@@ -380,12 +380,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   mapWidth: 50
   mapHeight: 50
-  noiseScale: 14.5
+  noiseScale: 10.6
   octaves: 3
   persistance: 0.54
-  lacunarity: 1.8
-  seed: 59
-  offset: {x: 5.63, y: 0}
+  lacunarity: 2
+  seed: 1
+  offset: {x: 8.07, y: -14.32}
   heightOffset: -0.25
   autoUpdate: 1
   LandTilePrefab: {fileID: 7529323164102042202, guid: 6363a3e10ab272d488697efb12a45b4c, type: 3}
@@ -547,8 +547,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   generator: {fileID: 1061143969}
-  startingPopulation: 0
-  entityPrefab: {fileID: 2703553458042422284, guid: 02aee3c59b382474abd31114e69351bd, type: 3}
+  startingPopulation: 250
+  entityPrefab: {fileID: 7191839513551554315, guid: b6ac8d364eb34684c9fe5e9606cdb669, type: 3}
 --- !u!4 &1703699936
 Transform:
   m_ObjectHideFlags: 0

@@ -20,9 +20,9 @@ public class BasicWalk : MonoBehaviour
     {
         while(true)
         {  
-            int x = Random.Range(-2,2);
-            int y = Random.Range(-2,2);
-            velocity = new Vector3(x,0,y);
+            int x = Random.Range(-5,5);
+            int y = Random.Range(-5,5);
+            velocity = Vector3.Normalize( new Vector3(x,0,y));
             yield return new WaitForSeconds(1);
         }
     }

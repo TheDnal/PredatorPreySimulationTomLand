@@ -44,18 +44,18 @@ public class MapGenerator : MonoBehaviour
             for(int j = 0; j < mapHeight; j++)
             {
                 float height = noiseMap[i,j];
-                Vector3 pos = new Vector3(i,1,j);
+                Vector3 pos = new Vector3(i,0,j);
                 pos -= new Vector3(mapWidth/2, 0, mapHeight/2);
                 Color col = heightColorKey.Evaluate(height);
                 prefab = LandTilePrefab;
-                if(height >= 0.8f)
+                if(height > 0.8f)
                 {
                     pos.y += height;
                 }
                 if(height <= 0.4f)
                 {
                     prefab = OceanTilePrefab;
-                    pos.y -= height;
+                    pos.y -= 1 - height;
                 }
                 GameObject newTile = Instantiate(prefab, pos, Quaternion.identity);
                 newTile.GetComponent<MeshRenderer>().material.color = col;
@@ -67,7 +67,7 @@ public class MapGenerator : MonoBehaviour
         for(int i = -1; i < mapWidth + 1; i++)
         {
             float height = 0f;
-            Vector3 pos = new Vector3(i,1,-1) - new Vector3(mapWidth/2, 0, mapHeight/2);
+            Vector3 pos = new Vector3(i,0,-1) - new Vector3(mapWidth/2, 0, mapHeight/2);
             Color col = heightColorKey.Evaluate(height);
             prefab = OceanTilePrefab;
             pos.y += height;
@@ -75,7 +75,7 @@ public class MapGenerator : MonoBehaviour
             southWallTile.GetComponent<MeshRenderer>().material.color = col;
             southWallTile.transform.parent = this.transform;
             
-            pos = new Vector3(i, 1, mapHeight) - new Vector3(mapWidth/2, 0, mapHeight/2);
+            pos = new Vector3(i, 0, mapHeight) - new Vector3(mapWidth/2, 0, mapHeight/2);
             pos.y += height;
             GameObject northWallTile = Instantiate(prefab, pos, Quaternion.identity);
             northWallTile.GetComponent<MeshRenderer>().material.color = col;
@@ -84,7 +84,7 @@ public class MapGenerator : MonoBehaviour
         for(int j = -1; j < mapHeight; j++)
         {
             float height = 0f;
-            Vector3 pos = new Vector3(-1,1,j) - new Vector3(mapWidth/2, 0, mapHeight/2);
+            Vector3 pos = new Vector3(-1,0,j) - new Vector3(mapWidth/2, 0, mapHeight/2);
             Color col = heightColorKey.Evaluate(height);
             prefab = OceanTilePrefab;
             pos.y += height;
@@ -92,7 +92,7 @@ public class MapGenerator : MonoBehaviour
             WestWallTile.GetComponent<MeshRenderer>().material.color = col;
             WestWallTile.transform.parent = this.transform;
 
-            pos = new Vector3(mapWidth, 1, j) - new Vector3(mapWidth/2, 0, mapHeight/2);
+            pos = new Vector3(mapWidth, 0, j) - new Vector3(mapWidth/2, 0, mapHeight/2);
             pos.y += height;
             GameObject EastWallTile = Instantiate(prefab, pos, Quaternion.identity);
             EastWallTile.GetComponent<MeshRenderer>().material.color = col;
@@ -104,7 +104,7 @@ public class MapGenerator : MonoBehaviour
         List<Vector3> validSpawns = new List<Vector3>();
         foreach(GameObject tile in Tiles)
         {
-            if(tile.layer == 6)
+            if(tile.layer == 6 && tile.transform.position.y < 0.8f)
             {
                 validSpawns.Add(tile.transform.position);
             }

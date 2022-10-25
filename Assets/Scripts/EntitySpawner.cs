@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class EntitySpawner : MonoBehaviour
 {
+    //AI Entity spawner Class. Gets a list of valid spawn points from the map generator and spawns AI on those spots
     public MapGenerator generator;
     public int startingPopulation;
     public GameObject entityPrefab;
@@ -16,22 +17,22 @@ public class EntitySpawner : MonoBehaviour
 
     void SpawnEntities(List<Vector3> spawnZones)
     {
-        if(spawnZones.Count < startingPopulation)
-        {
-            startingPopulation = spawnZones.Count;
-        }
         for(int i = 0; i < startingPopulation; i++ )
         {
+            //Ran out of spawnzones
             if(spawnZones.Count == 0)
             {
+                Debug.Log("Error : Starting population exceeded valid map spawns.");
+                Debug.Log("Entities attemped to spawn : " + startingPopulation);
+                Debug.Log("Entities successfully spawned : " + i);
                 break;
             }
             int index = Random.Range(0, spawnZones.Count -1 );
             Vector3 spawnPos = spawnZones[index];
-            spawnPos += Vector3.up;
+            spawnPos += Vector3.up * 0.75f;
             GameObject newEntity = Instantiate(entityPrefab, spawnPos, Quaternion.identity);
             newEntity.transform.parent = this.transform;
-            spawnZones.Remove(spawnPos);
+            spawnZones.Remove(spawnZones[index]);
         }
     }
 }
