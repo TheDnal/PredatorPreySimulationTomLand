@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class MapDisplay : MonoBehaviour
 {
+    public MapGenerator mapGen;
     public Renderer textureRender;
     void Start()
     {
@@ -11,6 +12,8 @@ public class MapDisplay : MonoBehaviour
     }
     public void DrawNoiseMap(float[,] noiseMap)
     {
+        Gradient WaterColorGradient = mapGen.WaterColorGradient;
+        Gradient LandcolorGradient = mapGen.LandColorGradient;
         int width = noiseMap.GetLength(0);
         int height = noiseMap.GetLength(1);
 
@@ -21,7 +24,16 @@ public class MapDisplay : MonoBehaviour
         {
             for(int x = 0; x < width; x++)
             {
-                colourMap[y * width + x] = Color.Lerp(Color.black, Color.white, noiseMap[x,y]);
+                Color col;
+                if(noiseMap[x,y] < mapGen.WorldSeaLevel)
+                {
+                    col = WaterColorGradient.Evaluate(noiseMap[x,y]);
+                }
+                else
+                {
+                    col = LandcolorGradient.Evaluate(noiseMap[x,y] - mapGen.WorldSeaLevel);
+                }
+                colourMap[y * width + x] = col;
             }
         }
         texture.SetPixels(colourMap);

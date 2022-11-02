@@ -15,11 +15,16 @@ public class MapGeneratorEditor : Editor
             if(mapGen.autoUpdate)
             {
                 mapGen.GenerateMap();
+                mapGen.UpdateSeaLevel();
             }
         }
-        if(GUILayout.Button ("Generate"))
+        if(GUILayout.Button ("Generate Noise"))
         {
             mapGen.GenerateMap();
+        }
+        if(GUILayout.Button("Update Sealevel"))
+        {
+            mapGen.UpdateSeaLevel();
         }
     }
 }

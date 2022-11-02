@@ -16,7 +16,8 @@ public class WanderAction : Action
         direction = new Vector3(x,0,z);
         agent = _agent;
         RaycastHit hit;
-        if(Physics.Raycast(agent.transform.position, agent.transform.position + direction * 10, out hit, 10))
+        Vector3 startPos = agent.transform.position - Vector3.up * 0.1f;
+        if(Physics.Raycast(startPos, startPos + direction * 10, out hit, 10))
         {
             distance = Vector3.Distance(agent.transform.position, hit.point);
             if(distance < 1)
@@ -45,4 +46,5 @@ public class WanderAction : Action
         agent.SetPerformingAction(false);
         yield return null;
     }
+
 }
