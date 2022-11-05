@@ -9,6 +9,7 @@ public class PlantSpawner : MonoBehaviour
     public int maxPlantCount = 10;
     private int plantCount = 0;
     private MapGenerator mapGen;
+    private int iter = 0;
     void Awake()
     {
         if(instance != null )
@@ -43,6 +44,7 @@ public class PlantSpawner : MonoBehaviour
     }
     public void SpawnPlant()
     {
+        iter++;
         //Get plant spawn location
         List<Vector3> spawns = mapGen.GetValidSpawnZones();
         int index = Random.Range(0, spawns.Count -1);
@@ -52,9 +54,10 @@ public class PlantSpawner : MonoBehaviour
         position += spawns[index];
         GameObject newPlant = Instantiate(plantPrefab, position, Quaternion.identity);
         newPlant.transform.parent = this.transform;
+        newPlant.name = "Plant #" + iter;
         PartitionSystem.instance.AddGameObjectToPartition(newPlant, PartitionSystem.ObjectType.food);
         Vector2Int p = PartitionSystem.instance.GetPartitionCoords(newPlant.transform.position);
-        PartitionSystem.instance.partitions[p.x,p.y].IncrementFoodCount();
+        newPlant.GetComponent<Plant>().setPartitionCoords(p);
     }
     public void DecrementPlantCount()
     {

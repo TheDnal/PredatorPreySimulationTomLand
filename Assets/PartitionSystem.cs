@@ -93,10 +93,10 @@ public class PartitionSystem : MonoBehaviour
         Vector2Int partitionPos =  new Vector2Int(Mathf.RoundToInt(relativePosition.x), Mathf.RoundToInt(relativePosition.z));
         return partitionPos;
     }
-    public List<Partition> GetAdjacentPartitions(Vector3 position, int radius)
+    public List<Partition> GetPartitionsInRadius(Vector3 position, int radius)
     {
         //Gets list of adjacent partitions
-        List<Partition> AdjacentPartitions = new List<Partition>();
+        List<Partition> partitionsInRadius = new List<Partition>();
         Vector2Int coreCoords = GetPartitionCoords(position);
         for(int i= -radius; i <= radius; i++)
         {
@@ -105,11 +105,10 @@ public class PartitionSystem : MonoBehaviour
             for(int j= -radius; j <= radius; j++)
             {
                 if(coreCoords.y + j < 0 || coreCoords.y + j >= size.y){continue;}
-                if(i == 0 && j == 0){continue;}
-                AdjacentPartitions.Add(partitions[coreCoords.x + i, coreCoords.y + j]);
+                partitionsInRadius.Add(partitions[coreCoords.x + i, coreCoords.y + j]);
             }
         }
-        return AdjacentPartitions;
+        return partitionsInRadius;
     }
     void OnDrawGizmos()
     {
@@ -189,7 +188,7 @@ public class Partition
         }
     }
     public int GetFoodCount() {return foodCount;}
-    public bool HasFood(){return hasFood;}
+    public bool HasFood(){return foodCount > 0 ? true : false;}
     public bool HasWater(){return hasWater;}
     public void AddAgent(GameObject _agent)
     {
@@ -203,14 +202,13 @@ public class Partition
     }
     public void AddFood(GameObject _food)
     {
+        IncrementFoodCount();
         food.Add(_food);
     }
     public void RemoveFood(GameObject _food)
     {
-        if(food.Contains(_food))
-        {
-            food.Add(_food);
-        }
+        DecrementFoodCount();
+        food.Remove(_food);
     }
     #endregion
 }

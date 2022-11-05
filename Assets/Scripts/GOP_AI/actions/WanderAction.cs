@@ -31,6 +31,10 @@ public class WanderAction : Action
         }
         return true;
     }
+    public override float ActionScore()
+    {
+        return 10;
+    }
     public override void PerformAction()
     {
         float speed = agent.GetSpeedModifier();

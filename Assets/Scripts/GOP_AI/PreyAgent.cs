@@ -5,7 +5,7 @@ using UnityEngine;
 public class PreyAgent : GOPAgent
 {
     //GOPAgent that is a herbavore and avoids predators
-    Vector2Int currPartition;
+
     private PartitionSystem pSystem;
     private List<Partition> adjacentPartitions = new List<Partition>();
     private bool initialised = false;
@@ -22,6 +22,8 @@ public class PreyAgent : GOPAgent
         pSystem.AddGameObjectToPartition(this.gameObject, PartitionSystem.ObjectType.agent);
         WanderAction wander = this.gameObject.AddComponent<WanderAction>();
         actions.Add(wander);
+        GetFoodAction getFoodAction = this.gameObject.AddComponent<GetFoodAction>();
+        actions.Add(getFoodAction);
         initialised = true;
     }
     void Update()
@@ -36,7 +38,7 @@ public class PreyAgent : GOPAgent
         {
             pSystem.RemoveGameObjectFromPartition(this.gameObject, oldPartitionPos, PartitionSystem.ObjectType.agent);
             pSystem.AddGameObjectToPartition(this.gameObject, PartitionSystem.ObjectType.agent);
-            adjacentPartitions = pSystem.GetAdjacentPartitions(transform.position, 1);
+            adjacentPartitions = pSystem.GetPartitionsInRadius(transform.position, 1);
         }
         rb.velocity = velocity;
         if(performingAction)
@@ -46,6 +48,7 @@ public class PreyAgent : GOPAgent
         Action bestAction = CalculateBestAction();
         bestAction.PerformAction();
     }
+
     void OnDrawGizmos()
     {
         //debug to show that the adjacent partitions are correctly calculated

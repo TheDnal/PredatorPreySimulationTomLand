@@ -25,15 +25,18 @@ public class GOPAgent : MonoBehaviour
     //goal. 
     protected float tiredness = 0;
     protected float hunger = 0;
+    protected float thirst = 0;
     protected float reproduction = 0;
     protected float danger = 0;
     ////
 
+    protected Vector2Int currPartition;
     //Goal discontent speeds
     
-    protected float tirednessIncrease = 0.25f;
-    protected float hungerIncrease = 1;
-    protected float reproductionIncrease = 0.5f;
+    protected float tirednessIncrease = 0.04f;
+    protected float hungerIncrease = 0.05f;
+    protected float hungerDecrease = 1f;
+    protected float reproductionIncrease = 0.035f;
     //
     //Which AI is being highlighted by the user
     public static GOPAgent selectedAgent;
@@ -49,6 +52,7 @@ public class GOPAgent : MonoBehaviour
     protected bool performingAction = false;
     //Prevents hunger loss (i.e. while eating)
     protected bool isEating = false;
+    protected bool isDrinking = false;
 
     ////Action arrays
     protected List<Action> actions = new List<Action>();
@@ -68,10 +72,16 @@ public class GOPAgent : MonoBehaviour
         {
             if(tiredness <= 1){ tiredness += tirednessIncrease * Time.deltaTime;}
             else{tiredness = 1;}
-
-            if(hunger <= 1){hunger += hungerIncrease * Time.deltaTime;}
-            else{hunger = 1;}
-
+            if(!isEating)
+            {
+                if(hunger <= 1){hunger += hungerIncrease * Time.deltaTime;}
+                else{hunger = 1; killAgent();}
+            }
+            else
+            {
+                if(hunger >= 0){hunger -= hungerDecrease * Time.deltaTime;}
+                else{hunger = 0;}
+            }
             if(reproduction <= 1){reproduction += reproductionIncrease * Time.deltaTime;}
             else{reproduction = 1;}
 
@@ -109,6 +119,7 @@ public class GOPAgent : MonoBehaviour
     public float GetReproduction(){return reproduction;}
     public float GetDanger(){return danger;}
     public float GetSpeedModifier(){return speedModifier;}
+    public Vector2Int getCurrPartition(){return currPartition;}
     #endregion
 
     #region Setters
@@ -121,6 +132,12 @@ public class GOPAgent : MonoBehaviour
     public void setVelocity(Vector3 _velocity)
     {
         velocity = _velocity;
+    }
+    public void killAgent()
+    {
+        PartitionSystem.instance.RemoveGameObjectFromPartition(this.gameObject, getCurrPartition(), PartitionSystem.ObjectType.agent);
+        Debug.Log("Agent " + this.gameObject.name + " died");
+        Destroy(this.gameObject);
     }
     #endregion
 }
