@@ -16,6 +16,7 @@ public class Action : MonoBehaviour
     //Inherited Fields
     #region Fields
     protected GOPAgent agent;
+    protected bool actionRunning = false;
     #endregion
 
 

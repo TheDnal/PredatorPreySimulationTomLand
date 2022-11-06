@@ -9,8 +9,7 @@ public class GetFoodAction : Action
     {
         agent = _agent;
         //Get partitions in radius
-        Vector2Int currPartition = agent.getCurrPartition();
-        List<Partition> partitions = PartitionSystem.instance.GetPartitionsInRadius(transform.position, 1);
+        List<Partition> partitions = PartitionSystem.instance.GetPartitionsInRadius(transform.position, 2);
 
         //Get nearest plant object that isn't being eaten
         float closest = 9999, distance;
@@ -47,6 +46,7 @@ public class GetFoodAction : Action
     }
     public override void PerformAction()
     {
+        actionRunning = true;
         StartCoroutine(goToFood());
     }
     private IEnumerator goToFood()
@@ -78,6 +78,16 @@ public class GetFoodAction : Action
             targetFood.Consume();
         }
         agent.SetPerformingAction(false);
+        actionRunning = false;
         yield return null;
+    }
+    void OnDrawGizmos()
+    {
+        if(nearestFoodObject != null && actionRunning)
+        {
+            Gizmos.color = Color.green;
+            Gizmos.DrawLine(agent.transform.position, nearestFoodObject.transform.position);
+            Gizmos.DrawWireCube(nearestFoodObject.transform.position, Vector3.one);
+        }
     }
 }

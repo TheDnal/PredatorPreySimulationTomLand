@@ -9,6 +9,15 @@ public class EntitySpawner : MonoBehaviour
     public int startingPopulation;
     public GameObject entityPrefab;
 
+    public static EntitySpawner instance;
+    void Awake()
+    {
+        if(instance != null)
+        {
+            if(instance != this){Destroy(this);}
+        }
+        else{instance = this;}
+    }
     void Start()
     {
         List<Vector3> validSpawns = generator.GetValidSpawnZones();

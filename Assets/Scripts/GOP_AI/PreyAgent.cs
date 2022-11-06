@@ -18,12 +18,20 @@ public class PreyAgent : GOPAgent
     {
         base.Initialise();
         pSystem = PartitionSystem.instance;
-        currPartition = pSystem.GetPartitionCoords(transform.position);
+        currPartition = pSystem.WorldToPartitionCoords(transform.position);
         pSystem.AddGameObjectToPartition(this.gameObject, PartitionSystem.ObjectType.agent);
+
         WanderAction wander = this.gameObject.AddComponent<WanderAction>();
         actions.Add(wander);
+
         GetFoodAction getFoodAction = this.gameObject.AddComponent<GetFoodAction>();
         actions.Add(getFoodAction);
+
+        GetWaterAction getWaterAction = this.gameObject.AddComponent<GetWaterAction>();
+        actions.Add(getWaterAction);
+
+        ReproduceAction reproduceAction = this.gameObject.AddComponent<ReproduceAction>();
+        actions.Add(reproduceAction);
         initialised = true;
     }
     void Update()
@@ -33,7 +41,7 @@ public class PreyAgent : GOPAgent
             return;
         }
         Vector2Int oldPartitionPos = currPartition;
-        currPartition = pSystem.GetPartitionCoords(transform.position);
+        currPartition = pSystem.WorldToPartitionCoords(transform.position);
         if(oldPartitionPos != currPartition)
         {
             pSystem.RemoveGameObjectFromPartition(this.gameObject, oldPartitionPos, PartitionSystem.ObjectType.agent);

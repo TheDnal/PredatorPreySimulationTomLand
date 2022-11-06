@@ -56,7 +56,7 @@ public class PlantSpawner : MonoBehaviour
         newPlant.transform.parent = this.transform;
         newPlant.name = "Plant #" + iter;
         PartitionSystem.instance.AddGameObjectToPartition(newPlant, PartitionSystem.ObjectType.food);
-        Vector2Int p = PartitionSystem.instance.GetPartitionCoords(newPlant.transform.position);
+        Vector2Int p = PartitionSystem.instance.WorldToPartitionCoords(newPlant.transform.position);
         newPlant.GetComponent<Plant>().setPartitionCoords(p);
     }
     public void DecrementPlantCount()

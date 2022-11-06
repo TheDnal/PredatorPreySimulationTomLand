@@ -49,7 +49,7 @@ public class PartitionSystem : MonoBehaviour
     }
     public void AddGameObjectToPartition(GameObject _GameObject, ObjectType type)
     {
-        Vector2Int partitionCoords = GetPartitionCoords(_GameObject.transform.position);
+        Vector2Int partitionCoords = WorldToPartitionCoords(_GameObject.transform.position);
         if(type == ObjectType.agent)
         {
             partitions[partitionCoords.x,partitionCoords.y].AddAgent(_GameObject);
@@ -84,7 +84,7 @@ public class PartitionSystem : MonoBehaviour
 
        
     }
-    public Vector2Int GetPartitionCoords(Vector3 position)
+    public Vector2Int WorldToPartitionCoords(Vector3 position)
     {
         Vector3 roundedPos = new Vector3(Mathf.RoundToInt(position.x), 0, 
                                          Mathf.RoundToInt(position.z));
@@ -93,11 +93,17 @@ public class PartitionSystem : MonoBehaviour
         Vector2Int partitionPos =  new Vector2Int(Mathf.RoundToInt(relativePosition.x), Mathf.RoundToInt(relativePosition.z));
         return partitionPos;
     }
+    public Vector3 PartitionToWorldCoords(Vector2Int coords)
+    {
+        Vector3 offset = new Vector3(coords.x, 0 , coords.y);
+        Vector3 position = startPos + offset;   
+        return position;
+    }
     public List<Partition> GetPartitionsInRadius(Vector3 position, int radius)
     {
         //Gets list of adjacent partitions
         List<Partition> partitionsInRadius = new List<Partition>();
-        Vector2Int coreCoords = GetPartitionCoords(position);
+        Vector2Int coreCoords = WorldToPartitionCoords(position);
         for(int i= -radius; i <= radius; i++)
         {
             if(coreCoords.x + i < 0 || coreCoords.x + i >= size.x){continue;}
