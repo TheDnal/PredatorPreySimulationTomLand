@@ -33,6 +33,7 @@ public class PreyAgent : GOPAgent
         ReproduceAction reproduceAction = this.gameObject.AddComponent<ReproduceAction>();
         actions.Add(reproduceAction);
         initialised = true;
+        pathfindToDestination(transform.position + Vector3.forward * 2);
     }
     void Update()
     {
@@ -40,6 +41,8 @@ public class PreyAgent : GOPAgent
         {
             return;
         }
+        //temp
+        return;
         Vector2Int oldPartitionPos = currPartition;
         currPartition = pSystem.WorldToPartitionCoords(transform.position);
         if(oldPartitionPos != currPartition)
@@ -76,6 +79,13 @@ public class PreyAgent : GOPAgent
         //         }
         //     }
         // }
+        if(currPos != null && destinationPos != null)
+        {
+            Gizmos.color = Color.green;
+            Gizmos.DrawWireCube(currPos, Vector3.one);
+            Gizmos.color = Color.red;
+            Gizmos.DrawWireCube(destinationPos, Vector3.one);
+        }
     }
 }
 

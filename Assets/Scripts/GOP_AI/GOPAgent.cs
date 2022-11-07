@@ -148,7 +148,42 @@ public class GOPAgent : MonoBehaviour
         }
         return bestAction;
     }
+    protected bool requiresPathfinding()
+    {
+        return false;
+    }
+    protected Vector3 currPos, destinationPos;
+    protected List<Partition> cachedPartitions;
+    protected List<Vector3> pathfindToDestination(Vector3 target)
+    {
+        //Dijkstra algorithm for help navigating the AI
 
+        cachedPartitions = PartitionSystem.instance.GetPartitionsInRadius(transform.position, 2);
+        Vector2Int currP = getCurrPartition();
+
+
+        //Setup nodes
+        DijkstraNode[,] nodes = new DijkstraNode[5,5];  
+        Vector2Int coordsCentre = new Vector2Int(2,2);
+        foreach(Partition p in cachedPartitions)
+        {
+            
+            Vector2Int relativeCoords = coordsCentre + (p.coords - currP);
+            if(relativeCoords.x > 5 || relativeCoords.y > 5 || relativeCoords.x < 0 || relativeCoords.y < 0)
+            {
+                Debug.Log("Error : pathfinding out of bounds");
+                Debug.Log(relativeCoords);
+                return null;
+            }
+            bool travserable = !p.HasWater();
+            nodes[relativeCoords.x,relativeCoords.y] = new DijkstraNode(float.MaxValue, relativeCoords, travserable);
+            
+        }
+        nodes[coordsCentre.x,coordsCentre.y].tentativeDistance = 0;
+        DijkstraNode currNode = nodes[2,2];
+        
+        return null;
+    }
     #endregion
 
     #region Getters
@@ -176,4 +211,19 @@ public class GOPAgent : MonoBehaviour
         Destroy(this.gameObject);
     }
     #endregion
+
+    public struct DijkstraNode
+    {
+        public float tentativeDistance;
+        public Vector2Int pos;
+        public bool travserable;
+        public Vector2Int rootPos;
+        public DijkstraNode(float _tentativeDistance, Vector2Int _pos, bool _traversable)
+        {
+            tentativeDistance = _tentativeDistance;
+            pos = _pos;
+            travserable = _traversable;
+            rootPos = pos;
+        }
+    }
 }

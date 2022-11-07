@@ -116,6 +116,7 @@ public class PartitionSystem : MonoBehaviour
         }
         return partitionsInRadius;
     }
+
     void OnDrawGizmos()
     {
         if(partitions != null)
