@@ -13,6 +13,7 @@ public class Algorithm : MonoBehaviour
     void Awake()
     {
         GenerateNodes();
+        ComputeDijkstra();
     }
     void GenerateNodes()
     {
@@ -27,7 +28,7 @@ public class Algorithm : MonoBehaviour
                 nodes[i,j] = newNode;
                 unfilteredNodes.Add(newNode);
             }
-        }  
+        }
     }
     void Update()
     {
@@ -38,41 +39,33 @@ public class Algorithm : MonoBehaviour
     }
     void ComputeDijkstra()
     {
-        //Intialise vals
-        Node startNode, endNode;
-        startNode = nodes[start.x,start.y];
-        endNode = nodes[end.x,end.y];
-        Node currNode = startNode;
-        Node neigbourNode;
-        startNode.distanceFromRoot = 0;
-        List<Node> neigbhourNodes = getAdjacentNodes(currNode.pos);
-
-
-        while(unvisitedNodes.Count > 0)
+        Node currentNode = nodes[start.x,start.y];
+        List<Node> nodesToCompute = new List<Node>();
+        nodesToCompute.AddRange(getAdjacentNodes(currentNode.pos));
+        while(nodesToCompute.Count > 0)
         {
-            neigbourNode = unvisitedNodes[0];
-            float distance = Vector2Int.Distance(neigbourNode.pos, currNode.pos);
-            if(currNode.distanceFromRoot + distance < neigbourNode.distanceFromRoot)
-            {
-                neigbourNode.distanceFromRoot = currNode.distanceFromRoot + distance;
-                neigbourNode.rootNode = currNode.pos;
-            }
+            //Iterate over each node
+
         }
     }
     private List<Node> getAdjacentNodes(Vector2Int nodePos)
     {
         List<Node> adjacentNodes = new List<Node>();
-        for(int i = -1; i < 1; i++){
-            for(int j = -1; j < 1; j++)
+        for(int i = -1; i <= 1; i++){
+            for(int j = -1; j <= 1; j++)
             {
                 Vector2Int displacement = new Vector2Int(i,j);
-                if(displacement == Vector2Int.zero)
+                if(displacement == Vector2Int.zero || 
+                   displacement == new Vector2Int(1,1) ||
+                   displacement == new Vector2Int(-1,-1)||
+                   displacement == new Vector2Int(-1,1)||
+                   displacement == new Vector2Int(1,-1))
                 {
                     continue;
                 }
                 Vector2Int coords = nodePos + displacement;
-                if(coords.x > 0 && coords.x <= size.x &&
-                   coords.y > 0 && coords.y <= size.y)
+                if(coords.x >= 0 && coords.x <= size.x &&
+                   coords.y >= 0 && coords.y <= size.y)
                 {
                         adjacentNodes.Add(nodes[coords.x,coords.y]);
                 }
@@ -80,6 +73,41 @@ public class Algorithm : MonoBehaviour
         }
         return adjacentNodes;
     }
+    private List<Node> pruneNodeList(List<Node> listToPrune)
+    {
+        //removes visited and untravserable nodes.
+        if(listToPrune == null)
+        {
+            return listToPrune;
+        }
+        List<Node> PrunedList = listToPrune;
+        List<Node> nodesToPrune = new List<Node>();
+        foreach(Node n in listToPrune)
+        {
+            if(n.visited || !n.traversable)
+            {
+                nodesToPrune.Add(n);
+            }
+        }
+        foreach(Node n in nodesToPrune)
+        {
+            PrunedList.Remove(n);
+        }
+        return PrunedList;
+    }
+    private List<Node> addUniqueNodes(List<Node> coreList, List<Node> nodesToAdd)
+    {
+        //Prevents duplicates from being added to a list
+        foreach(Node n in nodesToAdd)
+        {
+            if(!coreList.Contains(n))
+            {
+                coreList.Add(n);
+            }
+        }
+        return coreList;
+    }
+    private List<
     void OnDrawGizmos()
     {
         if(nodes != null)
