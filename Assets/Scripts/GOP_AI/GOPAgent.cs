@@ -23,11 +23,11 @@ public class GOPAgent : MonoBehaviour
     ////Goals
     //These values represent the AI's "urge" to deal with the
     //goal. 
-    protected float tiredness = 0;
-    protected float hunger = 0;
-    protected float thirst = 0;
-    protected float reproduction = 0;
-    protected float danger = 0;
+    public float tiredness = 0;
+    public float hunger = 0;
+    public float thirst = 0;
+    public float reproduction = 0;
+    public float danger = 0;
     ////
 
     protected Vector2Int currPartition;

@@ -8,6 +8,7 @@ public class ReproduceAction : Action
 
     public override bool isActionPossible(GOPAgent _agent)
     {
+        actionName = "Reproduce";
         agent = _agent;
         return agent.GetReproduction() == 1 ? true : false;
     }

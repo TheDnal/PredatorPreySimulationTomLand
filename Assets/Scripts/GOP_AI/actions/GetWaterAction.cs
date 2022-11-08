@@ -7,6 +7,7 @@ public class GetWaterAction : Action
     public Vector3 nearestWaterSource = Vector3.up;
     public override bool isActionPossible(GOPAgent _agent)
     {
+        actionName = "GetWater";
         agent = _agent;
         Vector2Int pos = agent.getCurrPartition();
         List<Partition> adjacentPartitions = PartitionSystem.instance.GetPartitionsInRadius(agent.transform.position, 3);

@@ -9,6 +9,7 @@ public class WanderAction : Action
     private Vector3 direction;
     public override bool isActionPossible(GOPAgent _agent)
     {
+        actionName = "Wander";
         agent = _agent;
         //pick rand Direction
         int x = Random.Range(-10,10);

@@ -7,6 +7,7 @@ public class GetFoodAction : Action
     private GameObject nearestFoodObject;
     public override bool isActionPossible(GOPAgent _agent)
     {
+        actionName = "GetFood";
         agent = _agent;
         //Get partitions in radius
         List<Partition> partitions = PartitionSystem.instance.GetPartitionsInRadius(transform.position, 2);

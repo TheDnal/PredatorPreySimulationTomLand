@@ -49,12 +49,14 @@ public class PreyAgent : GOPAgent
             pSystem.AddGameObjectToPartition(this.gameObject, PartitionSystem.ObjectType.agent);
             adjacentPartitions = pSystem.GetPartitionsInRadius(transform.position, 1);
         }
+        //transform.LookAt(transform.position + velocity);
         rb.velocity = velocity;
         if(performingAction)
         {
             return;
         }
         Action bestAction = CalculateBestAction();
+        Debug.Log("Current action : " + bestAction.actionName);
         bestAction.PerformAction();
     }
 
