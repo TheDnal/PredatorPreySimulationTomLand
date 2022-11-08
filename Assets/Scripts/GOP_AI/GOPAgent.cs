@@ -72,63 +72,56 @@ public class GOPAgent : MonoBehaviour
     public virtual void Initialise()
     {
         rb = this.GetComponent<Rigidbody>();
-        StartCoroutine(i_GenerateDiscontent());
     }
-    protected IEnumerator i_GenerateDiscontent()
+    protected void UpdateDiscontent()
     {
-        while(true)
+        if(!isSleeping)
         {
-            if(!isSleeping)
-            {
-                if(tiredness <= 1){ tiredness += tirednessIncrease * Time.deltaTime;}
-                else{tiredness = 1;}
-            }
-            else
-            {
-                if(tiredness >= 0){ tiredness -= tirednessDecrease * Time.deltaTime;}
-                else{tiredness = 0;}
-            }
-            
-            if(!isEating)
-            {
-                if(hunger <= 1){hunger += hungerIncrease * Time.deltaTime;}
-                else{hunger = 1; Debug.Log("agent died from starvation"); killAgent();}
-            }
-            else
-            {
-                if(hunger >= 0){hunger -= hungerDecrease * Time.deltaTime;}
-                else{hunger = 0;}
-            }
-            
-            if(!isDrinking)
-            {
-                if(thirst <= 1){thirst += thirstIncrease * Time.deltaTime;}
-                else{thirst = 1; Debug.Log("agent died from dehydration"); killAgent();} 
-            }
-            else
-            {
-                if(thirst >= 0){thirst -= thirstDecrease * Time.deltaTime;}
-                else{thirst = 0;}
-            }
-            
-            if(!isReproducing)
-            {
-                if(reproduction <= 1){reproduction += reproductionIncrease * Time.deltaTime;}
-                else{reproduction = 1;}
-            }
-            else
-            {
-                if(reproduction >= 0){reproduction -= reproductionDecrease * Time.deltaTime;}
-                else{reproduction = 0;}
-            }
-
-            if(danger <= 1){/*TODO*/}
-            else{danger =1;}
-
-            yield return new WaitForEndOfFrame();
+            if(tiredness <= 1){ tiredness += tirednessIncrease * Time.deltaTime;}
+            else{tiredness = 1;}
         }
-    }
+        else
+        {
+            if(tiredness >= 0){ tiredness -= tirednessDecrease * Time.deltaTime;}
+            else{tiredness = 0;}
+        }
+        
+        if(!isEating)
+        {
+            if(hunger <= 1){hunger += hungerIncrease * Time.deltaTime;}
+            else{hunger = 1; Debug.Log("agent died from starvation"); killAgent();}
+        }
+        else
+        {
+            if(hunger >= 0){hunger -= hungerDecrease * Time.deltaTime;}
+            else{hunger = 0;}
+        }
+        
+        if(!isDrinking)
+        {
+            if(thirst <= 1){thirst += thirstIncrease * Time.deltaTime;}
+            else{thirst = 1; Debug.Log("agent died from dehydration"); killAgent();} 
+        }
+        else
+        {
+            if(thirst >= 0){thirst -= thirstDecrease * Time.deltaTime;}
+            else{thirst = 0;}
+        }
+        
+        if(!isReproducing)
+        {
+            if(reproduction <= 1){reproduction += reproductionIncrease * Time.deltaTime;}
+            else{reproduction = 1;}
+        }
+        else
+        {
+            if(reproduction >= 0){reproduction -= reproductionDecrease * Time.deltaTime;}
+            else{reproduction = 0;}
+        }
 
+        if(danger <= 1){/*TODO*/}
+        else{danger =1;}
+    }
     //Method that returns the best possible action
     protected Action CalculateBestAction()
     {

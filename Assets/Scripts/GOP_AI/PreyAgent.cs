@@ -41,6 +41,7 @@ public class PreyAgent : GOPAgent
         {
             return;
         }
+        UpdateDiscontent();
         Vector2Int oldPartitionPos = currPartition;
         currPartition = pSystem.WorldToPartitionCoords(transform.position);
         if(oldPartitionPos != currPartition)
