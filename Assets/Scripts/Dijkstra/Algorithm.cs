@@ -8,8 +8,7 @@ public class Algorithm : MonoBehaviour
     public Vector2Int start, end;
 
     private Node[,] nodes;
-    private List<Node> unvisitedNodes;
-    private List<Node> unfilteredNodes;
+    private List<Vector2Int> path = new List<Vector2Int>();
     void Awake()
     {
         GenerateNodes();
@@ -17,8 +16,6 @@ public class Algorithm : MonoBehaviour
     }
     void GenerateNodes()
     {
-        unvisitedNodes = new List<Node>();
-        unfilteredNodes = new List<Node>();
         nodes = new Node[5,5];
         for(int i =0; i < 5; i++){
             for(int j = 0; j < 5; j++)
@@ -26,7 +23,6 @@ public class Algorithm : MonoBehaviour
                 Vector2Int pos = new Vector2Int(i,j);
                 Node newNode = new Node(pos, true);
                 nodes[i,j] = newNode;
-                unfilteredNodes.Add(newNode);
             }
         }
     }
@@ -39,13 +35,76 @@ public class Algorithm : MonoBehaviour
     }
     void ComputeDijkstra()
     {
+       /*
+        Begin at start node
+        get adjacent nodes
+        get distance from start node to adjacent node. if dist + start node dist < adjacent dist,
+        then adjacent dist = dist + start dist
+        mark adjacent nodes as visited
+        get all their neighbours (no repeats or visited nodes)
+        repeat until no nodes left or reach end node visited
+        */ 
+
+        path = new List<Vector2Int>();
+        //Get start node
         Node currentNode = nodes[start.x,start.y];
+        currentNode.distance = 0;
+        Node endNode = nodes[end.x,end.y];
+        Node startNode = nodes[start.x,start.y];
         List<Node> nodesToCompute = new List<Node>();
+        //Get Adjacent nodes
         nodesToCompute.AddRange(getAdjacentNodes(currentNode.pos));
+        foreach(Node n in nodesToCompute)
+        {
+            n.rootNode = currentNode.pos;
+        }
+        //Repeat until no nodes left or reach end node visited
+        int x= 0;
         while(nodesToCompute.Count > 0)
         {
-            //Iterate over each node
-
+            x++;
+            float distance;
+            List<Node> nextNodesToCompute = new List<Node>();
+            foreach(Node adjacentNode in nodesToCompute)
+            {
+                currentNode = nodes[adjacentNode.rootNode.x, adjacentNode.rootNode.y];
+                //Get distance from adjacent node to root node
+                distance = Vector2Int.Distance(adjacentNode.pos, currentNode.pos);
+                if(distance + currentNode.distance < adjacentNode.distance)
+                {
+                    //Set new distance
+                    adjacentNode.distance = distance + currentNode.distance;
+                    //Mark as visited
+                    adjacentNode.visited = true;
+                    adjacentNode.chainNode = currentNode.pos;
+                    List<Node> adjacentNodes = getAdjacentNodes(adjacentNode.pos);
+                    foreach(Node n in adjacentNodes)
+                    {
+                        if(!n.visited && !nextNodesToCompute.Contains(n))
+                        {
+                            n.rootNode = adjacentNode.pos;
+                            nextNodesToCompute.Add(n);
+                        }
+                    }
+                }
+            }
+            nodesToCompute.Clear();
+            nodesToCompute.AddRange(nextNodesToCompute);
+        }
+        List<Vector2Int> reversePath = new List<Vector2Int>();
+        Vector2Int currStep = endNode.pos;
+        x = 0;
+        while(currStep != start && x < 99) 
+        {
+            x++;
+            reversePath.Add(currStep);
+            currStep = nodes[currStep.x,currStep.y].chainNode;
+        }
+        reversePath.Add(start);
+        path = new List<Vector2Int>();
+        for(int i = reversePath.Count - 1; i >=0 ; i--)
+        {
+            path.Add(reversePath[i]);
         }
     }
     private List<Node> getAdjacentNodes(Vector2Int nodePos)
@@ -64,9 +123,10 @@ public class Algorithm : MonoBehaviour
                     continue;
                 }
                 Vector2Int coords = nodePos + displacement;
-                if(coords.x >= 0 && coords.x <= size.x &&
-                   coords.y >= 0 && coords.y <= size.y)
+                if(coords.x >= 0 && coords.x < size.x &&
+                   coords.y >= 0 && coords.y < size.y)
                 {
+                    
                         adjacentNodes.Add(nodes[coords.x,coords.y]);
                 }
             }
@@ -107,7 +167,6 @@ public class Algorithm : MonoBehaviour
         }
         return coreList;
     }
-    private List<
     void OnDrawGizmos()
     {
         if(nodes != null)
@@ -117,6 +176,7 @@ public class Algorithm : MonoBehaviour
             {
                 for(int j = 0; j < size.y; j++)
                 {
+
                     Gizmos.color = Color.white;
                     Vector2Int node = new Vector2Int(i,j);
                     if(node == start)
@@ -127,9 +187,13 @@ public class Algorithm : MonoBehaviour
                     {
                         Gizmos.color = Color.red;
                     }
-                    else if(nodes[i,j].visited)
+                    else if(path != null)
                     {
-                        Gizmos.color = Color.yellow;
+                        Vector2Int currNode = nodes[i,j].pos;
+                        if(path.Contains(currNode))
+                        {
+                            Gizmos.color = Color.yellow;
+                        }
                     }
                     Vector3 pos = new Vector3(i,0,j);
                     Gizmos.DrawWireCube(transform.position + pos, Vector3.one * 0.5f);

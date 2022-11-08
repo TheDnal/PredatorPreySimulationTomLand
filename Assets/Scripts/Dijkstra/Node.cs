@@ -7,6 +7,7 @@ public class Node
     public Vector2Int pos;
     public bool traversable;
     public float distance;
+    public Vector2Int rootNode;
     public Vector2Int chainNode;
     public bool visited;
     public Node(Vector2Int _pos, bool _traversable)
