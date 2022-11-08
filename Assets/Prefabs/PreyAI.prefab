@@ -282,6 +282,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2f5729e0ba4eb974f8bc6085bd1544de, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  showGizmos: 1
+  tiredness: 0
+  hunger: 0
+  thirst: 0
+  reproduction: 0
+  danger: 0
 --- !u!136 &4439834588647203632
 CapsuleCollider:
   m_ObjectHideFlags: 0

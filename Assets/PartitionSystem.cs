@@ -6,7 +6,7 @@ public class PartitionSystem : MonoBehaviour
 {
     public static PartitionSystem instance;
     private Vector3 startPos;
-    private Vector2Int size;
+    public Vector2Int size;
     private float partitionSize;
     public Partition[,] partitions;
     public enum ObjectType{agent, food};
@@ -40,7 +40,8 @@ public class PartitionSystem : MonoBehaviour
                 Vector3 displacement = new Vector3(i,0,j) * partitionSize;
                 Vector2Int coords = new Vector2Int(i,j);
                 bool water = MapGenerator.instance.isTileUnderWater(new Vector2Int(i,j));
-                Partition newPart = new Partition(startPos + displacement, coords, water, false);
+                bool traversable = MapGenerator.instance.isTileTraversable(new Vector2Int(i,j));
+                Partition newPart = new Partition(startPos + displacement, coords, water, false, traversable);
                 partitions[i,j] = newPart;
                 
             }
@@ -168,12 +169,13 @@ public class Partition
     public Vector2 worldPosition;
     public Vector2Int coords;
     private bool hasWater;
+    private bool isTraversable;
     public int foodCount;
     private bool hasFood;
 
     #endregion
     //Constructor
-    public Partition(Vector3 _Position, Vector2Int _coords, bool _hasWater, bool _hasFood)
+    public Partition(Vector3 _Position, Vector2Int _coords, bool _hasWater, bool _hasFood, bool _isTraversable)
     {
         food = new List<GameObject>();
         agents = new List<GameObject>();
@@ -182,6 +184,7 @@ public class Partition
         coords = _coords;
         hasWater = _hasWater;
         hasFood = _hasFood;
+        isTraversable = _isTraversable;
     }
     #region methods
     public void IncrementFoodCount(){foodCount++; hasFood = true;}
@@ -197,6 +200,7 @@ public class Partition
     public int GetFoodCount() {return foodCount;}
     public bool HasFood(){return foodCount > 0 ? true : false;}
     public bool HasWater(){return hasWater;}
+    public bool IsTraversable(){return isTraversable;}
     public void AddAgent(GameObject _agent)
     {
         if(agents.Contains(_agent)){return;}

@@ -168,6 +168,18 @@ public class MapGenerator : MonoBehaviour
         float height = noiseMap[tileCoord.x,tileCoord.y];
         return height > WorldSeaLevel ? false : true;
     }
+    public bool isTileTraversable(Vector2Int tileCoord)
+    {
+        float height = noiseMap[tileCoord.x, tileCoord.y];
+        if(height < WorldSeaLevel || height >= 0.80f)
+        {
+            return false;
+        }
+        else
+        {
+            return true;
+        }
+    }
     //Will adjust all the tiles in the map to accommodate the new sea level
     public void UpdateSeaLevel()
     {
