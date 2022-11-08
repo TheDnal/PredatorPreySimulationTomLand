@@ -6,10 +6,14 @@ public class Algorithm : MonoBehaviour
 {
     public Vector2Int size = new Vector2Int(5,5);
     public Vector2Int start, end;
-
+    public Vector2Int obstacle;
     private Node[,] nodes;
     private List<Vector2Int> path = new List<Vector2Int>();
     void Awake()
+    {
+        Compute();
+    }
+    public void Compute()
     {
         GenerateNodes();
         ComputeDijkstra();
@@ -21,16 +25,14 @@ public class Algorithm : MonoBehaviour
             for(int j = 0; j < 5; j++)
             {
                 Vector2Int pos = new Vector2Int(i,j);
-                Node newNode = new Node(pos, true);
+                bool _obstacle = true;
+                if(pos == obstacle)
+                {
+                    _obstacle = false;
+                }
+                Node newNode = new Node(pos, _obstacle);
                 nodes[i,j] = newNode;
             }
-        }
-    }
-    void Update()
-    {
-        if(Input.GetKeyDown(KeyCode.Space))
-        {
-            ComputeDijkstra();
         }
     }
     void ComputeDijkstra()
@@ -54,6 +56,18 @@ public class Algorithm : MonoBehaviour
         List<Node> nodesToCompute = new List<Node>();
         //Get Adjacent nodes
         nodesToCompute.AddRange(getAdjacentNodes(currentNode.pos));
+        List<Node> nodesToPrune = new List<Node>();
+        foreach(Node n in nodesToCompute)
+        {
+            if(!n.traversable)
+            {
+                nodesToPrune.Add(n);
+            }
+        }
+        foreach(Node n in nodesToPrune)
+        {
+            nodesToCompute.Remove(n);
+        }
         foreach(Node n in nodesToCompute)
         {
             n.rootNode = currentNode.pos;
@@ -80,7 +94,7 @@ public class Algorithm : MonoBehaviour
                     List<Node> adjacentNodes = getAdjacentNodes(adjacentNode.pos);
                     foreach(Node n in adjacentNodes)
                     {
-                        if(!n.visited && !nextNodesToCompute.Contains(n))
+                        if(!n.visited && !nextNodesToCompute.Contains(n) && n.traversable)
                         {
                             n.rootNode = adjacentNode.pos;
                             nextNodesToCompute.Add(n);
@@ -186,6 +200,10 @@ public class Algorithm : MonoBehaviour
                     else if(node == end)
                     {
                         Gizmos.color = Color.red;
+                    }
+                    else if(!nodes[i,j].traversable)
+                    {
+                        Gizmos.color = Color.blue;
                     }
                     else if(path != null)
                     {

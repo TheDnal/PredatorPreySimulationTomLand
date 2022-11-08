@@ -387,7 +387,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   size: {x: 5, y: 5}
   start: {x: 0, y: 0}
-  end: {x: 3, y: 3}
+  end: {x: 4, y: 2}
+  obstacle: {x: 1, y: 2}
 --- !u!4 &1723224327
 Transform:
   m_ObjectHideFlags: 0

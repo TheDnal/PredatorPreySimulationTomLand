@@ -477,7 +477,7 @@ MonoBehaviour:
   persistance: 0.5
   lacunarity: 2
   seed: 1
-  offset: {x: 2.37, y: 0.1}
+  offset: {x: 4.18, y: 0.1}
   autoUpdate: 1
   WorldSeaLevel: 0.4
   seaLevelOffset: 0
@@ -672,7 +672,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   generator: {fileID: 1061143969}
-  startingPopulation: 1
+  startingPopulation: 2000
   entityPrefab: {fileID: 7191839513551554315, guid: b6ac8d364eb34684c9fe5e9606cdb669, type: 3}
 --- !u!4 &1703699936
 Transform:
