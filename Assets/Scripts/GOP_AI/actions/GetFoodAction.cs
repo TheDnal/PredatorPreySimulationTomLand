@@ -7,6 +7,7 @@ public class GetFoodAction : Action
     private GameObject nearestFoodObject;
     public override bool isActionPossible(GOPAgent _agent)
     {
+        actionRunning = false;
         actionName = "GetFood";
         agent = _agent;
         //Get partitions in radius
@@ -42,45 +43,46 @@ public class GetFoodAction : Action
     public override float ActionScore()
     {
         //Return hunger - distance to nearest food object
-        float score = (agent.GetHunger() * 100) - Vector3.Distance(transform.position, nearestFoodObject.transform.position) * 10;
+        float score = (agent.GetHunger() * 125) - Vector3.Distance(transform.position, nearestFoodObject.transform.position) * 5;
         return score;
     }
     public override void PerformAction()
     {
-        actionRunning = true;
-        StartCoroutine(goToFood());
-    }
-    private IEnumerator goToFood()
-    {
-        agent.SetPerformingAction(true);
-        Vector3 target = nearestFoodObject.transform.position;
-        Plant targetFood = nearestFoodObject.GetComponent<Plant>();
-        float speed = agent.GetSpeedModifier();
-        Vector3 velocity;
-        Rigidbody rb = agent.GetComponent<Rigidbody>();
-        while(targetFood.isEdible())
+        if(PartitionSystem.instance.WorldToPartitionCoords(nearestFoodObject.transform.position) == agent.getCurrPartition())
         {
-            if(Vector3.Distance(transform.position, target)< 0.4f)
-            {
-                break;
-            }
-            velocity = target - transform.position;
-            velocity.Normalize();
-            velocity *= speed;
-            rb.velocity = velocity;
+            ConsumeFood();
+            return;
+        }
+        if(!agent.isTargetReachable(nearestFoodObject.transform.position))
+        {
+            agent.SetPerformingAction(false);
+            return;
+        }
+        actionRunning = true;
+        agent.PathToTarget(nearestFoodObject.transform.position);
+        StartCoroutine(i_waitUntilReachedFood());
+    }
+    private IEnumerator i_waitUntilReachedFood()
+    {
+        while(!agent.arrivedAtDestination)
+        {
             yield return new WaitForEndOfFrame();
         }
-        if(Vector3.Distance(transform.position, target) < 0.4)
-        {
-            targetFood.startEating();
-            agent.SetEating(true);
-            yield return new WaitForSeconds(0.3f);
-            agent.SetEating(false);
-            targetFood.Consume();
-        }
+        ConsumeFood();
+    }
+    private void ConsumeFood()
+    {
+        StartCoroutine(i_ConsumeFood());
+    }
+    private IEnumerator i_ConsumeFood()
+    {
+        agent.SetPerformingAction(true);
+        agent.SetEating(true);
+        yield return new WaitForSeconds(.5f);
+        Plant plant = nearestFoodObject.GetComponent<Plant>();
+        plant.Consume();
+        agent.SetEating(false);
         agent.SetPerformingAction(false);
-        actionRunning = false;
-        yield return null;
     }
     void OnDrawGizmos()
     {

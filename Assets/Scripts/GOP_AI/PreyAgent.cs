@@ -9,9 +9,8 @@ public class PreyAgent : GOPAgent
     private PartitionSystem pSystem;
     private List<Partition> adjacentPartitions = new List<Partition>();
     private bool initialised = false;
-    private List<Vector2Int> path = new List<Vector2Int>();
-    private List<Vector3> currentPath = new List<Vector3>();
-    private bool pathing;
+    [SerializeField]
+    private string currentAction;
     void Start()
     {
         Initialise();
@@ -51,7 +50,7 @@ public class PreyAgent : GOPAgent
         {
             pSystem.RemoveGameObjectFromPartition(this.gameObject, oldPartitionPos, PartitionSystem.ObjectType.agent);
             pSystem.AddGameObjectToPartition(this.gameObject, PartitionSystem.ObjectType.agent);
-            adjacentPartitions = pSystem.GetPartitionsInRadius(transform.position, 1);
+            adjacentPartitions = pSystem.GetPartitionsInRadius(transform.position, 2);
         }
         transform.LookAt(transform.position + velocity);
         rb.velocity = velocity;
@@ -60,54 +59,10 @@ public class PreyAgent : GOPAgent
             return;
         }
         Action bestAction = CalculateBestAction();
+        currentAction = bestAction.name;
         bestAction.PerformAction();
     }
-    public bool isLocationReachable(Vector3 target)
-    {
-        //Actions will use this to make sure their target location is valid
-        Vector2Int targetPartition = PartitionSystem.instance.WorldToPartitionCoords(target);
-        path = GetPathToPartition(targetPartition, 2);
-        if(path == null)
-        {
-            Debug.Log("path unreachable");
-            return false;
-        }
-        else{
-            return true;
-        }
-    }
-    public void PathToTarget()
-    {
-        StartCoroutine(i_PathToTarget());
-    }
-    private IEnumerator i_PathToTarget()
-    {
-        //Will iterate through each checkpoint on the path list. 
-        currentPath = new List<Vector3>();
-        foreach(Vector2Int pos in path)
-        {
-            Vector2Int partitionCoord = pos + currPartition;
-            Vector3 coord = PartitionSystem.instance.PartitionToWorldCoords(partitionCoord);
-            currentPath.Add(coord);
-        }
-        //Iterate through each path
-        for(int i =0; i < partitionPath.Count; i ++)
-        {
-            Vector3 target =  currentPath[i];
-            target.y = transform.position.y;
-            while(Vector3.Distance(target, transform.position) > 0.25)
-            {
-                Vector3 targetVelocity = target - transform.position;
-                targetVelocity.Normalize();
-                targetVelocity.y = 0;
-                velocity = targetVelocity;
-                yield return new WaitForEndOfFrame();
-            }
-        }
-        velocity = Vector3.zero;
-        partitionPath.Clear();
-        yield return null;
-    }
+
     void OnDrawGizmos()
     {
         //debug to show that the adjacent partitions are correctly calculated
@@ -136,7 +91,7 @@ public class PreyAgent : GOPAgent
                 foreach(Vector3 step in currentPath)
                 {
                     Gizmos.color = Color.yellow;
-                    Gizmos.DrawWireCube(step + Vector3.up, Vector3.one);
+                    Gizmos.DrawWireCube(step, Vector3.one);
                 }
             }
         }

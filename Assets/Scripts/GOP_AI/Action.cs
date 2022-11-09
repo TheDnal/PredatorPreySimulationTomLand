@@ -22,9 +22,10 @@ public class Action : MonoBehaviour
 
 
     //Inherited Methods
-    #region Methods 
+    #region Generic Methods 
     public virtual bool isActionPossible(GOPAgent _agent){return false;}
     public virtual float ActionScore(){return 0;}
     public virtual void PerformAction(){}
     #endregion
+
 }

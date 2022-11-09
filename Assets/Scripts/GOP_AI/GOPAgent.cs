@@ -193,7 +193,8 @@ public class GOPAgent : MonoBehaviour
     Node startNode,endNode;
     Vector2Int gridCorner;
     protected List<Vector2Int> partitionPath = new List<Vector2Int>();
-
+    protected List<Vector3> currentPath = new List<Vector3>();
+    public bool arrivedAtDestination = false;
     #endregion
     #region DijkstraAlgorithm
 
@@ -333,13 +334,75 @@ public class GOPAgent : MonoBehaviour
             reversePath.Add(currStep);
             currStep = nodes[currStep.x,currStep.y].chainNode;
         }
+        reversePath.Add(startNode.pos);
         partitionPath = new List<Vector2Int>();
+
         for(int i = reversePath.Count - 1; i >=0 ; i--)
         {
             partitionPath.Add(reversePath[i] - startNode.pos);
         }
         return partitionPath;
     }
+    
+    public bool isTargetReachable(Vector3 target)
+    {
+        //Actions will use this to make sure their target location is valid
+        Vector2Int targetPartition = PartitionSystem.instance.WorldToPartitionCoords(target);
+        List<Vector2Int> dijkstraPath = GetPathToPartition(targetPartition, 4);
+        if(dijkstraPath == null)
+        {
+            return false;
+        }
+        else{
+            return true;
+        }
+    }
+    public void PathToTarget(Vector3 target)
+    {
+        arrivedAtDestination = false;
+        partitionPath = new List<Vector2Int>();
+        Vector2Int targetPartition = PartitionSystem.instance.WorldToPartitionCoords(target);
+        partitionPath = GetPathToPartition(targetPartition, 4);
+        StartCoroutine(i_PathToTarget());
+    }
+    private IEnumerator i_PathToTarget()
+    {
+        performingAction = true;
+        //Will iterate through each checkpoint on the path list. 
+        currentPath = new List<Vector3>();
+        foreach(Vector2Int pos in partitionPath)
+        {
+            Vector2Int partitionCoord = pos + currPartition;
+            Vector3 coord = PartitionSystem.instance.PartitionToWorldCoords(partitionCoord);
+            coord.y = transform.position.y;
+            currentPath.Add(coord);
+        }
+        Vector3 destination = currentPath[currentPath.Count -1];
+        //Iterate through each path
+        for(int i =0; i < currentPath.Count; i++)
+        {
+            Vector3 target =  currentPath[i];
+            float distance;
+            do
+            {
+                Vector2 currPos = new Vector2(transform.position.x,transform.position.z);
+                Vector2 targetPos = new Vector2(target.x,target.z);
+                distance = Vector2.Distance(currPos, targetPos);
+                Vector2 targetVelocity = targetPos - currPos;
+                targetVelocity.Normalize();
+                velocity = new Vector3(targetVelocity.x,0,targetVelocity.y);
+                
+                yield return new WaitForEndOfFrame();
+            }
+            while(distance > 0.1);
+        }
+        velocity = Vector3.zero;
+        partitionPath.Clear();
+        arrivedAtDestination = true;
+        performingAction = false;
+        yield return null;
+    }
+    
     private List<Node> GetAdjacentNodes(Vector2Int nodePos)
     {
         List<Node> adjacentNodes = new List<Node>();

@@ -478,9 +478,9 @@ MonoBehaviour:
   persistance: 0.5
   lacunarity: 2
   seed: 1
-  offset: {x: 4.18, y: 0.1}
+  offset: {x: 10.69, y: -3.1}
   autoUpdate: 1
-  WorldSeaLevel: 0.5
+  WorldSeaLevel: 0.45
   seaLevelOffset: 0
   heightOffset: 0
   LandTilePrefab: {fileID: 7529323164102042202, guid: 6363a3e10ab272d488697efb12a45b4c, type: 3}
@@ -673,7 +673,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   generator: {fileID: 1061143969}
-  startingPopulation: 250
+  startingPopulation: 1
   entityPrefab: {fileID: 7191839513551554315, guid: b6ac8d364eb34684c9fe5e9606cdb669, type: 3}
 --- !u!4 &1703699936
 Transform:
@@ -701,6 +701,8 @@ GameObject:
   - component: {fileID: 1914719981}
   - component: {fileID: 1914719980}
   - component: {fileID: 1914719979}
+  - component: {fileID: 1914719982}
+  - component: {fileID: 1914719983}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -774,3 +776,50 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1914719982
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1914719978}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a79441f348de89743a2939f4d699eac1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_RenderShadows: 1
+  m_RequiresDepthTextureOption: 2
+  m_RequiresOpaqueTextureOption: 2
+  m_CameraType: 0
+  m_Cameras: []
+  m_RendererIndex: -1
+  m_VolumeLayerMask:
+    serializedVersion: 2
+    m_Bits: 1
+  m_VolumeTrigger: {fileID: 0}
+  m_VolumeFrameworkUpdateModeOption: 2
+  m_RenderPostProcessing: 0
+  m_Antialiasing: 0
+  m_AntialiasingQuality: 2
+  m_StopNaN: 0
+  m_Dithering: 0
+  m_ClearDepth: 1
+  m_AllowXRRendering: 1
+  m_RequiresDepthTexture: 0
+  m_RequiresColorTexture: 0
+  m_Version: 2
+--- !u!114 &1914719983
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1914719978}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 237fa9820a8c06644bf53e4d9c450f33, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  cameraStartPos: {x: 0, y: 50, z: 0}
+  speed: 5
