@@ -11,7 +11,9 @@ public class PartitionSystem : MonoBehaviour
     public Partition[,] partitions;
     public enum ObjectType{agent, food};
     private bool initialised = false;
-    public enum DebugType { none, food, water, agents};
+    public Gradient scoreRange;
+    public float multiplier = 0;
+    public enum DebugType { none, food, water, agents, score};
     public DebugType GizmosMode;
     void Awake()
     {
@@ -47,6 +49,7 @@ public class PartitionSystem : MonoBehaviour
             }
         }
         initialised =true;
+        StartCoroutine(i_ScoreCalculator());
     }
     public void AddGameObjectToPartition(GameObject _GameObject, ObjectType type)
     {
@@ -117,7 +120,28 @@ public class PartitionSystem : MonoBehaviour
         }
         return partitionsInRadius;
     }
-
+    private IEnumerator i_ScoreCalculator()
+    {
+        while(true)
+        {
+            yield return new WaitForSeconds(1);
+            List<Partition> nearbyPartitions = new List<Partition>();
+            foreach(Partition p in partitions)
+            {
+                Vector3 pos = PartitionToWorldCoords(p.coords);
+                nearbyPartitions = GetPartitionsInRadius(pos, 2);
+                int score = 0;
+                score += p.GetFoodCount();
+                foreach(Partition adjacentP in nearbyPartitions)
+                {
+                    score += adjacentP.GetFoodCount();
+                    score += adjacentP.HasWater() ? 1 : 0;
+                }
+                score = p.HasWater() ? 0 : score;
+                p.SetScore(score);
+            }
+        }
+    }
     void OnDrawGizmos()
     {
         if(partitions != null)
@@ -150,6 +174,13 @@ public class PartitionSystem : MonoBehaviour
                             Gizmos.DrawWireCube(pos + Vector3.up, Vector3.one * partitionSize);
                         }
                         break;
+                    case DebugType.score:
+                        {
+                            Color col = scoreRange.Evaluate(p.GetScore() * multiplier);
+                            Gizmos.color = col;
+                            Gizmos.DrawWireCube(pos + Vector3.up, Vector3.one * partitionSize);
+                            break;
+                        }
                     default:
                         break;
                 }
@@ -172,7 +203,7 @@ public class Partition
     private bool isTraversable;
     public int foodCount;
     private bool hasFood;
-
+    private int score = 0;
     #endregion
     //Constructor
     public Partition(Vector3 _Position, Vector2Int _coords, bool _hasWater, bool _hasFood, bool _isTraversable)
@@ -221,5 +252,13 @@ public class Partition
         DecrementFoodCount();
         food.Remove(_food);
     }
+    public int GetScore()
+    {
+        return score;
+    }
+    public void SetScore(int _score)
+    {
+        score = _score;
+    }    
     #endregion
 }

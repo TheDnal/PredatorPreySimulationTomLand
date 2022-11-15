@@ -9,8 +9,7 @@ public class PreyAgent : GOPAgent
     private PartitionSystem pSystem;
     private List<Partition> adjacentPartitions = new List<Partition>();
     private bool initialised = false;
-    [SerializeField]
-    private string currentAction;
+    public string currentAction;
     void Start()
     {
         Initialise();
@@ -19,6 +18,8 @@ public class PreyAgent : GOPAgent
     public override void Initialise()
     {
         base.Initialise();
+        showGizmos = false;
+        currentAction = "null";
         pSystem = PartitionSystem.instance;
         currPartition = pSystem.WorldToPartitionCoords(transform.position);
         pSystem.AddGameObjectToPartition(this.gameObject, PartitionSystem.ObjectType.agent);
@@ -59,31 +60,12 @@ public class PreyAgent : GOPAgent
             return;
         }
         Action bestAction = CalculateBestAction();
-        currentAction = bestAction.name;
+        currentAction = bestAction.actionName;
         bestAction.PerformAction();
     }
 
     void OnDrawGizmos()
     {
-        //debug to show that the adjacent partitions are correctly calculated
-        
-        // if(adjacentPartitions != null)
-        // {
-        //     Gizmos.color = Color.red;
-        //     for(int i = 0; i < adjacentPartitions.Count; i++)
-        //     {
-        //         if(adjacentPartitions[i] != null)
-        //         {
-        //             Vector2Int displacement = adjacentPartitions[i].coords - currPartition;
-        //             Vector3Int pos = new Vector3Int(Mathf.RoundToInt(transform.position.x), 1, Mathf.RoundToInt(transform.position.z));
-        //             pos.x += displacement.x;
-        //             pos.z += displacement.y;
-        //             Gizmos.DrawWireCube(pos, Vector3.one);
-        //         }
-        //     }
-        // }
-
-        //Show dijkstra path
         if(showGizmos)
         {
             if(currentPath != null)

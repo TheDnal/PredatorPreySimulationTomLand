@@ -43,7 +43,7 @@ public class GetFoodAction : Action
     public override float ActionScore()
     {
         //Return hunger - distance to nearest food object
-        float score = (agent.GetHunger() * 125) - Vector3.Distance(transform.position, nearestFoodObject.transform.position) * 5;
+        float score = (agent.GetHunger() * 100) - Vector3.Distance(transform.position, nearestFoodObject.transform.position);
         return score;
     }
     public override void PerformAction()
@@ -68,6 +68,13 @@ public class GetFoodAction : Action
         {
             yield return new WaitForEndOfFrame();
         }
+        if(nearestFoodObject == null)
+        {
+            agent.SetEating(false);
+            agent.SetPerformingAction(false);
+            yield return null;
+        }
+        agent.arrivedAtDestination = false;
         ConsumeFood();
     }
     private void ConsumeFood()
@@ -76,17 +83,32 @@ public class GetFoodAction : Action
     }
     private IEnumerator i_ConsumeFood()
     {
-        agent.SetPerformingAction(true);
-        agent.SetEating(true);
-        yield return new WaitForSeconds(.5f);
-        Plant plant = nearestFoodObject.GetComponent<Plant>();
-        plant.Consume();
-        agent.SetEating(false);
-        agent.SetPerformingAction(false);
+        if(nearestFoodObject == null)
+        {
+            yield return null;
+        }
+        if(nearestFoodObject.TryGetComponent(out Plant plant))
+        {
+            if(plant.isEdible())
+            {
+                plant.startEating();
+                agent.SetPerformingAction(true);
+                agent.SetEating(true);
+                yield return new WaitForSeconds(.5f);
+                plant.Consume();
+                agent.SetPerformingAction(false);
+                agent.SetEating(false);
+            }
+            else
+            {
+                yield return null;
+            }
+        }
+
     }
     void OnDrawGizmos()
     {
-        if(nearestFoodObject != null && actionRunning)
+        if(nearestFoodObject != null && actionRunning && agent.showGizmos)
         {
             Gizmos.color = Color.green;
             Gizmos.DrawLine(agent.transform.position, nearestFoodObject.transform.position);

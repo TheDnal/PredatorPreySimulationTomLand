@@ -34,7 +34,7 @@ public class WanderAction : Action
     }
     public override float ActionScore()
     {
-        return 35;
+        return 15;
     }
     public override void PerformAction()
     {

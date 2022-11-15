@@ -32,15 +32,18 @@ public class GOPAgent : MonoBehaviour
     public float thirst = 0;
     public float reproduction = 0;
     public float danger = 0;
+
+    public float age = 0;
+    private float actualAge = 0;
     ////
 
     protected Vector2Int currPartition;
 
     //Goal discontent speeds
-    protected float tirednessIncrease = 0.02f;
+    protected float tirednessIncrease = 0.0125f;
     protected float tirednessDecrease = 0.25f;
 
-    protected float hungerIncrease = 0.05f;
+    protected float hungerIncrease = 0.025f;
     protected float hungerDecrease = 1f;
 
     protected float thirstIncrease = 0.033f;
@@ -62,6 +65,7 @@ public class GOPAgent : MonoBehaviour
     //Locks the AI out from selecting new actions.
     protected bool performingAction = false;
     //Reduces discontent when true, increases when false
+    [SerializeField]
     protected bool isEating = false;
     protected bool isDrinking = false;
     protected bool isSleeping = false;
@@ -117,7 +121,25 @@ public class GOPAgent : MonoBehaviour
             else{thirst = 0;}
         }
         
-        if(!isReproducing)
+        //Age
+        actualAge += Time.deltaTime;
+        age = Mathf.RoundToInt(actualAge);
+        if(actualAge < 20)
+        {
+            if(actualAge <5)
+            {
+                transform.localScale = new Vector3(0.2f,0.4f,0.2f) * 5 /20;
+            }
+            else
+            {
+                transform.localScale = new Vector3(0.2f,0.4f,0.2f) * actualAge /20;
+            }
+        }
+        else
+        {
+            transform.localScale = new Vector3(0.2f,0.4f,0.2f);
+        }
+        if(!isReproducing && age > 10 && hunger < 0.5f && thirst < 0.5f)
         {
             if(reproduction <= 1){reproduction += reproductionIncrease * Time.deltaTime;}
             else{reproduction = 1;}
@@ -167,7 +189,6 @@ public class GOPAgent : MonoBehaviour
     public float GetSpeedModifier(){return speedModifier;}
     public Vector2Int getCurrPartition(){return currPartition;}
     #endregion
-
     #region Setters
     public void SetEating(bool _isEating){isEating = _isEating;}
     public void SetDrinking(bool _isDrinking){isDrinking = _isDrinking;}
@@ -179,13 +200,11 @@ public class GOPAgent : MonoBehaviour
     }
     public void killAgent()
     {
+        EntitySpawner.instance.currentPopulation--;
         PartitionSystem.instance.RemoveGameObjectFromPartition(this.gameObject, getCurrPartition(), PartitionSystem.ObjectType.agent);
         Destroy(this.gameObject);
     }
-    #endregion
-
-   
-   
+    #endregion 
     #region Dijkstra Fields
     protected Node[,] nodes;
     Vector2Int gridSize;

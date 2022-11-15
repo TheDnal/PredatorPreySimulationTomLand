@@ -15,7 +15,7 @@ public class ReproduceAction : Action
 
     public override float ActionScore()
     {
-        return agent.GetReproduction() == 1 ? 50 : 0;
+        return agent.GetReproduction() == 1 ? 85 : 0;
     }
 
     public override void PerformAction()
@@ -28,12 +28,24 @@ public class ReproduceAction : Action
         agent.SetPerformingAction(true);
         agent.SetReproduction(true);
         yield return new WaitForSeconds(1f);
+        int gender = Random.Range(0,2);
+        Material mat;
+        if(gender == 0)
+        {
+            mat = EntitySpawner.instance.MaleMat;
+        }
+        else
+        {
+            mat = EntitySpawner.instance.FemaleMat;
+        }
         GameObject prefab = EntitySpawner.instance.entityPrefab;
-        GameObject daughterAgent = Instantiate(prefab, agent.transform.position, Quaternion.identity);
-        daughterAgent.transform.parent = EntitySpawner.instance.transform;
+        GameObject childAgent = Instantiate(prefab, agent.transform.position, Quaternion.identity);
+        childAgent.transform.parent = EntitySpawner.instance.transform;
+        childAgent.GetComponent<MeshRenderer>().material = mat;
         Debug.Log("new agent spawned!");
         agent.SetReproduction(false);
         agent.SetPerformingAction(false);
+        EntitySpawner.instance.currentPopulation++;
         yield return null;
     }
 }

@@ -153,7 +153,37 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   size: {x: 0, y: 0}
-  GizmosMode: 3
+  scoreRange:
+    serializedVersion: 2
+    key0: {r: 1, g: 0, b: 0, a: 1}
+    key1: {r: 0, g: 1, b: 0.07796383, a: 1}
+    key2: {r: 0, g: 0, b: 0, a: 0}
+    key3: {r: 0, g: 0, b: 0, a: 0}
+    key4: {r: 0, g: 0, b: 0, a: 0}
+    key5: {r: 0, g: 0, b: 0, a: 0}
+    key6: {r: 0, g: 0, b: 0, a: 0}
+    key7: {r: 0, g: 0, b: 0, a: 0}
+    ctime0: 0
+    ctime1: 65535
+    ctime2: 0
+    ctime3: 0
+    ctime4: 0
+    ctime5: 0
+    ctime6: 0
+    ctime7: 0
+    atime0: 0
+    atime1: 65535
+    atime2: 0
+    atime3: 0
+    atime4: 0
+    atime5: 0
+    atime6: 0
+    atime7: 0
+    m_Mode: 0
+    m_NumColorKeys: 2
+    m_NumAlphaKeys: 2
+  multiplier: 0.1
+  GizmosMode: 4
 --- !u!4 &30286393
 Transform:
   m_ObjectHideFlags: 0
@@ -199,7 +229,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   plantPrefab: {fileID: 8051440670488318334, guid: 448c5a0ac990c0a4591673943254e2ba, type: 3}
-  maxPlantCount: 250
+  maxPlantCount: 500
 --- !u!4 &265763117
 Transform:
   m_ObjectHideFlags: 0
@@ -478,9 +508,9 @@ MonoBehaviour:
   persistance: 0.5
   lacunarity: 2
   seed: 1
-  offset: {x: 10.69, y: -3.1}
+  offset: {x: 14.28, y: -6.8}
   autoUpdate: 1
-  WorldSeaLevel: 0.45
+  WorldSeaLevel: 0.32
   seaLevelOffset: 0
   heightOffset: 0
   LandTilePrefab: {fileID: 7529323164102042202, guid: 6363a3e10ab272d488697efb12a45b4c, type: 3}
@@ -673,8 +703,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   generator: {fileID: 1061143969}
-  startingPopulation: 1
+  startingPopulation: 250
+  currentPopulation: 0
   entityPrefab: {fileID: 7191839513551554315, guid: b6ac8d364eb34684c9fe5e9606cdb669, type: 3}
+  MaleMat: {fileID: 2100000, guid: 6fe87d30324297f4cace41de8295a083, type: 2}
+  FemaleMat: {fileID: 2100000, guid: 218c54f36220aca4187e603ac1fca000, type: 2}
 --- !u!4 &1703699936
 Transform:
   m_ObjectHideFlags: 0
@@ -822,4 +855,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cameraStartPos: {x: 0, y: 50, z: 0}
-  speed: 5
+  speed: 10
