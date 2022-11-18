@@ -64,6 +64,10 @@ public class PreyAgent : GOPAgent
         bestAction.PerformAction();
     }
 
+    void OnMouseDown()
+    {
+        EntityInspector.instance.SetSelectedEntity(this.gameObject, EntityInspector.EntityType.prey);
+    }
     void OnDrawGizmos()
     {
         if(showGizmos)
@@ -76,6 +80,8 @@ public class PreyAgent : GOPAgent
                     Gizmos.DrawWireCube(step, Vector3.one);
                 }
             }
+            Gizmos.color = Color.green;
+            Gizmos.DrawLine(transform.position, transform.position + velocity);
         }
     }
 }
