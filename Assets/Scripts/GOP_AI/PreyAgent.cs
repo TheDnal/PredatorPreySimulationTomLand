@@ -9,9 +9,9 @@ public class PreyAgent : GOPAgent
     private PartitionSystem pSystem;
     private List<Partition> adjacentPartitions = new List<Partition>();
     private bool initialised = false;
-    private string currentAction;
     void Start()
     {
+        agentType = "Prey agent";
         Initialise();
     }
 
@@ -19,7 +19,7 @@ public class PreyAgent : GOPAgent
     {
         base.Initialise();
         showGizmos = false;
-        currentAction = "null";
+        currentActionName = "null";
         pSystem = PartitionSystem.instance;
         currPartition = pSystem.WorldToPartitionCoords(transform.position);
         pSystem.AddGameObjectToPartition(this.gameObject, PartitionSystem.ObjectType.agent);
@@ -63,21 +63,13 @@ public class PreyAgent : GOPAgent
             return;
         }
         Action bestAction = CalculateBestAction();
-        currentAction = bestAction.actionName;
+        currentActionName = bestAction.actionName;
         bestAction.PerformAction();
     }
 
     void OnMouseDown()
     {
         EntityInspector.instance.SetSelectedEntity(this.gameObject, EntityInspector.EntityType.prey);
-    }
-    public string GetCurrentAction()
-    {
-        if(currentAction == null)
-        {
-            return "null";
-        }
-        return currentAction;
     }
     void OnDrawGizmos()
     {

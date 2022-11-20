@@ -11,7 +11,7 @@ public class GetFoodAction : Action
         actionName = "GetFood";
         agent = _agent;
         //Get partitions in radius
-        List<Partition> partitions = PartitionSystem.instance.GetPartitionsInRadius(transform.position, 2);
+        List<Partition> partitions = agent.sensorySystem.GetVisionCone();
 
         //Get nearest plant object that isn't being eaten
         float closest = 9999, distance;

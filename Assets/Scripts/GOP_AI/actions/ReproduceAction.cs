@@ -39,10 +39,10 @@ public class ReproduceAction : Action
             mat = EntitySpawner.instance.FemaleMat;
         }
         GameObject prefab = EntitySpawner.instance.entityPrefab;
-        GameObject childAgent = Instantiate(prefab, agent.transform.position, Quaternion.identity);
+        GameObject childAgent = Instantiate(prefab, this.transform.position, Quaternion.identity);
         childAgent.transform.parent = EntitySpawner.instance.transform;
         childAgent.GetComponent<MeshRenderer>().material = mat;
-        Debug.Log("new agent spawned!");
+        agent.offspring++;
         agent.SetReproduction(false);
         agent.SetPerformingAction(false);
         EntitySpawner.instance.currentPopulation++;

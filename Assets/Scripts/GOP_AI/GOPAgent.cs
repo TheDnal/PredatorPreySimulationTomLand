@@ -34,7 +34,10 @@ public class GOPAgent : MonoBehaviour
     public float danger = 0;
 
     public float age = 0;
+    public float offspring = 0;
     private float actualAge = 0;
+    public string agentType;
+    protected string currentActionName;
     ////
 
     protected Vector2Int currPartition;
@@ -77,7 +80,7 @@ public class GOPAgent : MonoBehaviour
     ////Dijkstra arrays
     private List<Partition> partitions = new List<Partition>();
     private List<Node> nodeGrid = new List<Node>();
-
+    public SVision sensorySystem;
     protected Vector3 velocity;
     #endregion
 
@@ -89,6 +92,7 @@ public class GOPAgent : MonoBehaviour
     protected void UpdateDiscontent()
     {
         float sleepModifier = 1;
+        float reproductionModifier = 1;
         if(!isSleeping)
         {
             if(tiredness <= 1){ tiredness += tirednessIncrease * Time.deltaTime;}
@@ -97,6 +101,7 @@ public class GOPAgent : MonoBehaviour
         else
         {
             sleepModifier = 0.25f;
+            reproductionModifier = 0;
             if(tiredness >= 0){ tiredness -= tirednessDecrease * Time.deltaTime;}
             else{tiredness = 0;}
         }
@@ -104,7 +109,7 @@ public class GOPAgent : MonoBehaviour
         if(!isEating)
         {
             if(hunger <= 1){hunger += hungerIncrease * sleepModifier * Time.deltaTime;}
-            else{hunger = 1; Debug.Log("agent died from starvation"); killAgent();}
+            else{hunger = 1; killAgent();}
         }
         else
         {
@@ -115,7 +120,7 @@ public class GOPAgent : MonoBehaviour
         if(!isDrinking)
         {
             if(thirst <= 1){thirst += thirstIncrease * sleepModifier * Time.deltaTime;}
-            else{thirst = 1; Debug.Log("agent died from dehydration"); killAgent();} 
+            else{thirst = 1; killAgent();} 
         }
         else
         {
@@ -141,9 +146,13 @@ public class GOPAgent : MonoBehaviour
         {
             transform.localScale = new Vector3(0.2f,0.4f,0.2f);
         }
-        if(!isReproducing && age > 10 && hunger < 0.5f && thirst < 0.5f)
+        if(!isReproducing && age > 10)
         {
-            if(reproduction <= 1){reproduction += reproductionIncrease * sleepModifier * Time.deltaTime;}
+            if(hunger >0.5f || thirst > 0.5f)
+            {
+                reproductionModifier = 0;
+            }
+            if(reproduction <= 1){reproduction += reproductionIncrease * reproductionModifier * Time.deltaTime;}
             else{reproduction = 1;}
         }
         else
@@ -190,6 +199,14 @@ public class GOPAgent : MonoBehaviour
     public float GetDanger(){return danger;}
     public float GetSpeedModifier(){return speedModifier;}
     public Vector2Int getCurrPartition(){return currPartition;}
+    public string GetCurrentAction()
+    {
+        if(currentActionName == null)
+        {
+            return "null";
+        }
+        return currentActionName;
+    }
     #endregion
     #region Setters
     public void SetEating(bool _isEating){isEating = _isEating;}

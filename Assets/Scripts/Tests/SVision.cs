@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class SVision : MonoBehaviour
 {
-    public Vector2Int startPos;
     public float maxDotProduct;
     public int visionRadius;
     public int smellRadius;
@@ -18,8 +17,6 @@ public class SVision : MonoBehaviour
     void Start()
     {
         pSystem = PartitionSystem.instance;
-        Vector3 pos = pSystem.PartitionToWorldCoords(startPos);
-        transform.position = pos + Vector3.up;
     }
 
     void Update()
@@ -75,6 +72,10 @@ public class SVision : MonoBehaviour
             }
         }
         return hasSmell;
+    }
+    public List<Partition> GetVisionCone()
+    {
+        return visiblePartitions;
     }
     void OnDrawGizmos()
     {

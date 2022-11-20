@@ -13,7 +13,7 @@ public class GetWaterAction : Action
         agent = _agent;
         //Get all partitions in radius
         nearbyWaterSources = new List<Partition>();
-        List<Partition> nearbyPartitions = PartitionSystem.instance.GetPartitionsInRadius(agent.transform.position, 3);
+        List<Partition> nearbyPartitions = agent.sensorySystem.GetVisionCone();
         //Check if any contain water
         foreach(Partition p in nearbyPartitions)
         {
