@@ -5,70 +5,90 @@ using UnityEngine;
 public class GetWaterAction : Action
 {
     public Vector3 nearestWaterSource = Vector3.up;
+    private List<Partition> nearbyWaterSources = new List<Partition>();
+    #region Common action methods
     public override bool isActionPossible(GOPAgent _agent)
     {
         actionName = "GetWater";
         agent = _agent;
-        Vector2Int pos = agent.getCurrPartition();
-        List<Partition> adjacentPartitions = PartitionSystem.instance.GetPartitionsInRadius(agent.transform.position, 5);
-        float closest = 9999;
-        float distance;
-        Vector2Int closestPartition = Vector2Int.down * 100;
-        foreach(Partition p in adjacentPartitions)
+        //Get all partitions in radius
+        nearbyWaterSources = new List<Partition>();
+        List<Partition> nearbyPartitions = PartitionSystem.instance.GetPartitionsInRadius(agent.transform.position, 3);
+        //Check if any contain water
+        foreach(Partition p in nearbyPartitions)
         {
-            if(p.coords == pos){continue;}
-            if(!p.HasWater()){continue;}
-            distance = Vector2Int.Distance(p.coords, pos);
-            if(distance < closest)
+            if(p.hasDrinkbleWater())
             {
-                closest = distance;
-                closestPartition = p.coords;
+                nearbyWaterSources.Add(p);
             }
         }
-        if(closestPartition ==  Vector2Int.down * 100)
+        //If no water sources nearby, return false
+        if(nearbyWaterSources.Count > 0)
         {
-            return false;
+            return true;
         }
         else
         {
-            nearestWaterSource = PartitionSystem.instance.PartitionToWorldCoords(closestPartition); 
-            return true;
+            return false;
         }
     }
     public override float ActionScore()
     {
-        float score = (agent.GetThirst() *115) - Vector3.Distance(agent.transform.position, nearestWaterSource);
+        float score = (agent.GetThirst() *100);
         return score;
     }
     public override void PerformAction()
     {
-        actionRunning = true;
-        StartCoroutine(moveToWater());
-    }
-    private IEnumerator moveToWater()
-    {
-        agent.SetPerformingAction(true);
-        float distance = Vector3.Distance(agent.transform.position, nearestWaterSource);
-        Vector3 velocity;
-        float speed = agent.GetSpeedModifier();
-        Rigidbody rb = agent.gameObject.GetComponent<Rigidbody>();
-        while(distance > 1.4f)
+        Partition nearestWaterSource = nearbyWaterSources[0];
+        float distance = 0, closest = float.MaxValue;
+        foreach(Partition p in nearbyWaterSources)
         {
-            velocity = nearestWaterSource - transform.position;
-            velocity.Normalize();
-            velocity *= speed;
-            rb.velocity = velocity;
-            distance = Vector3.Distance(agent.transform.position, nearestWaterSource);
+            distance = Vector3.Distance(agent.transform.position, p.worldPosition);
+            if(distance < closest)
+            {
+                closest = distance;
+                nearestWaterSource = p;
+            }
+        }
+        if(PartitionSystem.instance.WorldToPartitionCoords(nearestWaterSource.worldPosition) == agent.getCurrPartition())
+        {
+            DrinkWater();
+            return;
+        }
+        if(!agent.isTargetReachable(nearestWaterSource.worldPosition))
+        {
+            agent.SetPerformingAction(false);
+            return;
+        }
+        actionRunning = true;
+        agent.PathToTarget(nearestWaterSource.worldPosition);
+
+    }
+    #endregion
+    #region Reaching and drinking water
+    private IEnumerator i_waitUntilReachedWater()
+    {
+        while(!agent.arrivedAtDestination)
+        {
             yield return new WaitForEndOfFrame();
         }
+        agent.arrivedAtDestination = false;
+        DrinkWater();
+    }
+    private void DrinkWater()
+    {
+        StartCoroutine(i_DrinkWater());
+    }
+    private IEnumerator i_DrinkWater()
+    {
         agent.SetPerformingAction(true);
         agent.SetDrinking(true);
-        yield return new WaitForSeconds(1f);
-        agent.SetDrinking(false);
+        yield return new WaitForSeconds(0.5f);
         agent.SetPerformingAction(false);
-        actionRunning = false;
+        agent.SetDrinking(false);
+        yield return null;
     }
-
+    #endregion
     void OnDrawGizmos()
     {
         if(nearestWaterSource != null && actionRunning && agent.showGizmos)

@@ -1,0 +1,11 @@
+==Debug screen==
+Has four sections : Summary, Brain, senses and Genetics
+Summary has all the basic information on the agent. It has the agents type (prey or predator), its age, amount of offspring etc.
+
+Brain displays the agents AI descision making in real time, with its current action, its goal insistence values etc
+
+Senses turns on gizmos for the agent, showing its vision cone, smell and sound. It also shows the values for each (i.e. distance, angles etc)
+
+Genetics shows all of the stats of the agent. This is broken into DNA and traits. DNA is the plus or minus values for each of the AI's genes.
+These could be its speed, reproductive speed, sight distance, sight angle, smell and hearing distance etc. The traits will show how the agents 
+DNA effects the agent. These are ; movement speed, hunger,thirst,sleepyness,reproductive urge, etc. A fast agent may get hungry quicker for example.

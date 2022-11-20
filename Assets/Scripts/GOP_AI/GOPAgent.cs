@@ -88,6 +88,7 @@ public class GOPAgent : MonoBehaviour
     }
     protected void UpdateDiscontent()
     {
+        float sleepModifier = 1;
         if(!isSleeping)
         {
             if(tiredness <= 1){ tiredness += tirednessIncrease * Time.deltaTime;}
@@ -95,13 +96,14 @@ public class GOPAgent : MonoBehaviour
         }
         else
         {
+            sleepModifier = 0.25f;
             if(tiredness >= 0){ tiredness -= tirednessDecrease * Time.deltaTime;}
             else{tiredness = 0;}
         }
         
         if(!isEating)
         {
-            if(hunger <= 1){hunger += hungerIncrease * Time.deltaTime;}
+            if(hunger <= 1){hunger += hungerIncrease * sleepModifier * Time.deltaTime;}
             else{hunger = 1; Debug.Log("agent died from starvation"); killAgent();}
         }
         else
@@ -112,7 +114,7 @@ public class GOPAgent : MonoBehaviour
         
         if(!isDrinking)
         {
-            if(thirst <= 1){thirst += thirstIncrease * Time.deltaTime;}
+            if(thirst <= 1){thirst += thirstIncrease * sleepModifier * Time.deltaTime;}
             else{thirst = 1; Debug.Log("agent died from dehydration"); killAgent();} 
         }
         else
@@ -141,7 +143,7 @@ public class GOPAgent : MonoBehaviour
         }
         if(!isReproducing && age > 10 && hunger < 0.5f && thirst < 0.5f)
         {
-            if(reproduction <= 1){reproduction += reproductionIncrease * Time.deltaTime;}
+            if(reproduction <= 1){reproduction += reproductionIncrease * sleepModifier * Time.deltaTime;}
             else{reproduction = 1;}
         }
         else
@@ -193,6 +195,7 @@ public class GOPAgent : MonoBehaviour
     public void SetEating(bool _isEating){isEating = _isEating;}
     public void SetDrinking(bool _isDrinking){isDrinking = _isDrinking;}
     public void SetReproduction(bool _isReproducing){isReproducing = _isReproducing;}
+    public void SetSleeping(bool _isSleeping){isSleeping = _isSleeping;}
     public void SetPerformingAction(bool _isPerformingAction){performingAction = _isPerformingAction;}
     public void setVelocity(Vector3 _velocity)
     {

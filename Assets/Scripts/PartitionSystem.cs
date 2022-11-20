@@ -13,8 +13,9 @@ public class PartitionSystem : MonoBehaviour
     private bool initialised = false;
     public Gradient scoreRange;
     public float multiplier = 0;
-    public enum DebugType { none, food, water, agents, score};
+    public enum DebugType { none, food, drinkableWater, bodyOfWater, agents, score};
     public DebugType GizmosMode;
+    #region Initialization and generation of spacial partitioning system
     void Awake()
     {
         if(instance != null)
@@ -48,9 +49,15 @@ public class PartitionSystem : MonoBehaviour
                 
             }
         }
+        foreach(Partition p in partitions)
+        {
+            p.UpdateDrinkableStatus();
+        }
         initialised =true;
         StartCoroutine(i_ScoreCalculator());
     }
+    #endregion
+    #region Public methods
     public void AddGameObjectToPartition(GameObject _GameObject, ObjectType type)
     {
         Vector2Int partitionCoords = WorldToPartitionCoords(_GameObject.transform.position);
@@ -120,6 +127,8 @@ public class PartitionSystem : MonoBehaviour
         }
         return partitionsInRadius;
     }
+    #endregion
+    #region Misc/Private methods
     private IEnumerator i_ScoreCalculator()
     {
         while(true)
@@ -135,9 +144,9 @@ public class PartitionSystem : MonoBehaviour
                 foreach(Partition adjacentP in nearbyPartitions)
                 {
                     score += adjacentP.GetFoodCount();
-                    score += adjacentP.HasWater() ? 1 : 0;
+                    score += adjacentP.IsWater() ? 1 : 0;
                 }
-                score = p.HasWater() ? 0 : score;
+                score = p.IsWater() ? 0 : score;
                 p.SetScore(score);
             }
         }
@@ -160,10 +169,17 @@ public class PartitionSystem : MonoBehaviour
                             Gizmos.DrawWireCube(pos + Vector3.up, Vector3.one * partitionSize);
                         }
                         break;
-                    case DebugType.water:
-                        if(p.HasWater())
+                    case DebugType.bodyOfWater:
+                        if(p.IsWater())
                         {
                             Gizmos.color = Color.blue;
+                            Gizmos.DrawWireCube(pos + Vector3.up, Vector3.one * partitionSize);
+                        }
+                        break;
+                    case DebugType.drinkableWater:
+                        if(p.hasDrinkbleWater())
+                        {
+                            Gizmos.color = Color.cyan;
                             Gizmos.DrawWireCube(pos + Vector3.up, Vector3.one * partitionSize);
                         }
                         break;
@@ -187,7 +203,7 @@ public class PartitionSystem : MonoBehaviour
             }
         }
     }
-
+    #endregion
 
 }
 
@@ -197,25 +213,27 @@ public class Partition
     #region fields
     public List<GameObject> agents;
     public List<GameObject> food;
-    public Vector2 worldPosition;
+    public Vector3 worldPosition;
     public Vector2Int coords;
-    private bool hasWater;
+    private bool isWater;
+    private bool drinkableArea;
     private bool isTraversable;
     public int foodCount;
     private bool hasFood;
     private int score = 0;
     #endregion
     //Constructor
-    public Partition(Vector3 _Position, Vector2Int _coords, bool _hasWater, bool _hasFood, bool _isTraversable)
+    public Partition(Vector3 _Position, Vector2Int _coords, bool _isWater, bool _hasFood, bool _isTraversable)
     {
         food = new List<GameObject>();
         agents = new List<GameObject>();
         foodCount = 0;
         worldPosition = _Position;
         coords = _coords;
-        hasWater = _hasWater;
+        isWater = _isWater;
         hasFood = _hasFood;
         isTraversable = _isTraversable;
+        drinkableArea = false;
     }
     #region methods
     public void IncrementFoodCount(){foodCount++; hasFood = true;}
@@ -228,9 +246,29 @@ public class Partition
             hasFood = false;
         }
     }
+    public void UpdateDrinkableStatus()
+    {
+        if(isWater)
+        {
+            drinkableArea = false;
+            return;
+        }
+        Vector3 pos = PartitionSystem.instance.PartitionToWorldCoords(coords);
+        List<Partition> nearby = PartitionSystem.instance.GetPartitionsInRadius(pos, 1);
+        bool drinkable = false;
+        foreach(Partition p in nearby)
+        {
+            if(p.IsWater())
+            {
+                drinkable = true;
+            }
+        }
+        drinkableArea = drinkable;
+    }
     public int GetFoodCount() {return foodCount;}
     public bool HasFood(){return foodCount > 0 ? true : false;}
-    public bool HasWater(){return hasWater;}
+    public bool hasDrinkbleWater(){return drinkableArea;}
+    public bool IsWater(){return isWater;}
     public bool IsTraversable(){return isTraversable;}
     public void AddAgent(GameObject _agent)
     {

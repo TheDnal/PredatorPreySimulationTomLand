@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
+using UnityEngine.UI;
 public class EntityInspector : MonoBehaviour
 {
     //Singleton
@@ -15,16 +16,15 @@ public class EntityInspector : MonoBehaviour
     [Header("UI Elements")]
     public GameObject UIElement;
     public TextMeshProUGUI EntityName;
-    public TextMeshProUGUI CurrentEntityAction;
+    public GameObject SummaryUI, BrainUI, SensesUI,GeneticsUI, Buttons;
+    int screenNum = 0;
+    public ActionDisplayManager actionDisplay;
     [Space(3)]
     public TextMeshProUGUI Age;
-    public TextMeshProUGUI hunger;
-    public TextMeshProUGUI thirst;
-    public TextMeshProUGUI ReproductiveUrge;
-    public TextMeshProUGUI Sleepyness;
+    public GameObject Hunger,Thirst,Tiredness,ReproductiveUrge;
     [Space(6), Header("UI Settings")]
     public float transitionSpeed = 0;
-    public float hiddenXPos, visibleXPos;
+    public float openButtonPos,closedButtonPos;
     private float targetXPos;
     private GameObject currentEntity;
     private PreyAgent currSelectedPrey;
@@ -38,7 +38,7 @@ public class EntityInspector : MonoBehaviour
             }
         }
         instance = this;
-        targetXPos = hiddenXPos;
+        targetXPos = closedButtonPos;
     }
     public void SetSelectedEntity(GameObject entity, EntityType _entityType)
     {
@@ -48,40 +48,92 @@ public class EntityInspector : MonoBehaviour
         currSelectedPrey = entity.GetComponent<PreyAgent>();
         UpdateEntityData();
     }
+    public void SetCurrentUIScreen(int _screenNum)
+    {
+        if(screenNum == _screenNum)
+        {
+            screenNum = 0;
+            return;
+        }
+        else
+        {
+            screenNum = _screenNum;
+        }
+    }
     void Update()
     {
         if(currentEntity != null)
         {   
             UpdateEntityData();
         }
-        RectTransform rect = UIElement.GetComponent<RectTransform>();
-        Vector3 pos = rect.position;
-        if(rect.position.x != targetXPos)
+        SummaryUI.SetActive(false);
+        BrainUI.SetActive(false);
+        SensesUI.SetActive(false);
+        GeneticsUI.SetActive(false);
+        targetXPos = openButtonPos;
+        switch(screenNum)
         {
-            pos.x = targetXPos;
-            rect.position = pos;
+            case 0:
+                targetXPos = closedButtonPos;
+                break;
+            case 1:
+                SummaryUI.SetActive(true);
+                break;
+            case 2:
+                BrainUI.SetActive(true);
+                break;
+            case 3:
+                SensesUI.SetActive(true);
+                break;
+            case 4:
+                GeneticsUI.SetActive(true);
+                break;
+            default:
+                targetXPos = closedButtonPos;
+                break;
         }
+        Vector3 pos = Buttons.GetComponent<RectTransform>().position;
+        pos.x = targetXPos;
+        Buttons.GetComponent<RectTransform>().position = pos;
     }
     private void UpdateEntityData()
     {
         if(currentEntity == null)
         {
+            actionDisplay.SetSprite(ActionDisplayManager.Actions.NULL);
             return;
         }
-        Age.text          = "Age :                  \n" + currSelectedPrey.age.ToString();
+        Age.text                 = "Age \n" + currSelectedPrey.age.ToString();
+        ActionDisplayManager.Actions currentAction;
 
-        float _hunger,_thirst,_sleepyness,_reproductiveUrge;
+        switch(currSelectedPrey.GetCurrentAction())
+        {
+            case "GetFood":
+                currentAction = ActionDisplayManager.Actions.EAT;
+                break;
+            case "GetWater":
+                currentAction = ActionDisplayManager.Actions.DRINK;
+                break;
+            case "Wander":
+                currentAction = ActionDisplayManager.Actions.WANDER;
+                break;
+            case "Reproduce":
+                currentAction = ActionDisplayManager.Actions.REPRODUCE;
+                break;
+            case "Sleep":
+                currentAction = ActionDisplayManager.Actions.SLEEP;
+                break;
+            default :
+                currentAction = ActionDisplayManager.Actions.NULL;
+                break;
+        }
+        actionDisplay.SetSprite(currentAction);
 
-        _hunger           = currSelectedPrey.GetHunger();
-        _thirst           = currSelectedPrey.GetThirst();
-        _sleepyness       = currSelectedPrey.GetTiredness();
-        _reproductiveUrge = currSelectedPrey.GetReproduction(); 
 
-        hunger.text           = "Hunger :           \n" + ConvertToPercentage(_hunger).ToString();
-        thirst.text           = "Thirst :           \n" + ConvertToPercentage(_thirst).ToString(); 
-        Sleepyness.text       = "Sleepyness :       \n" + ConvertToPercentage(_sleepyness).ToString();
-        ReproductiveUrge.text = "Reproductive Urge :\n" + ConvertToPercentage(_reproductiveUrge).ToString();
-
+        Hunger.GetComponent<Image>().fillAmount           = currSelectedPrey.GetHunger();
+        Thirst.GetComponent<Image>().fillAmount           = currSelectedPrey.GetThirst();
+        Tiredness.GetComponent<Image>().fillAmount        = currSelectedPrey.GetTiredness();
+        ReproductiveUrge.GetComponent<Image>().fillAmount = currSelectedPrey.GetReproduction();
     }
     private int ConvertToPercentage(float _float)
     {
@@ -89,9 +141,5 @@ public class EntityInspector : MonoBehaviour
         int _int = Mathf.RoundToInt(_float);
         return _int;
     }
-    public void ToggleUIDisplay()
-    {
-        UIEnabled = !UIEnabled;
-        targetXPos = UIEnabled ? visibleXPos : hiddenXPos;
-    }
+    
 }

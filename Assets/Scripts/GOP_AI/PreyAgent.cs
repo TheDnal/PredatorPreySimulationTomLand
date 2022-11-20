@@ -9,7 +9,7 @@ public class PreyAgent : GOPAgent
     private PartitionSystem pSystem;
     private List<Partition> adjacentPartitions = new List<Partition>();
     private bool initialised = false;
-    public string currentAction;
+    private string currentAction;
     void Start()
     {
         Initialise();
@@ -35,6 +35,9 @@ public class PreyAgent : GOPAgent
 
         ReproduceAction reproduceAction = this.gameObject.AddComponent<ReproduceAction>();
         actions.Add(reproduceAction);
+
+        SleepAction sleepAction = this.gameObject.AddComponent<SleepAction>();
+        actions.Add(sleepAction);
         initialised = true;
     }
     void Update()
@@ -67,6 +70,14 @@ public class PreyAgent : GOPAgent
     void OnMouseDown()
     {
         EntityInspector.instance.SetSelectedEntity(this.gameObject, EntityInspector.EntityType.prey);
+    }
+    public string GetCurrentAction()
+    {
+        if(currentAction == null)
+        {
+            return "null";
+        }
+        return currentAction;
     }
     void OnDrawGizmos()
     {
