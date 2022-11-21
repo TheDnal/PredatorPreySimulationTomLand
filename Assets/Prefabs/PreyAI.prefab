@@ -290,6 +290,8 @@ MonoBehaviour:
   reproduction: 0
   danger: 0
   age: 0
+  offspring: 0
+  agentType: 
   isEating: 0
   sensorySystem: {fileID: -7720130899013404928}
   arrivedAtDestination: 0
@@ -322,4 +324,4 @@ MonoBehaviour:
   maxDotProduct: -0.4
   visionRadius: 2
   smellRadius: 0
-  SVChannel: 0
+  SVChannel: 3

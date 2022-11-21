@@ -77,6 +77,10 @@ public class SVision : MonoBehaviour
     {
         return visiblePartitions;
     }
+    public List<Partition> GetSmell()
+    {
+        return smelledPartitions;
+    }
     void OnDrawGizmos()
     {
         if(visiblePartitions != null && pSystem != null)

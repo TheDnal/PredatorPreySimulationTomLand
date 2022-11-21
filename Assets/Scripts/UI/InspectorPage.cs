@@ -21,4 +21,8 @@ public class InspectorPage : MonoBehaviour
         currentAgent = _Inspector.currentEntity.GetComponent<GOPAgent>();
     } 
     public virtual void UpdatePage(){}
+    public virtual void ClosePage()
+    {
+        
+    }
 }

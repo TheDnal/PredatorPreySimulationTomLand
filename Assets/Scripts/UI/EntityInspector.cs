@@ -52,7 +52,7 @@ public class EntityInspector : MonoBehaviour
     }
     void Update()
     {
-        if(currentEntity != null)
+        if(currentEntity != null && currentPage != null)
         {   
             currentPage.UpdatePage();
         }
@@ -72,12 +72,14 @@ public class EntityInspector : MonoBehaviour
     {
         if(currentPage == page)
         {
+            currentPage.ClosePage();
             currentPage.gameObject.SetActive(false);
             currentPage = null;
             return;
         }
         if(currentPage != null)
         {
+            currentPage.ClosePage();
             currentPage.gameObject.SetActive(false);
         }
         currentPage = page;
