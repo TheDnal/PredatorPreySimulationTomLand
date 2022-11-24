@@ -940,6 +940,7 @@ GameObject:
   m_Component:
   - component: {fileID: 265763117}
   - component: {fileID: 265763116}
+  - component: {fileID: 265763118}
   m_Layer: 0
   m_Name: PlantSpawner
   m_TagString: Untagged
@@ -960,7 +961,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   plantPrefab: {fileID: 8051440670488318334, guid: 448c5a0ac990c0a4591673943254e2ba, type: 3}
-  maxPlantCount: 200
+  maxPlantCount: 15
 --- !u!4 &265763117
 Transform:
   m_ObjectHideFlags: 0
@@ -969,13 +970,29 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 265763115}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.042894192, y: 8.606534, z: -7.478255}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &265763118
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 265763115}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 50c7813283356ba41be26e457d72bc27, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  BushPopulation: 5
+  bushPrefab: {fileID: 5608466912101737910, guid: 1da2d9594f7f06746bc559796db12bcf, type: 3}
+  fruitGrowthTime: 5
+  maxFruitPerBush: 3
 --- !u!1 &273184836
 GameObject:
   m_ObjectHideFlags: 0
@@ -5693,7 +5710,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   generator: {fileID: 1061143969}
-  startingPopulation: 1
+  startingPopulation: 0
   currentPopulation: 0
   entityPrefab: {fileID: 7191839513551554315, guid: b6ac8d364eb34684c9fe5e9606cdb669, type: 3}
   MaleMat: {fileID: 2100000, guid: 6fe87d30324297f4cace41de8295a083, type: 2}

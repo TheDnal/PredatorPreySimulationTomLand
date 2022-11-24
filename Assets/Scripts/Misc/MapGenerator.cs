@@ -69,6 +69,7 @@ public class MapGenerator : MonoBehaviour
         Vector2Int mapDimensions = new Vector2Int(mapWidth, mapHeight);
         Vector3 mapOrigin = new Vector3(-mapWidth/2, 0, -mapHeight/2);
         PartitionSystem.instance.Initialise(mapOrigin, mapDimensions, 1);
+        BushSpawner.instance.Initialise();
         PlantSpawner.instance.Initialise();
     }
     public void GenerateMap()
