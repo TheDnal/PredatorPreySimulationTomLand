@@ -35,7 +35,6 @@ public class Plant : MonoBehaviour
     }
     public void Consume()
     {
-        key = Random.Range(0, int.MaxValue);
         PartitionSystem.instance.RemoveGameObjectFromPartition(this.gameObject, partition, PartitionSystem.ObjectType.food);
         StartCoroutine(i_Respawn());
     }
@@ -46,5 +45,6 @@ public class Plant : MonoBehaviour
         transform.position = newPos;
         PartitionSystem.instance.AddGameObjectToPartition(this.gameObject, PartitionSystem.ObjectType.food);
         partition = PartitionSystem.instance.WorldToPartitionCoords(transform.position);
+        isBeingEaten = false;
     }
 }

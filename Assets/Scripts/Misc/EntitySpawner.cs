@@ -36,6 +36,13 @@ public class EntitySpawner : MonoBehaviour
                 Debug.Log("Entities successfully spawned : " + i);
                 break;
             }
+            //Spawn entity
+            int index = Random.Range(0, spawnZones.Count -1 );
+            Vector3 spawnPos = spawnZones[index];
+            spawnPos += Vector3.up * 0.75f;
+            GameObject newEntity = Instantiate(entityPrefab, spawnPos, Quaternion.identity);
+
+            //Set gender
             int gender = Random.Range(0,2);
             Material genderMat;
             if(gender == 0)
@@ -46,11 +53,10 @@ public class EntitySpawner : MonoBehaviour
             {
                 genderMat = FemaleMat;
             }
-            int index = Random.Range(0, spawnZones.Count -1 );
-            Vector3 spawnPos = spawnZones[index];
-            spawnPos += Vector3.up * 0.75f;
-            GameObject newEntity = Instantiate(entityPrefab, spawnPos, Quaternion.identity);
             newEntity.GetComponent<MeshRenderer>().material = genderMat;
+            newEntity.GetComponent<GOPAgent>().SetGender(gender);
+
+            //Misc
             newEntity.transform.parent = this.transform;
             spawnZones.Remove(spawnZones[index]);
             currentPopulation++;

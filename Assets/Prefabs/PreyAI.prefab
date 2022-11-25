@@ -289,8 +289,12 @@ MonoBehaviour:
   thirst: 0
   reproduction: 0
   danger: 0
+  pregnancy: 0
   age: 0
   offspring: 0
+  validFemale: 0
+  suitableMale: 0
+  pregnant: 0
   agentType: 
   isEating: 0
   sensorySystem: {fileID: -7720130899013404928}
@@ -323,5 +327,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxDotProduct: -0.4
   visionRadius: 2
-  smellRadius: 0
+  smellRadius: 1
   SVChannel: 3

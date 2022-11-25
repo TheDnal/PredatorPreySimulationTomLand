@@ -10,12 +10,13 @@ public class ReproduceAction : Action
     {
         actionName = "Reproduce";
         agent = _agent;
-        return agent.GetReproduction() == 1 ? true : false;
+        
+        return agent.pregnancy >= 1 ? true : false;
     }
 
     public override float ActionScore()
     {
-        return agent.GetReproduction() == 1 ? 85 : 0;
+        return agent.pregnancy >= 1 ? 999 : 0;
     }
 
     public override void PerformAction()
@@ -43,6 +44,8 @@ public class ReproduceAction : Action
         childAgent.transform.parent = EntitySpawner.instance.transform;
         childAgent.GetComponent<MeshRenderer>().material = mat;
         agent.offspring++;
+        agent.pregnant = false;
+        agent.validFemale = true;
         agent.SetReproduction(false);
         agent.SetPerformingAction(false);
         EntitySpawner.instance.currentPopulation++;

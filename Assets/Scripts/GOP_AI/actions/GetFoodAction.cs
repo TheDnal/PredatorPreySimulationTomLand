@@ -40,7 +40,7 @@ public class GetFoodAction : Action
     public override float ActionScore()
     {
         //Return hunger - distance to nearest food object
-        float score = (agent.GetHunger() * 100) - Vector3.Distance(transform.position, nearestFoodObject.transform.position);
+        float score = (agent.GetHunger() * 125);
         return score;
     }
     public override void PerformAction()

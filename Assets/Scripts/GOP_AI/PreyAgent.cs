@@ -33,8 +33,18 @@ public class PreyAgent : GOPAgent
         GetWaterAction getWaterAction = this.gameObject.AddComponent<GetWaterAction>();
         actions.Add(getWaterAction);
 
-        ReproduceAction reproduceAction = this.gameObject.AddComponent<ReproduceAction>();
-        actions.Add(reproduceAction);
+        if(gender == 0)
+        {
+            SeekFemale seekFemale = this.gameObject.AddComponent<SeekFemale>();
+            actions.Add(seekFemale);
+        }
+        else
+        {
+            WaitForMale waitForMale = this.gameObject.AddComponent<WaitForMale>();
+            actions.Add(waitForMale);
+            ReproduceAction reproduceAction = this.gameObject.AddComponent<ReproduceAction>();
+            actions.Add(reproduceAction);
+        }
 
         SleepAction sleepAction = this.gameObject.AddComponent<SleepAction>();
         actions.Add(sleepAction);

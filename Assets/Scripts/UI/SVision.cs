@@ -6,7 +6,7 @@ public class SVision : MonoBehaviour
 {
     public float maxDotProduct;
     public int visionRadius;
-    public int smellRadius;
+    public int smellRadius = 2;
     private List<Partition> visiblePartitions = new List<Partition>();
     private List<Partition> smelledPartitions = new List<Partition>();
     private PartitionSystem pSystem;
@@ -24,10 +24,10 @@ public class SVision : MonoBehaviour
         if(oldForwardVector != transform.forward || oldPos != transform.position)
         {
             visiblePartitions = CalculateVision();
-            smelledPartitions = CalculateSmell();
             oldForwardVector = transform.forward;
             oldPos = transform.position;
         }
+        smelledPartitions = CalculateSmell();
     }
     private List<Partition> CalculateVision()
     {
@@ -70,6 +70,7 @@ public class SVision : MonoBehaviour
             {
                 hasSmell.Add(p);
             }
+            
         }
         return hasSmell;
     }

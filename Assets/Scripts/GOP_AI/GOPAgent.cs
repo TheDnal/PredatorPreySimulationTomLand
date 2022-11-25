@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class GOPAgent : MonoBehaviour
 {
+    #region Description
     /*
         Class for the Goal-oriented-planner AI. This agent
         utilised Goals and Actions 
@@ -23,6 +24,7 @@ public class GOPAgent : MonoBehaviour
     ////Goals
     //These values represent the AI's "urge" to deal with the
     //goal. 
+    #endregion
     #region Fields
 
     public bool showGizmos = false;
@@ -32,10 +34,15 @@ public class GOPAgent : MonoBehaviour
     public float thirst = 0;
     public float reproduction = 0;
     public float danger = 0;
-
+    public float pregnancy = 0;
     public float age = 0;
     public float offspring = 0;
     private float actualAge = 0;
+    protected int gender = 0; //0 = male, 1 = female
+    public bool validFemale = false;
+    public bool suitableMale = false;
+    public bool pregnant = false;
+    private GameObject maleMate;
     public string agentType;
     protected string currentActionName;
     ////
@@ -46,6 +53,7 @@ public class GOPAgent : MonoBehaviour
     protected float tirednessIncrease = 0.0125f;
     protected float tirednessDecrease = 0.25f;
 
+    protected float pregnancyIncrease = 0.25f;
     protected float hungerIncrease = 0.025f;
     protected float hungerDecrease = 1f;
 
@@ -83,7 +91,6 @@ public class GOPAgent : MonoBehaviour
     public SVision sensorySystem;
     protected Vector3 velocity;
     #endregion
-
     #region Virtual Methods
     public virtual void Initialise()
     {
@@ -128,6 +135,15 @@ public class GOPAgent : MonoBehaviour
             else{thirst = 0;}
         }
         
+        if(pregnant && gender == 1)
+        {
+            if(pregnancy <= 1){pregnancy += pregnancyIncrease * Time.deltaTime;}
+            else{pregnancy = 1;}
+        }
+        else
+        {
+            pregnancy = 0;
+        }
         //Age
         actualAge += Time.deltaTime;
         age = Mathf.RoundToInt(actualAge);
@@ -146,14 +162,14 @@ public class GOPAgent : MonoBehaviour
         {
             transform.localScale = new Vector3(0.2f,0.4f,0.2f);
         }
-        if(!isReproducing && age > 10)
+        if(!isReproducing && age > 10 && !pregnant)
         {
             if(hunger >0.5f || thirst > 0.5f)
             {
                 reproductionModifier = 0;
             }
             if(reproduction <= 1){reproduction += reproductionIncrease * reproductionModifier * Time.deltaTime;}
-            else{reproduction = 1;}
+            else{reproduction = 1; validFemale = true;}
         }
         else
         {
@@ -190,7 +206,6 @@ public class GOPAgent : MonoBehaviour
     protected Vector3 currPos, destinationPos;
     protected List<Partition> cachedPartitions;
     #endregion
-
     #region Getters
     public float GetTiredness(){return tiredness;}
     public float GetHunger(){return hunger;}
@@ -199,6 +214,10 @@ public class GOPAgent : MonoBehaviour
     public float GetDanger(){return danger;}
     public float GetSpeedModifier(){return speedModifier;}
     public Vector2Int getCurrPartition(){return currPartition;}
+    public GameObject getMaleMate()
+    {
+        return maleMate;
+    }
     public string GetCurrentAction()
     {
         if(currentActionName == null)
@@ -207,11 +226,19 @@ public class GOPAgent : MonoBehaviour
         }
         return currentActionName;
     }
+    public int GetGender()
+    {
+        return gender;
+    }
     #endregion
     #region Setters
     public void SetEating(bool _isEating){isEating = _isEating;}
     public void SetDrinking(bool _isDrinking){isDrinking = _isDrinking;}
     public void SetReproduction(bool _isReproducing){isReproducing = _isReproducing;}
+    public void ResetReproductiveUrge()
+    {
+        reproduction = 0;
+    }
     public void SetSleeping(bool _isSleeping){isSleeping = _isSleeping;}
     public void SetPerformingAction(bool _isPerformingAction){performingAction = _isPerformingAction;}
     public void setVelocity(Vector3 _velocity)
@@ -223,6 +250,21 @@ public class GOPAgent : MonoBehaviour
         EntitySpawner.instance.currentPopulation--;
         PartitionSystem.instance.RemoveGameObjectFromPartition(this.gameObject, getCurrPartition(), PartitionSystem.ObjectType.agent);
         Destroy(this.gameObject);
+    }
+    public void SetGender(int _gender)
+    {
+        gender = _gender;
+    }
+    public void SetMaleMate(GameObject male)
+    {
+        maleMate = male;
+        validFemale = false;
+    }
+    public void Mate()
+    {
+        maleMate = null;
+        pregnant = true;
+        validFemale = false;
     }
     #endregion 
     #region Dijkstra Fields
