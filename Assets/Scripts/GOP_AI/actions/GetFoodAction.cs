@@ -15,24 +15,21 @@ public class GetFoodAction : Action
 
         //Get nearest plant object that isn't being eaten
         float closest = 9999, distance;
-        Plant currPlant;
         nearestFoodObject = null;
         foreach(Partition p in partitions)
         {
             foreach(GameObject food in p.food)
             {
-                if(food == null)
+                if(food.TryGetComponent(out Plant currPlant))
                 {
-                    continue;
-                }
-                currPlant = food.GetComponent<Plant>();
-                if(currPlant.isEdible())
-                {
-                    distance = Vector3.Distance(agent.transform.position, food.transform.position);
-                    if(distance < closest)
+                    if(currPlant.isEdible())
                     {
-                        closest = distance;
-                        nearestFoodObject = food;
+                        distance = Vector3.Distance(agent.transform.position, food.transform.position);
+                        if(distance < closest)
+                        {
+                            closest = distance;
+                            nearestFoodObject = food;
+                        }
                     }
                 }
             }
@@ -68,12 +65,6 @@ public class GetFoodAction : Action
         {
             yield return new WaitForEndOfFrame();
         }
-        if(nearestFoodObject == null)
-        {
-            agent.SetEating(false);
-            agent.SetPerformingAction(false);
-            yield return null;
-        }
         agent.arrivedAtDestination = false;
         ConsumeFood();
     }
@@ -83,12 +74,12 @@ public class GetFoodAction : Action
     }
     private IEnumerator i_ConsumeFood()
     {
-        if(nearestFoodObject == null)
-        {
-            yield return null;
-        }
         if(nearestFoodObject.TryGetComponent(out Plant plant))
         {
+            if (plant.GetCurrentPartition() != agent.getCurrPartition())
+            {
+                yield return null;
+            }
             if(plant.isEdible())
             {
                 plant.startEating();

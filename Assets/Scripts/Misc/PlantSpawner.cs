@@ -59,6 +59,16 @@ public class PlantSpawner : MonoBehaviour
         Vector2Int p = PartitionSystem.instance.WorldToPartitionCoords(newPlant.transform.position);
         newPlant.GetComponent<Plant>().setPartitionCoords(p);
     }
+    public Vector3 getValidSpawn()
+    {
+        List<Vector3> spawns = mapGen.GetValidSpawnZones();
+        int index = Random.Range(0,spawns.Count - 1);
+        float x = Random.Range(-4,4);
+        float z = Random.Range(-4,4);
+        Vector3 pos = new Vector3(x/10, 0.6f,z/10);
+        pos += spawns[index];
+        return pos;
+    }
     public void DecrementPlantCount()
     {
         plantCount --;
