@@ -262,6 +262,7 @@ public class GOPAgent : MonoBehaviour
     }
     public void Mate()
     {
+        Debug.Log("female mated");
         maleMate = null;
         pregnant = true;
         validFemale = false;
@@ -448,7 +449,6 @@ public class GOPAgent : MonoBehaviour
     }
     private IEnumerator i_PathToTarget()
     {
-        performingAction = true;
         //Will iterate through each checkpoint on the path list. 
         currentPath = new List<Vector3>();
         foreach(Vector2Int pos in partitionPath)
@@ -480,7 +480,6 @@ public class GOPAgent : MonoBehaviour
         velocity = Vector3.zero;
         partitionPath.Clear();
         arrivedAtDestination = true;
-        performingAction = false;
         yield return null;
     }
     

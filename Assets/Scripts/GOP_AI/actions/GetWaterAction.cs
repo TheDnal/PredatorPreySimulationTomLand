@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class GetWaterAction : Action
 {
-    public Vector3 nearestWaterSource = Vector3.up;
+    private Partition nearestWaterSource;
     private List<Partition> nearbyWaterSources = new List<Partition>();
     #region Common action methods
     public override bool isActionPossible(GOPAgent _agent)
@@ -39,7 +39,8 @@ public class GetWaterAction : Action
     }
     public override void PerformAction()
     {
-        Partition nearestWaterSource = nearbyWaterSources[0];
+        agent.SetPerformingAction(true);
+        nearestWaterSource = nearbyWaterSources[0];
         float distance = 0, closest = float.MaxValue;
         foreach(Partition p in nearbyWaterSources)
         {
@@ -62,7 +63,7 @@ public class GetWaterAction : Action
         }
         actionRunning = true;
         agent.PathToTarget(nearestWaterSource.worldPosition);
-
+        agent.StartCoroutine(i_waitUntilReachedWater());
     }
     #endregion
     #region Reaching and drinking water
@@ -75,27 +76,47 @@ public class GetWaterAction : Action
         agent.arrivedAtDestination = false;
         DrinkWater();
     }
+    private void WalkToWater()
+    {
+        StartCoroutine(i_WalkToWater());
+    }
+    private IEnumerator i_WalkToWater()
+    {
+        float distance = Vector3.Distance(transform.position, nearestWaterSource.worldPosition);
+        Rigidbody rb = agent.gameObject.GetComponent<Rigidbody>();
+        Vector3 targetPos = nearestWaterSource.worldPosition;
+        float time = 0;
+        Vector3 lookPos = nearestWaterSource.worldPosition;
+        lookPos.y = agent.transform.position.y;
+        agent.transform.LookAt(lookPos);
+        while(distance > 0.75f && Time.deltaTime < 2f)
+        {   
+            time+= Time.deltaTime;
+            distance = Vector3.Distance(targetPos, transform.position);
+            Vector3 velocity = targetPos - transform.position;
+            velocity.Normalize();
+            agent.setVelocity(velocity);
+            yield return new WaitForEndOfFrame();
+        }
+        rb.velocity = Vector3.zero;
+        DrinkWater();
+    }
     private void DrinkWater()
     {
         StartCoroutine(i_DrinkWater());
     }
     private IEnumerator i_DrinkWater()
     {
-        agent.SetPerformingAction(true);
         agent.SetDrinking(true);
+        Vector3 targetPos = nearestWaterSource.worldPosition;
+        Vector3 lookPos = nearestWaterSource.worldPosition;
+        lookPos.y = agent.transform.position.y;
+        agent.transform.LookAt(lookPos);
+        agent.setVelocity(Vector3.zero);
         yield return new WaitForSeconds(0.5f);
         agent.SetPerformingAction(false);
         agent.SetDrinking(false);
         yield return null;
     }
     #endregion
-    void OnDrawGizmos()
-    {
-        if(nearestWaterSource != null && actionRunning && agent.showGizmos)
-        {
-            Gizmos.color = Color.blue;
-            Gizmos.DrawLine(agent.transform.position, nearestWaterSource);
-            Gizmos.DrawWireCube(nearestWaterSource, Vector3.one);
-        }
-    }
 }

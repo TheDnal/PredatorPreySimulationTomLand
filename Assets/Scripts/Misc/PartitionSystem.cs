@@ -127,6 +127,19 @@ public class PartitionSystem : MonoBehaviour
         }
         return partitionsInRadius;
     }
+    public Vector3 GetValidSpawnZone()
+    {
+        List<Vector3> validSpawns = new List<Vector3>();
+        foreach(Partition p in partitions)
+        {
+            if(!p.IsWater() && p.foodCount < 2)
+            {
+                validSpawns.Add(p.worldPosition);
+            }
+        }
+        int index = Random.Range(0, validSpawns.Count - 1);
+        return validSpawns[index];
+    }
     #endregion
     #region Misc/Private methods
     private IEnumerator i_ScoreCalculator()

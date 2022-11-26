@@ -41,8 +41,12 @@ public class Plant : MonoBehaviour
     private IEnumerator i_Respawn()
     {
         yield return new WaitForSeconds(0.5f);
-        Vector3 newPos = PlantSpawner.instance.getValidSpawn();
+        Vector3 newPos = PartitionSystem.instance.GetValidSpawnZone();
         transform.position = newPos;
+        float x,z;
+        x = Random.Range(-.5f,.5f);
+        z = Random.Range(-.5f,.5f);
+        transform.position += new Vector3(x,0.6f,z);
         PartitionSystem.instance.AddGameObjectToPartition(this.gameObject, PartitionSystem.ObjectType.food);
         partition = PartitionSystem.instance.WorldToPartitionCoords(transform.position);
         isBeingEaten = false;

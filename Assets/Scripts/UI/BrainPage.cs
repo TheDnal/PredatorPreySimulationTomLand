@@ -52,7 +52,7 @@ public class BrainPage : InspectorPage
                 break;      
             case "Reproduce":
                 actionImage.sprite = Reproduce;
-                text.tag = "Giving birth";
+                text.text = "Giving birth";
                 break;
             case "Sleep":
                 actionImage.sprite = Sleep;

@@ -45,9 +45,10 @@ public class GetFoodAction : Action
     }
     public override void PerformAction()
     {
+        agent.SetPerformingAction(true);
         if(PartitionSystem.instance.WorldToPartitionCoords(nearestFoodObject.transform.position) == agent.getCurrPartition())
         {
-            ConsumeFood();
+            WalkToFood();
             return;
         }
         if(!agent.isTargetReachable(nearestFoodObject.transform.position))
@@ -66,6 +67,31 @@ public class GetFoodAction : Action
             yield return new WaitForEndOfFrame();
         }
         agent.arrivedAtDestination = false;
+        WalkToFood();
+    }
+    private void WalkToFood()
+    {
+        StartCoroutine(i_WalkToFood());
+    }
+    private IEnumerator i_WalkToFood()
+    {
+        float distance = Vector3.Distance(transform.position, nearestFoodObject.transform.position);
+        Rigidbody rb = agent.gameObject.GetComponent<Rigidbody>();
+        Vector3 targetPos = nearestFoodObject.transform.position;
+        float time = 0;
+        Vector3 lookPos = nearestFoodObject.transform.position;
+        lookPos.y = agent.transform.position.y;
+        agent.transform.LookAt(lookPos);
+        while(distance > 0.20f && Time.deltaTime < 2f)
+        {   
+            time+= Time.deltaTime;
+            distance = Vector3.Distance(targetPos, transform.position);
+            Vector3 velocity = targetPos - transform.position;
+            velocity.Normalize();
+            rb.velocity = velocity;
+            yield return new WaitForEndOfFrame();
+        }
+        rb.velocity = Vector3.zero;
         ConsumeFood();
     }
     private void ConsumeFood()
@@ -78,14 +104,18 @@ public class GetFoodAction : Action
         {
             if (plant.GetCurrentPartition() != agent.getCurrPartition())
             {
+                agent.SetPerformingAction(false);
                 yield return null;
             }
             if(plant.isEdible())
             {
+                agent.setVelocity(Vector3.zero);
+                Vector3 lookPos = nearestFoodObject.transform.position;
+                lookPos.y = agent.transform.position.y;
+                agent.transform.LookAt(lookPos);
                 plant.startEating();
-                agent.SetPerformingAction(true);
                 agent.SetEating(true);
-                yield return new WaitForSeconds(.5f);
+                yield return new WaitForSeconds(1f);
                 plant.Consume();
                 agent.SetPerformingAction(false);
                 agent.SetEating(false);

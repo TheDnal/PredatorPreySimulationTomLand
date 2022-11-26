@@ -39,6 +39,7 @@ public class SeekFemale : Action
     }
     public override void PerformAction()
     {
+        agent.SetPerformingAction(true);
         if(PartitionSystem.instance.WorldToPartitionCoords(nearestFemale.transform.position) == agent.getCurrPartition())
         {
             MateWithFemale();
@@ -54,7 +55,6 @@ public class SeekFemale : Action
     }
     private IEnumerator i_WaitUntilReachedFemale()
     {
-        agent.SetPerformingAction(true);
         while(!agent.arrivedAtDestination)
         {
             if(nearestFemale == null)
@@ -70,7 +70,7 @@ public class SeekFemale : Action
     }
     public void MateWithFemale()
     {
-        if(nearestFemale != null)
+        if(nearestFemale != null && nearestFemale.GetComponent<GOPAgent>().validFemale)
         {
             agent.ResetReproductiveUrge();
             nearestFemale.GetComponent<GOPAgent>().Mate();

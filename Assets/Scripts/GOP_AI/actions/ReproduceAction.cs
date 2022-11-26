@@ -28,27 +28,30 @@ public class ReproduceAction : Action
     {
         agent.SetPerformingAction(true);
         agent.SetReproduction(true);
-        yield return new WaitForSeconds(1f);
-        int gender = Random.Range(0,2);
-        Material mat;
-        if(gender == 0)
+        for(int i =0; i < 3; i++)
         {
-            mat = EntitySpawner.instance.MaleMat;
+            yield return new WaitForSeconds(1f);
+            int gender = Random.Range(0,2);
+            Material mat;
+            if(gender == 0)
+            {
+                mat = EntitySpawner.instance.MaleMat;
+            }
+            else
+            {
+                mat = EntitySpawner.instance.FemaleMat;
+            }
+            GameObject prefab = EntitySpawner.instance.entityPrefab;
+            GameObject childAgent = Instantiate(prefab, this.transform.position, Quaternion.identity);
+            childAgent.transform.parent = EntitySpawner.instance.transform;
+            childAgent.GetComponent<GOPAgent>().SetGender(gender);
+            childAgent.GetComponent<MeshRenderer>().material = mat;
+            agent.offspring++;
+            EntitySpawner.instance.currentPopulation++;
         }
-        else
-        {
-            mat = EntitySpawner.instance.FemaleMat;
-        }
-        GameObject prefab = EntitySpawner.instance.entityPrefab;
-        GameObject childAgent = Instantiate(prefab, this.transform.position, Quaternion.identity);
-        childAgent.transform.parent = EntitySpawner.instance.transform;
-        childAgent.GetComponent<MeshRenderer>().material = mat;
-        agent.offspring++;
         agent.pregnant = false;
         agent.validFemale = true;
         agent.SetReproduction(false);
         agent.SetPerformingAction(false);
-        EntitySpawner.instance.currentPopulation++;
-        yield return null;
     }
 }
