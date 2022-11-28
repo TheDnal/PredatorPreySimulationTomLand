@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 7529323164102042183}
   - component: {fileID: 7529323164102042200}
   - component: {fileID: 7529323164102042201}
-  m_Layer: 6
+  m_Layer: 0
   m_Name: LandTilePrefab
   m_TagString: Untagged
   m_Icon: {fileID: 0}

@@ -48,6 +48,7 @@ public class ReproduceAction : Action
             childAgent.GetComponent<MeshRenderer>().material = mat;
             agent.offspring++;
             EntitySpawner.instance.currentPopulation++;
+            EntitySpawner.instance.AddEntity(childAgent.gameObject);
         }
         agent.pregnant = false;
         agent.validFemale = true;

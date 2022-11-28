@@ -47,6 +47,8 @@ public class MapGenerator : MonoBehaviour
     public Color DriedOceanColor;
     private List<GameObject> Tiles = new List<GameObject>();
     private GameObject[,] TileArray;
+    private List<GameObject> layeredTiles = new List<GameObject>();
+    public bool GenerationAnimation = false;
     public void Awake()
     {
         if(instance != null)
@@ -60,17 +62,32 @@ public class MapGenerator : MonoBehaviour
         {
             instance = this;
         }
+        
+    }
+    void Start()
+    {
         GenerateMap();
         GenerateTiles();
         UpdateSeaLevel();
+        
+        //Intitialisers
+        if(GenerationAnimation)
+        {
+            StartCoroutine(i_MapAnimation());
+        }
+        else
+        {
+            InitialiseSimulation();
+        }
     }
-    void Start()
+    private void InitialiseSimulation()
     {
         Vector2Int mapDimensions = new Vector2Int(mapWidth, mapHeight);
         Vector3 mapOrigin = new Vector3(-mapWidth/2, 0, -mapHeight/2);
         PartitionSystem.instance.Initialise(mapOrigin, mapDimensions, 1);
         BushSpawner.instance.Initialise();
         PlantSpawner.instance.Initialise();
+        EntitySpawner.instance.Initialise();
     }
     public void GenerateMap()
     {
@@ -80,7 +97,6 @@ public class MapGenerator : MonoBehaviour
         MapDisplay display = FindObjectOfType<MapDisplay>();
         display.DrawNoiseMap(noiseMap);
     }
-
     void GenerateTiles()
     {
         GameObject prefab;
@@ -110,7 +126,7 @@ public class MapGenerator : MonoBehaviour
                     float waterDepth = WorldSeaLevel - height;
                     col = WaterColorGradient.Evaluate(waterDepth);
                     prefab = OceanTilePrefab;
-                    pos.y = -WorldSeaLevel;
+                    pos.y = WorldSeaLevel/2;
                 }
                 GameObject newTile = Instantiate(prefab, pos, Quaternion.identity);
                 newTile.GetComponent<MeshRenderer>().material.color = col;
@@ -151,18 +167,6 @@ public class MapGenerator : MonoBehaviour
             EastWallTile.GetComponent<MeshRenderer>().material.color = col;
             EastWallTile.transform.parent = this.transform;
         }
-    }
-    public List<Vector3> GetValidSpawnZones()
-    {
-        List<Vector3> validSpawns = new List<Vector3>();
-        foreach(GameObject tile in TileArray)
-        {
-            if(tile.layer == 6 && tile.transform.position.y < 0.8f)
-            {
-                validSpawns.Add(tile.transform.position);
-            }
-        }   
-        return validSpawns;
     }
     public bool isTileUnderWater(Vector2Int tileCoord)
     {
@@ -207,7 +211,7 @@ public class MapGenerator : MonoBehaviour
                 {
 
                     //Tile aligns with sea level
-                    pos.y = -WorldSeaLevel;
+                    pos.y = -WorldSeaLevel/2;
                     //Tiles colour is adjusted to represent water depth
                     float waterDepth = currentSeaLevel - tileHeight;
                     tileColor = WaterColorGradient.Evaluate(waterDepth);
@@ -221,7 +225,7 @@ public class MapGenerator : MonoBehaviour
                     //Tile turns from water to sand
                     if(isBelowSeaLevel)
                     {
-                        pos.y = -WorldSeaLevel;
+                        pos.y = -WorldSeaLevel/2;
                         currTile.GetComponent<MeshRenderer>().material.color = DriedOceanColor;
                         currTile.transform.position = pos;
                     }
@@ -241,5 +245,63 @@ public class MapGenerator : MonoBehaviour
             }   
         }
     }
+    public void UpdateLayeredTiles(List<Partition> tilesToUpdate)
+    {
+        //Clear all old visibleTiles
+        foreach(GameObject tile in layeredTiles)
+        {
+            tile.layer = 0;
+        }
+        layeredTiles.Clear();
 
+        //Get all tiles in question
+        foreach(Partition p in tilesToUpdate)
+        {
+            GameObject tile = TileArray[p.coords.x,p.coords.y];
+            layeredTiles.Add(tile);
+            tile.layer = 8;
+        }
+    }
+    public void ClearAllLayeredTiles()
+    {
+        foreach(GameObject g in TileArray)
+        {
+            g.layer = 0;
+        }
+    }
+    private IEnumerator i_MapAnimation()
+    {
+        float offset = -1;
+        bool finished = false;
+        while(!finished)
+        {  
+            finished = true;
+            foreach(GameObject tile in TileArray)
+            {
+                if(tile.transform.position.y < offset)
+                {
+                    tile.SetActive(true);
+                    float t = offset /5 - tile.transform.position.y;
+                    t = t > 1 ? 1 : t;
+                    tile.transform.localScale = Vector3.Lerp(Vector3.zero, Vector3.one, t);
+                    if(Vector3.Distance(tile.transform.localScale, Vector3.one) > 0.1)
+                    {
+                        finished = false;
+                    }
+                }
+                else
+                {
+                    tile.SetActive(false);
+                    finished = false;
+                }
+            }
+            offset += Time.deltaTime *3;
+            yield return new WaitForEndOfFrame();
+        }
+        foreach(GameObject tile in TileArray)
+        {
+            tile.transform.localScale = Vector3.one;
+        }
+        InitialiseSimulation();
+    }
 }

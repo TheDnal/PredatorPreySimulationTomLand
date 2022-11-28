@@ -10,6 +10,7 @@ public class EntitySpawner : MonoBehaviour
     public GameObject entityPrefab;
     public Material MaleMat,FemaleMat;
     public static EntitySpawner instance;
+    private List<GameObject> entities = new List<GameObject>();
     void Awake()
     {
         if(instance != null)
@@ -18,12 +19,11 @@ public class EntitySpawner : MonoBehaviour
         }
         else{instance = this;}
     }
-    void Start()
+    public void Initialise()
     {
-        List<Vector3> validSpawns = generator.GetValidSpawnZones();
+        List<Vector3> validSpawns = PartitionSystem.instance.GetValidSpawnZones();
         SpawnEntities(validSpawns);
     }
-
     void SpawnEntities(List<Vector3> spawnZones)
     {
         for(int i = 0; i < startingPopulation; i++ )
@@ -58,8 +58,32 @@ public class EntitySpawner : MonoBehaviour
 
             //Misc
             newEntity.transform.parent = this.transform;
+            entities.Add(newEntity);
             spawnZones.Remove(spawnZones[index]);
             currentPopulation++;
+        }
+    }
+    public void AddEntity(GameObject entity)
+    {
+        entities.Add(entity);
+    }
+    public void RemoveEntity(GameObject entity)
+    {
+        entities.Remove(entity);
+    }
+    public void CullAllEntities()
+    {
+        foreach(GameObject entity in entities)
+        {
+            entity.layer = 0;
+        }
+    }
+    public void CullEntityList(List<GameObject> entitiesToCull)
+    {
+        CullAllEntities();
+        foreach(GameObject entity in entitiesToCull)
+        {
+            entity.layer = 8;
         }
     }
 }

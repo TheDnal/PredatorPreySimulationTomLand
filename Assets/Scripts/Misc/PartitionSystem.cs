@@ -132,13 +132,25 @@ public class PartitionSystem : MonoBehaviour
         List<Vector3> validSpawns = new List<Vector3>();
         foreach(Partition p in partitions)
         {
-            if(!p.IsWater() && p.foodCount < 2)
+            if(!p.IsWater() && p.foodCount < 3)
             {
                 validSpawns.Add(p.worldPosition);
             }
         }
         int index = Random.Range(0, validSpawns.Count - 1);
         return validSpawns[index];
+    }
+    public List<Vector3> GetValidSpawnZones()
+    {
+        List<Vector3> validSpawns = new List<Vector3>();
+        foreach(Partition p in partitions)
+        {
+            if(!p.IsWater() && p.foodCount < 3)
+            {
+                validSpawns.Add(p.worldPosition);
+            }
+        }
+        return validSpawns;
     }
     #endregion
     #region Misc/Private methods

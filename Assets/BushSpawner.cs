@@ -32,7 +32,7 @@ public class BushSpawner : MonoBehaviour
     }
     private void SpawnBushes()
     {
-        List<Vector3> spawns = MapGenerator.instance.GetValidSpawnZones();
+        List<Vector3> spawns = PartitionSystem.instance.GetValidSpawnZones();
         for(int i = 0; i < BushPopulation; i++)
         {
             int index = Random.Range(0,spawns.Count - 1);

@@ -5,6 +5,7 @@ using UnityEngine;
 public class GetFoodAction : Action
 {
     private GameObject nearestFoodObject;
+    private float startTime;
     public override bool isActionPossible(GOPAgent _agent)
     {
         actionRunning = false;
@@ -45,6 +46,7 @@ public class GetFoodAction : Action
     }
     public override void PerformAction()
     {
+        startTime = Time.time;
         agent.SetPerformingAction(true);
         if(PartitionSystem.instance.WorldToPartitionCoords(nearestFoodObject.transform.position) == agent.getCurrPartition())
         {
@@ -82,7 +84,7 @@ public class GetFoodAction : Action
         Vector3 lookPos = nearestFoodObject.transform.position;
         lookPos.y = agent.transform.position.y;
         agent.transform.LookAt(lookPos);
-        while(distance > 0.20f && Time.deltaTime < 2f)
+        while(distance > 0.20f && time <= 2f)
         {   
             time+= Time.deltaTime;
             distance = Vector3.Distance(targetPos, transform.position);
@@ -90,6 +92,12 @@ public class GetFoodAction : Action
             velocity.Normalize();
             rb.velocity = velocity;
             yield return new WaitForEndOfFrame();
+        }
+        if(time > 2f)
+        {
+            agent.SetPerformingAction(false);
+            Debug.Log("i_WalkToFood aborted");
+            yield return null;
         }
         rb.velocity = Vector3.zero;
         ConsumeFood();

@@ -56,6 +56,11 @@ public class PreyAgent : GOPAgent
         {
             return;
         }
+        if(transform.position.y < 0)
+        {
+            Debug.Log("Agent fell out of bounds, killing agent");
+            killAgent();
+        }
         UpdateDiscontent();
         Vector2Int oldPartitionPos = currPartition;
         currPartition = pSystem.WorldToPartitionCoords(transform.position);

@@ -50,6 +50,10 @@ public class EntityInspector : MonoBehaviour
             currentPage.InitialisePage(this);
         }
     }
+    public GameObject GetSelectedEntity()
+    {
+        return currentEntity;
+    }
     void Update()
     {
         if(currentEntity != null && currentPage != null)

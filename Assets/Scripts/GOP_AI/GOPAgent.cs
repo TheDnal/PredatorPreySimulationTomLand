@@ -249,6 +249,7 @@ public class GOPAgent : MonoBehaviour
     {
         EntitySpawner.instance.currentPopulation--;
         PartitionSystem.instance.RemoveGameObjectFromPartition(this.gameObject, getCurrPartition(), PartitionSystem.ObjectType.agent);
+        EntitySpawner.instance.RemoveEntity(this.gameObject);
         Destroy(this.gameObject);
     }
     public void SetGender(int _gender)
