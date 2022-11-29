@@ -57,6 +57,8 @@ public class EntitySpawner : MonoBehaviour
             newEntity.GetComponent<GOPAgent>().SetGender(gender);
 
             //Misc
+            Genome newGenome = GeneticsSystem.GetStartingPreyGenome();
+            newEntity.GetComponent<GOPAgent>().SetGenome(newGenome);
             newEntity.transform.parent = this.transform;
             entities.Add(newEntity);
             spawnZones.Remove(spawnZones[index]);

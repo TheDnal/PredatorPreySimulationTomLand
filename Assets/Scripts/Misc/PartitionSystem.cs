@@ -132,7 +132,7 @@ public class PartitionSystem : MonoBehaviour
         List<Vector3> validSpawns = new List<Vector3>();
         foreach(Partition p in partitions)
         {
-            if(!p.IsWater() && p.foodCount < 3)
+            if(!p.IsWater() && p.foodCount < 3 && p.IsTraversable())
             {
                 validSpawns.Add(p.worldPosition);
             }
@@ -145,7 +145,7 @@ public class PartitionSystem : MonoBehaviour
         List<Vector3> validSpawns = new List<Vector3>();
         foreach(Partition p in partitions)
         {
-            if(!p.IsWater() && p.foodCount < 3)
+            if(!p.IsWater() && p.foodCount < 3 && p.IsTraversable())
             {
                 validSpawns.Add(p.worldPosition);
             }

@@ -69,9 +69,15 @@ public class GetWaterAction : Action
     #region Reaching and drinking water
     private IEnumerator i_waitUntilReachedWater()
     {
+        float t = 0;
         while(!agent.arrivedAtDestination)
         {
             yield return new WaitForEndOfFrame();
+            if(t > 5)
+            {
+                agent.SetPerformingAction(false);
+                yield break;
+            }
         }
         agent.arrivedAtDestination = false;
         DrinkWater();

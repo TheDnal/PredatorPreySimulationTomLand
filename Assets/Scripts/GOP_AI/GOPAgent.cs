@@ -50,6 +50,7 @@ public class GOPAgent : MonoBehaviour
     protected Vector2Int currPartition;
 
     //Goal discontent speeds
+    protected Genome genome;
     protected float tirednessIncrease = 0.0125f;
     protected float tirednessDecrease = 0.25f;
 
@@ -155,12 +156,12 @@ public class GOPAgent : MonoBehaviour
             }
             else
             {
-                transform.localScale = new Vector3(0.2f,0.4f,0.2f) * actualAge /20;
+                transform.localScale = (new Vector3(0.2f,0.4f,0.2f) * actualAge /20) * genome.size;
             }
         }
         else
         {
-            transform.localScale = new Vector3(0.2f,0.4f,0.2f);
+            transform.localScale = new Vector3(0.2f,0.4f,0.2f) * genome.size;
         }
         if(!isReproducing && age > 10 && !pregnant)
         {
@@ -230,6 +231,10 @@ public class GOPAgent : MonoBehaviour
     {
         return gender;
     }
+    public Genome getGenome()
+    {
+        return genome;
+    }
     #endregion
     #region Setters
     public void SetEating(bool _isEating){isEating = _isEating;}
@@ -263,10 +268,13 @@ public class GOPAgent : MonoBehaviour
     }
     public void Mate()
     {
-        Debug.Log("female mated");
         maleMate = null;
         pregnant = true;
         validFemale = false;
+    }
+    public void SetGenome(Genome _genome)
+    {
+        genome = _genome;
     }
     #endregion 
     #region Dijkstra Fields
@@ -483,7 +491,6 @@ public class GOPAgent : MonoBehaviour
         arrivedAtDestination = true;
         yield return null;
     }
-    
     private List<Node> GetAdjacentNodes(Vector2Int nodePos)
     {
         List<Node> adjacentNodes = new List<Node>();

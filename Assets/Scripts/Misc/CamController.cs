@@ -18,7 +18,7 @@ public class CamController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(followAgent)
+        if(followAgent && currentAgent != null)
         {
             Vector3 pos = transform.position;
             pos.x = currentAgent.transform.position.x;

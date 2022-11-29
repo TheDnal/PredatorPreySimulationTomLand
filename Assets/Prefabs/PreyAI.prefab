@@ -311,7 +311,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d623181712295cb43b34ae50c6f0a3ad, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxDotProduct: -0.4
+  maxDotProduct: -0.5
   visionRadius: 2
   smellRadius: 1
   SVChannel: 3

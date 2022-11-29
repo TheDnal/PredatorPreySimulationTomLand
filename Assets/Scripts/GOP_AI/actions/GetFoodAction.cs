@@ -64,9 +64,16 @@ public class GetFoodAction : Action
     }
     private IEnumerator i_waitUntilReachedFood()
     {
+        float t = 0;
         while(!agent.arrivedAtDestination)
         {
+            t+= Time.deltaTime;
             yield return new WaitForEndOfFrame();
+            if(t > 5)
+            {
+                agent.SetPerformingAction(false);
+                yield break;
+            }
         }
         agent.arrivedAtDestination = false;
         WalkToFood();
@@ -77,6 +84,11 @@ public class GetFoodAction : Action
     }
     private IEnumerator i_WalkToFood()
     {
+        if(nearestFoodObject == null){
+            Debug.Log("null food ref");
+            agent.SetPerformingAction(false);
+            yield break;
+        }
         float distance = Vector3.Distance(transform.position, nearestFoodObject.transform.position);
         Rigidbody rb = agent.gameObject.GetComponent<Rigidbody>();
         Vector3 targetPos = nearestFoodObject.transform.position;
@@ -96,8 +108,7 @@ public class GetFoodAction : Action
         if(time > 2f)
         {
             agent.SetPerformingAction(false);
-            Debug.Log("i_WalkToFood aborted");
-            yield return null;
+            yield break;
         }
         rb.velocity = Vector3.zero;
         ConsumeFood();
@@ -113,7 +124,7 @@ public class GetFoodAction : Action
             if (plant.GetCurrentPartition() != agent.getCurrPartition())
             {
                 agent.SetPerformingAction(false);
-                yield return null;
+                yield break;
             }
             if(plant.isEdible())
             {
