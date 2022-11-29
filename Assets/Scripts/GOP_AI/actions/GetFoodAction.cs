@@ -59,6 +59,8 @@ public class GetFoodAction : Action
             return;
         }
         actionRunning = true;
+        Vector2Int pos = PartitionSystem.instance.WorldToPartitionCoords(nearestFoodObject.transform.position);
+        agent.pathfindingSystem.GetPathToPartition(pos, 3);
         agent.PathToTarget(nearestFoodObject.transform.position);
         StartCoroutine(i_waitUntilReachedFood());
     }

@@ -11,6 +11,8 @@ public class PreyAgent : GOPAgent
     private bool initialised = false;
     void Start()
     {
+        currPartition = PartitionSystem.instance.WorldToPartitionCoords(transform.position);
+        pathfindingSystem.Initialise(this);
         agentType = "Prey agent";
         Initialise();
     }

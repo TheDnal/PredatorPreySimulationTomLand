@@ -26,7 +26,7 @@ public class GOPAgent : MonoBehaviour
     //goal. 
     #endregion
     #region Fields
-
+    public PathfindingSystem pathfindingSystem;
     public bool showGizmos = false;
 
     public float tiredness = 0;

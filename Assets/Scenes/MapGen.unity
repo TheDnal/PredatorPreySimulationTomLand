@@ -1661,7 +1661,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   plantPrefab: {fileID: 8051440670488318334, guid: 448c5a0ac990c0a4591673943254e2ba, type: 3}
-  maxPlantCount: 50
+  maxPlantCount: 15
 --- !u!4 &265763117
 Transform:
   m_ObjectHideFlags: 0
@@ -4554,12 +4554,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   mapWidth: 9
   mapHeight: 9
-  noiseScale: 10
-  octaves: 3
+  noiseScale: 12
+  octaves: 1
   persistance: 1
-  lacunarity: 2
+  lacunarity: 1
   seed: 0
-  offset: {x: 0, y: 0}
+  offset: {x: 1.1, y: 0.1}
   autoUpdate: 1
   WorldSeaLevel: 0.5
   seaLevelOffset: 0
@@ -4626,7 +4626,7 @@ MonoBehaviour:
     m_NumColorKeys: 2
     m_NumAlphaKeys: 2
   DriedOceanColor: {r: 0.8113208, g: 0.6803596, b: 0, a: 1}
-  GenerationAnimation: 1
+  GenerationAnimation: 0
 --- !u!4 &1061143970
 Transform:
   m_ObjectHideFlags: 0
@@ -9463,7 +9463,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   generator: {fileID: 1061143969}
-  startingPopulation: 25
+  startingPopulation: 1
   currentPopulation: 0
   entityPrefab: {fileID: 7191839513551554315, guid: b6ac8d364eb34684c9fe5e9606cdb669, type: 3}
   MaleMat: {fileID: 2100000, guid: 6fe87d30324297f4cace41de8295a083, type: 2}

@@ -26,6 +26,8 @@ public class Action : MonoBehaviour
     public virtual bool isActionPossible(GOPAgent _agent){return false;}
     public virtual float ActionScore(){return 0;}
     public virtual void PerformAction(){}
+    public virtual void UpdateAction(){}
+    public virtual void ExitAction(){}
     #endregion
 
 }
