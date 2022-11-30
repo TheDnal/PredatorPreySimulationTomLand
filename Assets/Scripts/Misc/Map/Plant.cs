@@ -40,7 +40,6 @@ public class Plant : MonoBehaviour
     }
     private IEnumerator i_Respawn()
     {
-        yield return new WaitForSeconds(0.5f);
         Vector3 newPos = PartitionSystem.instance.GetValidSpawnZone();
         transform.position = newPos;
         float x,z;
@@ -50,5 +49,6 @@ public class Plant : MonoBehaviour
         PartitionSystem.instance.AddGameObjectToPartition(this.gameObject, PartitionSystem.ObjectType.food);
         partition = PartitionSystem.instance.WorldToPartitionCoords(transform.position);
         isBeingEaten = false;
+        yield break;
     }
 }

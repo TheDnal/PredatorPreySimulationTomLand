@@ -9,6 +9,7 @@ public class PreyAgent : GOPAgent
     private PartitionSystem pSystem;
     private List<Partition> adjacentPartitions = new List<Partition>();
     private bool initialised = false;
+    private Action bestAction;
     void Start()
     {
         currPartition = PartitionSystem.instance.WorldToPartitionCoords(transform.position);
@@ -37,19 +38,20 @@ public class PreyAgent : GOPAgent
 
         if(gender == 0)
         {
-            SeekFemale seekFemale = this.gameObject.AddComponent<SeekFemale>();
-            actions.Add(seekFemale);
+            // SeekFemale seekFemale = this.gameObject.AddComponent<SeekFemale>();
+            // actions.Add(seekFemale);
         }
         else
         {
-            WaitForMale waitForMale = this.gameObject.AddComponent<WaitForMale>();
-            actions.Add(waitForMale);
-            ReproduceAction reproduceAction = this.gameObject.AddComponent<ReproduceAction>();
-            actions.Add(reproduceAction);
+            // WaitForMale waitForMale = this.gameObject.AddComponent<WaitForMale>();
+            // actions.Add(waitForMale);
+            // ReproduceAction reproduceAction = this.gameObject.AddComponent<ReproduceAction>();
+            // actions.Add(reproduceAction);
         }
 
         SleepAction sleepAction = this.gameObject.AddComponent<SleepAction>();
         actions.Add(sleepAction);
+
         initialised = true;
     }
     void Update()
@@ -77,9 +79,13 @@ public class PreyAgent : GOPAgent
         rb.velocity = velocity;
         if(performingAction)
         {
+            if(bestAction != null)
+            {
+                bestAction.UpdateAction();
+            }
             return;
         }
-        Action bestAction = CalculateBestAction();
+        bestAction = CalculateBestAction();
         currentActionName = bestAction.actionName;
         bestAction.PerformAction();
     }
@@ -87,22 +93,6 @@ public class PreyAgent : GOPAgent
     void OnMouseDown()
     {
         EntityInspector.instance.SetSelectedEntity(this.gameObject, EntityInspector.EntityType.prey);
-    }
-    void OnDrawGizmos()
-    {
-        if(showGizmos)
-        {
-            if(currentPath != null)
-            {
-                foreach(Vector3 step in currentPath)
-                {
-                    Gizmos.color = Color.yellow;
-                    Gizmos.DrawWireCube(step, Vector3.one);
-                }
-            }
-            Gizmos.color = Color.green;
-            Gizmos.DrawLine(transform.position, transform.position + velocity);
-        }
     }
 }
 

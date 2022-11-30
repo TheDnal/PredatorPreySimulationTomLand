@@ -39,35 +39,35 @@ public class SeekFemale : Action
     }
     public override void PerformAction()
     {
-        agent.SetPerformingAction(true);
-        if(PartitionSystem.instance.WorldToPartitionCoords(nearestFemale.transform.position) == agent.getCurrPartition())
-        {
-            MateWithFemale();
-        }
-        if(!agent.isTargetReachable(nearestFemale.transform.position))
-        {
-            agent.SetPerformingAction(false);
-            return;
-        }
-        actionRunning = true;
-        agent.PathToTarget(nearestFemale.transform.position);
-        StartCoroutine(i_WaitUntilReachedFemale());
+        // agent.SetPerformingAction(true);
+        // if(PartitionSystem.instance.WorldToPartitionCoords(nearestFemale.transform.position) == agent.getCurrPartition())
+        // {
+        //     MateWithFemale();
+        // }
+        // if(!agent.isTargetReachable(nearestFemale.transform.position))
+        // {
+        //     agent.SetPerformingAction(false);
+        //     return;
+        // }
+        // actionRunning = true;
+        // agent.PathToTarget(nearestFemale.transform.position);
+        // StartCoroutine(i_WaitUntilReachedFemale());
     }
-    private IEnumerator i_WaitUntilReachedFemale()
-    {
-        while(!agent.arrivedAtDestination)
-        {
-            if(nearestFemale == null)
-            {
-                actionRunning = false;
-                yield return null;
-            }
-            yield return new WaitForEndOfFrame();
-        }
-        agent.arrivedAtDestination = false;
-        MateWithFemale();
-        agent.SetPerformingAction(false);
-    }
+    // private IEnumerator i_WaitUntilReachedFemale()
+    // {
+    //     // while(!agent.arrivedAtDestination)
+    //     // {
+    //     //     if(nearestFemale == null)
+    //     //     {
+    //     //         actionRunning = false;
+    //     //         yield return null;
+    //     //     }
+    //     //     yield return new WaitForEndOfFrame();
+    //     // }
+    //     // agent.arrivedAtDestination = false;
+    //     // MateWithFemale();
+    //     // agent.SetPerformingAction(false);
+    // }
     public void MateWithFemale()
     {
         if(nearestFemale != null && nearestFemale.GetComponent<GOPAgent>().validFemale)

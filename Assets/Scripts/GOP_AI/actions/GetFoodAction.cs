@@ -4,157 +4,239 @@ using UnityEngine;
 
 public class GetFoodAction : Action
 {
-    private GameObject nearestFoodObject;
-    private float startTime;
+    /*
+        This Action class will attempt to find, get to, and consume food.
+        This is broken down into the following steps:
+        1) Check for food in the agents vision and smell senses
+        2) Find the closest food object
+        3) Get the fastest path (Djikstra) to the food object
+        4) Move to the food object
+        5) Eat the food object
+        6) Exit the action, and return control to the agent
+
+        If, at any stage the action is no longer possible, for example if the target 
+        food object is eaten by another agent, the action is aborted and control
+        is returned to the agent.
+        
+    */
+    #region Fields
+    private Partition nearestFoodPartition = null;
+    private GameObject nearestFoodObject = null;
+    private enum Stage{inactive, followPath, goToFood, eatFood, finished}
+    private Stage currentStage = Stage.inactive;
+    private List<Vector2Int> DijkstraPath = new List<Vector2Int>();
+    private Vector2Int startPosition;
+    #endregion
+    #region Inherrited Methods
     public override bool isActionPossible(GOPAgent _agent)
     {
-        actionRunning = false;
-        actionName = "GetFood";
         agent = _agent;
-        //Get partitions in radius
-        List<Partition> partitions = agent.sensorySystem.GetVisionCone();
+        actionName = "GetFood";
+        //Get all partitions that the agent is aware of
+        List<Partition> nearbyPartitions = new List<Partition>();
+        nearbyPartitions.AddRange(agent.sensorySystem.GetVisionCone());
+        nearbyPartitions.AddRange(agent.sensorySystem.GetSmell());
 
-        //Get nearest plant object that isn't being eaten
-        float closest = 9999, distance;
-        nearestFoodObject = null;
-        foreach(Partition p in partitions)
+        //Iterate over all of them to look for food, and get the closest one if it does
+        nearestFoodPartition = null;
+        float closest = float.MaxValue;
+        float distance = 0;
+        foreach(Partition partition in nearbyPartitions)
         {
-            foreach(GameObject food in p.food)
+            if(partition.HasFood())
             {
-                if(food.TryGetComponent(out Plant currPlant))
+                distance = Vector3.Distance(transform.position, partition.worldPosition);
+                if(distance < closest)
                 {
-                    if(currPlant.isEdible())
-                    {
-                        distance = Vector3.Distance(agent.transform.position, food.transform.position);
-                        if(distance < closest)
-                        {
-                            closest = distance;
-                            nearestFoodObject = food;
-                        }
-                    }
+                    closest = distance;
+                    nearestFoodPartition = partition;
                 }
             }
         }
-        //Return true if a valid food object is spotted, else return false
-        return nearestFoodObject == null ? false : true;
+
+        //Return true if there is a nearest food, false if not
+        return nearestFoodPartition != null ? true : false;
     }
     public override float ActionScore()
     {
-        //Return hunger - distance to nearest food object
-        float score = (agent.GetHunger() * 125);
-        return score;
+        //Food insistence = agentHunger^2 - distance
+        //agentHunger is squared to make high insistence values much stronger
+        float distance = Vector3.Distance(transform.position, nearestFoodPartition.worldPosition);
+        return (agent.hunger * agent.hunger *100) - distance;
     }
     public override void PerformAction()
     {
-        startTime = Time.time;
+        timer = 0;
+        startPosition = agent.getCurrPartition();
+        agent.setVelocity(Vector3.zero);
         agent.SetPerformingAction(true);
-        if(PartitionSystem.instance.WorldToPartitionCoords(nearestFoodObject.transform.position) == agent.getCurrPartition())
+        nearestFoodObject = null;
+        currentStage = Stage.inactive;
+        targetWaypoint = new Vector2Int(-1,-1);
+        //Check if the agent needs to pathfind to the food or not
+        if(agent.getCurrPartition() == nearestFoodPartition.coords)
         {
-            WalkToFood();
-            return;
+            //Move directly towards the food
+            currentStage = Stage.goToFood;
         }
-        if(!agent.isTargetReachable(nearestFoodObject.transform.position))
+        else
         {
-            agent.SetPerformingAction(false);
-            return;
+            //Get Path
+            DijkstraPath = agent.pathfindingSystem.GetPathToPartition(nearestFoodPartition.coords,3);
+            //Move along path
+            currentStage = Stage.followPath;
         }
-        actionRunning = true;
-        Vector2Int pos = PartitionSystem.instance.WorldToPartitionCoords(nearestFoodObject.transform.position);
-        agent.pathfindingSystem.GetPathToPartition(pos, 3);
-        agent.PathToTarget(nearestFoodObject.transform.position);
-        StartCoroutine(i_waitUntilReachedFood());
     }
-    private IEnumerator i_waitUntilReachedFood()
+    public override void UpdateAction()
     {
-        float t = 0;
-        while(!agent.arrivedAtDestination)
+        if(!IsActionStillValid())
         {
-            t+= Time.deltaTime;
-            yield return new WaitForEndOfFrame();
-            if(t > 5)
-            {
-                agent.SetPerformingAction(false);
-                yield break;
-            }
+            ExitAction();
         }
-        agent.arrivedAtDestination = false;
-        WalkToFood();
-    }
-    private void WalkToFood()
-    {
-        StartCoroutine(i_WalkToFood());
-    }
-    private IEnumerator i_WalkToFood()
-    {
-        if(nearestFoodObject == null){
-            Debug.Log("null food ref");
-            agent.SetPerformingAction(false);
-            yield break;
-        }
-        float distance = Vector3.Distance(transform.position, nearestFoodObject.transform.position);
-        Rigidbody rb = agent.gameObject.GetComponent<Rigidbody>();
-        Vector3 targetPos = nearestFoodObject.transform.position;
-        float time = 0;
-        Vector3 lookPos = nearestFoodObject.transform.position;
-        lookPos.y = agent.transform.position.y;
-        agent.transform.LookAt(lookPos);
-        while(distance > 0.20f && time <= 2f)
-        {   
-            time+= Time.deltaTime;
-            distance = Vector3.Distance(targetPos, transform.position);
-            Vector3 velocity = targetPos - transform.position;
-            velocity.Normalize();
-            rb.velocity = velocity;
-            yield return new WaitForEndOfFrame();
-        }
-        if(time > 2f)
+        switch(currentStage)
         {
-            agent.SetPerformingAction(false);
-            yield break;
+            case Stage.inactive:
+                return;
+            case Stage.followPath:
+                FollowPath();
+                break;
+            case Stage.goToFood:
+                GoToFood();
+                break;
+            case Stage.eatFood:
+                EatFood();
+                break;
+            case Stage.finished:
+                ExitAction();
+                break;
         }
-        rb.velocity = Vector3.zero;
-        ConsumeFood();
     }
-    private void ConsumeFood()
+    public override void ExitAction()
     {
-        StartCoroutine(i_ConsumeFood());
+        agent.SetPerformingAction(false);
+        currentStage = Stage.inactive;
     }
-    private IEnumerator i_ConsumeFood()
+    #endregion
+    #region actionStates
+    private Vector2Int targetWaypoint;
+    private void FollowPath()
     {
-        if(nearestFoodObject.TryGetComponent(out Plant plant))
+
+        //If starting the path, set the first waypoint
+        if(targetWaypoint == new Vector2Int(-1,-1))
         {
-            if (plant.GetCurrentPartition() != agent.getCurrPartition())
-            {
-                agent.SetPerformingAction(false);
-                yield break;
-            }
-            if(plant.isEdible())
-            {
-                agent.setVelocity(Vector3.zero);
-                Vector3 lookPos = nearestFoodObject.transform.position;
-                lookPos.y = agent.transform.position.y;
-                agent.transform.LookAt(lookPos);
-                plant.startEating();
-                agent.SetEating(true);
-                yield return new WaitForSeconds(1f);
-                plant.Consume();
-                agent.SetPerformingAction(false);
-                agent.SetEating(false);
-            }
-            else
-            {
-                yield return null;
-            }
+            targetWaypoint = DijkstraPath[0];
         }
 
+        //Check if agent has reached the current waypoint
+        Vector3 targetPosition = PartitionSystem.instance.PartitionToWorldCoords(targetWaypoint + startPosition);
+        targetPosition.y = transform.position.y;
+        float distance = Vector3.Distance(transform.position, targetPosition);
+
+        //if not, keep going
+        if(distance > 0.25f)
+        {
+            Vector3 velocity = targetPosition - transform.position;
+            velocity.y = 0;
+            velocity.Normalize();
+            agent.setVelocity(velocity);
+        }
+
+        //if they have, move onto the next waypoint
+        else
+        {
+            //Get index of next position
+            int index = DijkstraPath.IndexOf(targetWaypoint) + 1;
+
+            //Iterate to next waypoint
+            if(index < DijkstraPath.Count - 1)
+            {
+                targetWaypoint = DijkstraPath[index];
+            }
+            //Reached final waypoint, move to next state
+            else
+            {   
+                currentStage = Stage.goToFood;
+            }
+        }
+    }
+    private void GoToFood()
+    { 
+        //pick a random food object in the partition
+        if(nearestFoodObject == null)
+        {
+            int index = Random.Range(0, nearestFoodPartition.foodCount - 1);
+            nearestFoodObject = nearestFoodPartition.food[index];
+        }
+
+        //Walk to food
+        float distance = Vector3.Distance(transform.position, nearestFoodObject.transform.position);
+        if(distance > 0.2f)
+        {
+            Vector3 velocity = nearestFoodObject.transform.position - transform.position;
+            velocity.y = 0;
+            velocity.Normalize();
+            agent.setVelocity(velocity);
+        }
+        //Continue until reaching it
+        else
+        {
+            agent.setVelocity(Vector3.zero);
+            currentStage = Stage.eatFood;
+        }
+    }
+    private float timer = 0;
+    private void EatFood()
+    {
+        agent.SetEating(true);
+        timer+= Time.deltaTime;
+        if(nearestFoodObject.GetComponent<Plant>().isEdible())
+        {
+            nearestFoodObject.GetComponent<Plant>().startEating();
+        }
+        //Wait until time elapsed then finish state
+        if(timer >= 1)
+        {
+            nearestFoodObject.GetComponent<Plant>().Consume();
+            agent.SetEating(false);
+            currentStage = Stage.finished;
+        }
+        
+    }
+    #endregion
+    #region misc
+    private bool IsActionStillValid()
+    {
+        if(nearestFoodObject != null)
+        {
+            if(!nearestFoodObject.GetComponent<Plant>().isEdible() && currentStage != Stage.eatFood)
+            {
+            //Someone else has beat the agent to the food
+            return false;
+            }
+        }
+        
+        if(nearestFoodPartition.foodCount == 0)
+        {
+            //No food in partition
+            return false;
+        }
+        return true;
     }
     void OnDrawGizmos()
     {
-        if(nearestFoodObject != null && actionRunning && agent.showGizmos)
+        if(currentStage != Stage.inactive)
         {
-            Gizmos.color = Color.green;
-            Gizmos.DrawLine(agent.transform.position, nearestFoodObject.transform.position);
-            Gizmos.DrawWireCube(nearestFoodObject.transform.position, Vector3.one);
+            Gizmos.color = Color.white;
+            if(DijkstraPath != null)
+            {
+                foreach(Vector2Int pos in DijkstraPath)
+                {
+                    Vector3 worldPos = PartitionSystem.instance.PartitionToWorldCoords(pos + startPosition);
+                    Gizmos.DrawWireCube(worldPos,Vector3.one);
+                }
+            }
         }
     }
+    #endregion
 }

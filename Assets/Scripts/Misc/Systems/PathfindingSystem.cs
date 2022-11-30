@@ -38,7 +38,6 @@ public class PathfindingSystem : MonoBehaviour
         endPos = endPartition;
         GenerateNodeGrid(pathfindingRadius, endPos);
         partitionPath = DijkstraCompute();
-        Debug.Log(partitionPath.Count);
         gizmoPath = partitionPath;
         return partitionPath;
     }
@@ -209,16 +208,5 @@ public class PathfindingSystem : MonoBehaviour
         return adjacentNodes;
     }
    
-    void OnDrawGizmos()
-    {
-        if(gizmoPath != null)
-        {
-            foreach(Vector2Int pos in gizmoPath)
-            {
-                Vector3 worldPos = PartitionSystem.instance.PartitionToWorldCoords(pos + startPos);
-                Gizmos.DrawWireCube(worldPos,Vector3.one);
-            }
-        }
-    }
     #endregion
 }

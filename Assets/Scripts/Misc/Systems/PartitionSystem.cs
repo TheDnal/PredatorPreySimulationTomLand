@@ -43,8 +43,10 @@ public class PartitionSystem : MonoBehaviour
                 Vector3 displacement = new Vector3(i,0,j) * partitionSize;
                 Vector2Int coords = new Vector2Int(i,j);
                 bool water = MapGenerator.instance.isTileUnderWater(new Vector2Int(i,j));
+                float height = MapGenerator.instance.GetTileHeight(new Vector2Int(i,j));
                 bool traversable = MapGenerator.instance.isTileTraversable(new Vector2Int(i,j));
                 Partition newPart = new Partition(startPos + displacement, coords, water, false, traversable);
+                newPart.SetHeight(height);
                 partitions[i,j] = newPart;
                 
             }
@@ -164,8 +166,9 @@ public class PartitionSystem : MonoBehaviour
             {
                 Vector3 pos = PartitionToWorldCoords(p.coords);
                 nearbyPartitions = GetPartitionsInRadius(pos, 2);
-                int score = 0;
+                float score = 0;
                 score += p.GetFoodCount();
+                score += p.IsWater() ? 0 : 1f - p.GetHeight();
                 foreach(Partition adjacentP in nearbyPartitions)
                 {
                     score += adjacentP.GetFoodCount();
@@ -245,7 +248,8 @@ public class Partition
     private bool isTraversable;
     public int foodCount;
     private bool hasFood;
-    private int score = 0;
+    private float score = 0;
+    private float height;
     #endregion
     //Constructor
     public Partition(Vector3 _Position, Vector2Int _coords, bool _isWater, bool _hasFood, bool _isTraversable)
@@ -315,13 +319,21 @@ public class Partition
         DecrementFoodCount();
         food.Remove(_food);
     }
-    public int GetScore()
+    public float GetScore()
     {
         return score;
-    }
-    public void SetScore(int _score)
+    }    
+    public void SetScore(float _score)
     {
         score = _score;
     }    
+    public float GetHeight()
+    {
+        return height;
+    }
+    public void SetHeight(float _height)
+    {
+        height = _height;
+    }
     #endregion
 }

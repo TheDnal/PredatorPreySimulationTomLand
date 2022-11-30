@@ -184,7 +184,13 @@ public class MapGenerator : MonoBehaviour
             return true;
         }
     }
+    public float GetTileHeight(Vector2Int tileCoord)
+    {
+        return noiseMap[tileCoord.x,tileCoord.y];
+    }
+    
     //Will adjust all the tiles in the map to accommodate the new sea level
+    
     public void UpdateSeaLevel()
     {
         //No map
