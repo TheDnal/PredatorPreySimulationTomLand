@@ -36,6 +36,8 @@ public class PreyAgent : GOPAgent
         GetWaterAction getWaterAction = this.gameObject.AddComponent<GetWaterAction>();
         actions.Add(getWaterAction);
 
+        FleeAction flee = this.gameObject.AddComponent<FleeAction>();
+        actions.Add(flee);
         if(gender == 0)
         {
             // SeekFemale seekFemale = this.gameObject.AddComponent<SeekFemale>();

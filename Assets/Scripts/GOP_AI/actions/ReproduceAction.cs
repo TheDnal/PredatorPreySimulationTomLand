@@ -4,8 +4,19 @@ using UnityEngine;
 
 public class ReproduceAction : Action
 {
-    //Asexual reproduction action (cloning)
-
+    //  ▄██████▄   ▄█       ████████▄  
+    // ███    ███ ███       ███   ▀███ 
+    // ███    ███ ███       ███    ███ 
+    // ███    ███ ███       ███    ███ 
+    // ███    ███ ███       ███    ███ 
+    // ███    ███ ███       ███    ███ 
+    // ███    ███ ███▌    ▄ ███   ▄███ 
+    //  ▀██████▀  █████▄▄██ ████████▀  
+    //            ▀                    
+    private float timer = 0;
+    private float birthInterval = 1;
+    private int maxChildCount = 3;
+    private int childCount = 0;
     public override bool isActionPossible(GOPAgent _agent)
     {
         actionName = "Reproduce";
@@ -21,9 +32,45 @@ public class ReproduceAction : Action
 
     public override void PerformAction()
     {
+        timer = 0;
+        childCount = 0;
+        agent.SetPerformingAction(true);
+        agent.SetReproduction(true);
         StartCoroutine(i_Reproduce());
     }
-
+    public override void UpdateAction()
+    {
+        if(childCount == maxChildCount)
+        {
+            ExitAction();
+            return;
+        }
+        timer += Time.deltaTime;
+        if(timer >= birthInterval)
+        {
+            childCount ++;
+            timer = 0;
+            Material mat;
+            int gender = Random.Range(0,2);
+            if(gender == 0)
+            {
+                mat = EntitySpawner.instance.MaleMat;
+            }
+            else
+            {
+                mat = EntitySpawner.instance.FemaleMat;
+            }
+            GameObject prefab = EntitySpawner.instance.entityPrefab;
+            GameObject childAgent = Instantiate(prefab, this.transform.position, Quaternion.identity);
+            childAgent.transform.parent = EntitySpawner.instance.transform;
+            childAgent.GetComponent<GOPAgent>().SetGender(gender);
+            childAgent.GetComponent<MeshRenderer>().material = mat;
+        }
+    }
+    public override void ExitAction()
+    {
+        agent.SetPerformingAction(false);
+    }
     private IEnumerator i_Reproduce()
     {
         agent.SetPerformingAction(true);

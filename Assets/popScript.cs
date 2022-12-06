@@ -49,7 +49,6 @@ public class popScript : MonoBehaviour
         {
             Destroy(points[i]);
         }
-        float xSize= 50f;
         for(int i = 0; i < valueList.Count; i++)
         {
             float xPos = i;

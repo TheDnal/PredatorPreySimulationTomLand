@@ -6,15 +6,15 @@ public class BrainPage : InspectorPage
 {
     [Header("Action images")]
     public Image actionImage;
-    public Sprite Eat,Drink,Wander,Mating,Reproduce,Sleep , NULL;
+    public Sprite Eat,Drink,Wander,Mating,Reproduce,Sleep, Flee, NULL;
     public TMPro.TextMeshProUGUI text;
     [Space(6),Header("Graph Images")]
     public Image Hunger;
     public Image Thirst;
     public Image Tiredness;
     public Image ReproductiveUrge;
-
-
+    public Image Danger;
+    
     public override void InitialisePage(EntityInspector _Inspector)
     {
         base.InitialisePage(_Inspector);
@@ -58,6 +58,10 @@ public class BrainPage : InspectorPage
                 actionImage.sprite = Sleep;
                 text.text = "Sleeping";
                 break;
+            case "Flee":
+                actionImage.sprite = Flee;
+                text.text = "Fleeing";
+                break;
             default:
                 actionImage.sprite = NULL;
                 text.text = "Null";
@@ -70,5 +74,6 @@ public class BrainPage : InspectorPage
         Thirst.fillAmount           = currentAgent.GetThirst();
         Tiredness.fillAmount        = currentAgent.GetTiredness();
         ReproductiveUrge.fillAmount = currentAgent.GetReproduction();
+        Danger.fillAmount           = currentAgent.GetDanger();
     }
 }

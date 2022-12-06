@@ -82,6 +82,23 @@ public class SVision : MonoBehaviour
     {
         return smelledPartitions;
     }
+    public float GetSensedDanger()
+    {
+        List<Partition> partitions = GetVisionCone();
+        float danger= 0;
+        foreach(Partition p in partitions)
+        {
+            float relativeDanger = p.GetDangerValue(true);
+            if(relativeDanger < 0)
+            {
+                continue;
+            }
+            float proximity = 2 - Mathf.Abs(Vector3.Distance(transform.position, p.worldPosition));
+            proximity = proximity < 1 ? 1 : proximity;
+            danger += proximity * relativeDanger;
+        }
+        return danger;  
+    }
     void OnDrawGizmos()
     {
         if(visiblePartitions != null && pSystem != null)

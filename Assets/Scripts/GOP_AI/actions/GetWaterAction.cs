@@ -64,15 +64,13 @@ public class GetWaterAction : Action
         timer = 0;
         agent.setVelocity(Vector3.zero);
         agent.SetPerformingAction(true);
-        currentStage = ACTION_STAGE.inactive;
         targetWaypoint = new Vector2Int(-1,-1);
-
+        startPosition = agent.getCurrPartition();
         //Check if current partition has water
         Vector2Int pos = agent.getCurrPartition();
         Partition currPartition = PartitionSystem.instance.partitions[pos.x,pos.y];
         if(currPartition.hasDrinkbleWater())
         {
-            Debug.Log("has drinkable water");
             currentStage = ACTION_STAGE.DrinkWater;
             return;
         }
@@ -147,7 +145,7 @@ public class GetWaterAction : Action
             int index = DijkstraPath.IndexOf(targetWaypoint) + 1;
 
             //iterate to next waypoint
-            if(index < DijkstraPath.Count - 1)
+            if(index < DijkstraPath.Count)
             {
                 targetWaypoint = DijkstraPath[index];
             }
@@ -169,7 +167,7 @@ public class GetWaterAction : Action
         targetPos = targetPosition;
         float distance = Vector3.Distance(transform.position , targetPosition);
         //If too far away, keep approaching water front
-        if(distance > 1.5f)
+        if(distance > 2f)
         {
             Vector3 velocity = targetPosition - transform.position;
             velocity.y = 0;

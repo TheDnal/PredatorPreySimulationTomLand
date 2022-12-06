@@ -13,7 +13,7 @@ public class PartitionSystem : MonoBehaviour
     private bool initialised = false;
     public Gradient scoreRange;
     public float multiplier = 0;
-    public enum DebugType { none, food, drinkableWater, bodyOfWater, agents, score};
+    public enum DebugType { none, food, drinkableWater, bodyOfWater, agents, score, danger};
     public DebugType GizmosMode;
     #region Initialization and generation of spacial partitioning system
     void Awake()
@@ -225,6 +225,13 @@ public class PartitionSystem : MonoBehaviour
                             Gizmos.DrawWireCube(pos + Vector3.up, Vector3.one * partitionSize);
                             break;
                         }
+                    case DebugType.danger:
+                        {
+                            Color col = scoreRange.Evaluate(1 - p.GetDangerValue(true) * multiplier);
+                            Gizmos.color = col;
+                            Gizmos.DrawWireCube(pos + Vector3.up, Vector3.one * partitionSize);
+                            break;
+                        }
                     default:
                         break;
                 }
@@ -250,6 +257,9 @@ public class Partition
     private bool hasFood;
     private float score = 0;
     private float height;
+    private float danger;
+    private int dangerSources = 0;
+    private int predatorCount = 0;
     #endregion
     //Constructor
     public Partition(Vector3 _Position, Vector2Int _coords, bool _isWater, bool _hasFood, bool _isTraversable)
@@ -334,6 +344,22 @@ public class Partition
     public void SetHeight(float _height)
     {
         height = _height;
+    }
+    public void ChangeDangerSourceCount(int change)
+    {
+        dangerSources += change;
+        dangerSources = dangerSources < 0 ? 0 : dangerSources;
+    }
+    public void ChangePredatorCount(int change)
+    {
+        predatorCount += change;
+        predatorCount = predatorCount < 0 ? 0 : predatorCount;
+    }
+    public float GetDangerValue(bool isPrey)
+    {
+        float dangerValue = dangerSources;
+        dangerValue += isPrey ? predatorCount : 0;
+        return dangerValue;
     }
     #endregion
 }

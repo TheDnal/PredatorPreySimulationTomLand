@@ -177,8 +177,9 @@ public class GOPAgent : MonoBehaviour
             if(reproduction >= 0){reproduction -= reproductionDecrease * Time.deltaTime;}
             else{reproduction = 0;}
         }
-
-        if(danger <= 1){/*TODO*/}
+        
+        danger = sensorySystem.GetSensedDanger();
+        if(danger <= 1){}
         else{danger =1;}
     }
     //Method that returns the best possible action
