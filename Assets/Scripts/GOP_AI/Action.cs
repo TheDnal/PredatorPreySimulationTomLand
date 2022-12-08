@@ -15,7 +15,7 @@ public class Action : MonoBehaviour
 
     //Inherited Fields
     #region Fields
-    protected GOPAgent agent;
+    protected NewPreyAgent agent;
     public string actionName;
     protected bool actionRunning = false;
     #endregion
@@ -23,7 +23,7 @@ public class Action : MonoBehaviour
 
     //Inherited Methods
     #region Generic Methods 
-    public virtual bool isActionPossible(GOPAgent _agent){return false;}
+    public virtual bool isActionPossible(NewPreyAgent _agent){return false;}
     public virtual float ActionScore(){return 0;}
     public virtual void PerformAction(){}
     public virtual void UpdateAction(){}

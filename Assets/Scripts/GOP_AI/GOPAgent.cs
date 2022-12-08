@@ -187,26 +187,20 @@ public class GOPAgent : MonoBehaviour
     {
         float bestScore = float.MinValue;
         Action bestAction = actions[0];
-        foreach(Action _action in actions)
-        {
-            if(_action.isActionPossible(this))
-            {
-                float actionScore = _action.ActionScore();
-                if(bestScore < actionScore)
-                {
-                    bestScore = actionScore;
-                    bestAction = _action;
-                }
-            }
-        }
+        // foreach(Action _action in actions)
+        // {
+        //     if(_action.isActionPossible(this))
+        //     {
+        //         float actionScore = _action.ActionScore();
+        //         if(bestScore < actionScore)
+        //         {
+        //             bestScore = actionScore;
+        //             bestAction = _action;
+        //         }
+        //     }
+        // }
         return bestAction;
     }
-    protected bool requiresPathfinding()
-    {
-        return false;
-    }
-    protected Vector3 currPos, destinationPos;
-    protected List<Partition> cachedPartitions;
     #endregion
     #region Getters
     public float GetTiredness(){return tiredness;}

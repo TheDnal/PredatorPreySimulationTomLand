@@ -17,7 +17,7 @@ public class FleeAction : Action
     private bool active = false;
     private float timer = 0;
     private Vector3 velocity;
-    public override bool isActionPossible(GOPAgent _agent)
+    public override bool isActionPossible(NewPreyAgent _agent)
     {
         actionName = "Flee";
         agent = _agent;
@@ -33,7 +33,7 @@ public class FleeAction : Action
         active = true;
         timer = 0;
         //Getting the most dangerous partition
-        List<Partition> visiblePartitions = agent.sensorySystem.GetVisionCone();
+        List<Partition> visiblePartitions = agent.GetSensorySystem().GetVisionCone();
         Partition mostDangerous = null;
         float maxDanger = 0;
         foreach(Partition partition in visiblePartitions)
@@ -63,7 +63,7 @@ public class FleeAction : Action
         velocity = transform.position - fearCentre;
         velocity.y = 0;
         velocity.Normalize();
-        agent.setVelocity(velocity);
+        agent.SetVelocity(velocity);
         timer+= Time.deltaTime;
         if(timer > 2)
         {

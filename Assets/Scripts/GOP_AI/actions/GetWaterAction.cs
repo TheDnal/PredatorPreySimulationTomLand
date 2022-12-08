@@ -28,12 +28,12 @@ public class GetWaterAction : Action
     private float timer = 0;
     #endregion
     #region Inherrited methods
-    public override bool isActionPossible(GOPAgent _agent)
+    public override bool isActionPossible(NewPreyAgent _agent)
     {
         actionName = "GetWater";
         nearestWaterSource = null;
         agent = _agent;
-        List<Partition> visiblePartitions = agent.sensorySystem.GetVisionCone();
+        List<Partition> visiblePartitions = agent.GetSensorySystem().GetVisionCone();
         float distance = 0;
         float closest = float.MaxValue;
         foreach(Partition partition in visiblePartitions)
@@ -62,12 +62,12 @@ public class GetWaterAction : Action
     public override void PerformAction()
     {
         timer = 0;
-        agent.setVelocity(Vector3.zero);
+        agent.SetVelocity(Vector3.zero);
         agent.SetPerformingAction(true);
         targetWaypoint = new Vector2Int(-1,-1);
-        startPosition = agent.getCurrPartition();
+        startPosition = agent.GetCurrentPartition();
         //Check if current partition has water
-        Vector2Int pos = agent.getCurrPartition();
+        Vector2Int pos = agent.GetCurrentPartition();
         Partition currPartition = PartitionSystem.instance.partitions[pos.x,pos.y];
         if(currPartition.hasDrinkbleWater())
         {
@@ -76,7 +76,7 @@ public class GetWaterAction : Action
         }
         
         //Check if pathfinding is necessary
-        if(agent.getCurrPartition() == nearestWaterSource.coords)
+        if(agent.GetCurrentPartition() == nearestWaterSource.coords)
         {
             //Move directly to water front
             currentStage = ACTION_STAGE.GetToWaterSource;
@@ -84,7 +84,7 @@ public class GetWaterAction : Action
         else
         {
             //Get path
-            DijkstraPath = agent.pathfindingSystem.GetPathToPartition(nearestWaterSource.coords, 3);
+            DijkstraPath = agent.GetPathfindingSystem().GetPathToPartition(nearestWaterSource.coords, 3);
             //Move along path
             currentStage = ACTION_STAGE.followPath;
         }
@@ -135,7 +135,7 @@ public class GetWaterAction : Action
             Vector3 velocity = targetPosition - transform.position;
             velocity.y = 0;
             velocity.Normalize();
-            agent.setVelocity(velocity);
+            agent.SetVelocity(velocity);
         }
 
         //If they have, move onto the next waypoint
@@ -172,12 +172,12 @@ public class GetWaterAction : Action
             Vector3 velocity = targetPosition - transform.position;
             velocity.y = 0;
             velocity.Normalize();
-            agent.setVelocity(velocity);
+            agent.SetVelocity(velocity);
         }
         //Otherwise, drink
         else
         {
-            agent.setVelocity(Vector3.zero);
+            agent.SetVelocity(Vector3.zero);
             currentStage = ACTION_STAGE.DrinkWater;
         }
     }   

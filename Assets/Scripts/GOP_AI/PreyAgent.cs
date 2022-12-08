@@ -7,7 +7,6 @@ public class PreyAgent : GOPAgent
     //GOPAgent that is a herbavore and avoids predators
 
     private PartitionSystem pSystem;
-    private List<Partition> adjacentPartitions = new List<Partition>();
     private bool initialised = false;
     private Action bestAction;
     void Start()
@@ -75,7 +74,6 @@ public class PreyAgent : GOPAgent
         {
             pSystem.RemoveGameObjectFromPartition(this.gameObject, oldPartitionPos, PartitionSystem.ObjectType.agent);
             pSystem.AddGameObjectToPartition(this.gameObject, PartitionSystem.ObjectType.agent);
-            adjacentPartitions = pSystem.GetPartitionsInRadius(transform.position, 2);
         }
         transform.LookAt(transform.position + velocity);
         rb.velocity = velocity;

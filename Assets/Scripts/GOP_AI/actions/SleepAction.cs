@@ -15,7 +15,7 @@ public class SleepAction : Action
     private bool active = false;
     #endregion
     #region Inherrited methods
-    public override bool isActionPossible(GOPAgent _agent)
+    public override bool isActionPossible(NewPreyAgent _agent)
     {
         actionName = "Sleep";
         agent = _agent;
@@ -30,7 +30,7 @@ public class SleepAction : Action
         timer = 0;
         agent.SetPerformingAction(true);
         agent.SetSleeping(true);
-        agent.setVelocity(Vector3.zero);
+        agent.SetVelocity(Vector3.zero);
         active = true;
     }
     public override void UpdateAction()

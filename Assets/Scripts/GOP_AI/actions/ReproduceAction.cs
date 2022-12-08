@@ -17,17 +17,17 @@ public class ReproduceAction : Action
     private float birthInterval = 1;
     private int maxChildCount = 3;
     private int childCount = 0;
-    public override bool isActionPossible(GOPAgent _agent)
+    public override bool isActionPossible(NewPreyAgent _agent)
     {
         actionName = "Reproduce";
         agent = _agent;
         
-        return agent.pregnancy >= 1 ? true : false;
+        return agent.GetPregnancy() >= 1 ? true : false;
     }
 
     public override float ActionScore()
     {
-        return agent.pregnancy >= 1 ? 999 : 0;
+        return agent.GetPregnancy() >= 1 ? 999 : 0;
     }
 
     public override void PerformAction()
@@ -35,7 +35,6 @@ public class ReproduceAction : Action
         timer = 0;
         childCount = 0;
         agent.SetPerformingAction(true);
-        agent.SetReproduction(true);
         StartCoroutine(i_Reproduce());
     }
     public override void UpdateAction()
@@ -74,7 +73,6 @@ public class ReproduceAction : Action
     private IEnumerator i_Reproduce()
     {
         agent.SetPerformingAction(true);
-        agent.SetReproduction(true);
         for(int i =0; i < 3; i++)
         {
             yield return new WaitForSeconds(1f);
@@ -93,13 +91,9 @@ public class ReproduceAction : Action
             childAgent.transform.parent = EntitySpawner.instance.transform;
             childAgent.GetComponent<GOPAgent>().SetGender(gender);
             childAgent.GetComponent<MeshRenderer>().material = mat;
-            agent.offspring++;
             EntitySpawner.instance.currentPopulation++;
             EntitySpawner.instance.AddEntity(childAgent.gameObject);
         }
-        agent.pregnant = false;
-        agent.validFemale = true;
-        agent.SetReproduction(false);
         agent.SetPerformingAction(false);
     }
 }

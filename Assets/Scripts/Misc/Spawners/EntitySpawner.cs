@@ -54,11 +54,9 @@ public class EntitySpawner : MonoBehaviour
                 genderMat = FemaleMat;
             }
             newEntity.GetComponent<MeshRenderer>().material = genderMat;
-            newEntity.GetComponent<GOPAgent>().SetGender(gender);
+            newEntity.GetComponent<NewPreyAgent>().Initialise(gender, GeneticsSystem.GetStartingPreyGenome());
 
             //Misc
-            Genome newGenome = GeneticsSystem.GetStartingPreyGenome();
-            newEntity.GetComponent<GOPAgent>().SetGenome(newGenome);
             newEntity.transform.parent = this.transform;
             entities.Add(newEntity);
             spawnZones.Remove(spawnZones[index]);

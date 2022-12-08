@@ -28,14 +28,14 @@ public class GetFoodAction : Action
     private Vector2Int startPosition;
     #endregion
     #region Inherrited Methods
-    public override bool isActionPossible(GOPAgent _agent)
+    public override bool isActionPossible(NewPreyAgent _agent)
     {
         agent = _agent;
         actionName = "GetFood";
         //Get all partitions that the agent is aware of
         List<Partition> nearbyPartitions = new List<Partition>();
-        nearbyPartitions.AddRange(agent.sensorySystem.GetVisionCone());
-        nearbyPartitions.AddRange(agent.sensorySystem.GetSmell());
+        nearbyPartitions.AddRange(agent.GetSensorySystem().GetVisionCone());
+        nearbyPartitions.AddRange(agent.GetSensorySystem().GetSmell());
 
         //Iterate over all of them to look for food, and get the closest one if it does
         nearestFoodPartition = null;
@@ -62,19 +62,19 @@ public class GetFoodAction : Action
         //Food insistence = agentHunger^2 - distance
         //agentHunger is squared to make high insistence values much stronger
         float distance = Vector3.Distance(transform.position, nearestFoodPartition.worldPosition);
-        return (agent.hunger * agent.hunger *100) - distance;
+        return (agent.GetHunger() * agent.GetHunger() *100) - distance;
     }
     public override void PerformAction()
     {
         timer = 0;
-        startPosition = agent.getCurrPartition();
-        agent.setVelocity(Vector3.zero);
+        startPosition = agent.GetCurrentPartition();
+        agent.SetVelocity(Vector3.zero);
         agent.SetPerformingAction(true);
         nearestFoodObject = null;
         currentStage = Stage.inactive;
         targetWaypoint = new Vector2Int(-1,-1);
         //Check if the agent needs to pathfind to the food or not
-        if(agent.getCurrPartition() == nearestFoodPartition.coords)
+        if(agent.GetCurrentPartition() == nearestFoodPartition.coords)
         {
             //Move directly towards the food
             currentStage = Stage.goToFood;
@@ -82,7 +82,7 @@ public class GetFoodAction : Action
         else
         {
             //Get Path
-            DijkstraPath = agent.pathfindingSystem.GetPathToPartition(nearestFoodPartition.coords,3);
+            DijkstraPath = agent.GetPathfindingSystem().GetPathToPartition(nearestFoodPartition.coords,3);
             //Move along path
             currentStage = Stage.followPath;
         }
@@ -139,7 +139,7 @@ public class GetFoodAction : Action
             Vector3 velocity = targetPosition - transform.position;
             velocity.y = 0;
             velocity.Normalize();
-            agent.setVelocity(velocity);
+            agent.SetVelocity(velocity);
         }
 
         //if they have, move onto the next waypoint
@@ -176,12 +176,12 @@ public class GetFoodAction : Action
             Vector3 velocity = nearestFoodObject.transform.position - transform.position;
             velocity.y = 0;
             velocity.Normalize();
-            agent.setVelocity(velocity);
+            agent.SetVelocity(velocity);
         }
         //Continue until reaching it
         else
         {
-            agent.setVelocity(Vector3.zero);
+            agent.SetVelocity(Vector3.zero);
             currentStage = Stage.eatFood;
         }
     }

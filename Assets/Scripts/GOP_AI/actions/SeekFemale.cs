@@ -15,12 +15,12 @@ public class SeekFemale : Action
 //            ▀                    
 
     private GameObject nearestFemale;
-    public override bool isActionPossible(GOPAgent _agent)
+    public override bool isActionPossible(NewPreyAgent _agent)
     {
         actionRunning = false;
         actionName = "Mating";
         agent = _agent;
-        List<Partition> visiblePartitions = agent.sensorySystem.GetVisionCone();
+        List<Partition> visiblePartitions = agent.GetSensorySystem().GetVisionCone();
         bool canSeeFemale = false;
         foreach(Partition p in visiblePartitions)
         {
@@ -45,7 +45,7 @@ public class SeekFemale : Action
         {
             return 0;
         }
-        return agent.GetReproduction() > 0.6 ? agent.GetReproduction() * 150 : 0;
+        return agent.GetReproductiveUrge() > 0.6 ? agent.GetReproductiveUrge() * 150 : 0;
     }
     public override void PerformAction()
     {
@@ -82,7 +82,7 @@ public class SeekFemale : Action
     {
         if(nearestFemale != null && nearestFemale.GetComponent<GOPAgent>().validFemale)
         {
-            agent.ResetReproductiveUrge();
+            agent.ResetReproduction();
             nearestFemale.GetComponent<GOPAgent>().Mate();
         }
     }
