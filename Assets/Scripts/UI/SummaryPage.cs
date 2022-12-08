@@ -11,45 +11,37 @@ public class SummaryPage : InspectorPage
     private float _age, offspringCount;
     private bool followAgent = false;
     public GameObject mainCam;
+    private GameObject selectedGameObject;
     public override void InitialisePage(EntityInspector _inspector)
     {
         base.InitialisePage(_inspector);
-        if(inspector.currentEntity == null)
+        if(Agent.selectedAgent == null)
         {
             return;
         }
-        currentAgent             = inspector.currentEntity.GetComponent<GOPAgent>();
-        agentType.text           = "Agent type: \n" + currentAgent.agentType;
+         agentType.text           = "Agent type: \n" + Agent.selectedAgent.GetAgentType();
         agentAge.text            = "Agent age:";
         agentOffspringCount.text = "no. Offspring:";
-        agentGender.text         = inspector.currentEntity.GetComponent<GOPAgent>().GetGender() == 0 ? "Gender : \n Male" : "Gender \n Female";
+        agentGender.text         = Agent.selectedAgent.GetGender() == 0 ? "Gender : \n Male" : "Gender \n Female";
     }
     public override void UpdatePage()
     {
-        if(currentAgent == null)
+        if(Agent.selectedAgent == null)
         {
             followAgent = false;
             return;
         }
-        _age                     = currentAgent.age;
-        offspringCount           = currentAgent.offspring;
+        selectedGameObject = Agent.selectedAgent.GetGameObject();
+        _age                     = Agent.selectedAgent.GetAge();
+        offspringCount           = Agent.selectedAgent.GetOffspringCount();
         agentAge.text            = "Agent age: \n" + _age;
         agentOffspringCount.text = "no. Offspring: \n" + offspringCount;
+
         if(followAgent)
         {
             Vector3 pos = mainCam.transform.position;
-            pos.x = currentAgent.transform.position.x;
-            pos.z = currentAgent.transform.position.z;
-            mainCam.transform.position = pos;
-        }
-    }
-    void Update()
-    {
-        if(followAgent)
-        {
-            Vector3 pos = mainCam.transform.position;
-            pos.x = currentAgent.transform.position.x;
-            pos.z = currentAgent.transform.position.z;
+            pos.x = selectedGameObject.transform.position.x;
+            pos.z = selectedGameObject.transform.position.z;
             mainCam.transform.position = pos;
         }
     }

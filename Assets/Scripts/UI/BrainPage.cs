@@ -21,7 +21,7 @@ public class BrainPage : InspectorPage
     }
     public override void UpdatePage()
     {
-        if(currentAgent == null)
+        if(Agent.selectedAgent == null)
         {
             return;
         }
@@ -31,7 +31,7 @@ public class BrainPage : InspectorPage
 
     private void UpdateActionImage()
     {
-        string action = currentAgent.GetCurrentAction();
+        string action = Agent.selectedAgent.GetAction();
         switch(action)
         {
             case "GetFood":
@@ -70,10 +70,10 @@ public class BrainPage : InspectorPage
     }
     private void UpdateGraphs()
     {
-        Hunger.fillAmount           = currentAgent.GetHunger();
-        Thirst.fillAmount           = currentAgent.GetThirst();
-        Tiredness.fillAmount        = currentAgent.GetTiredness();
-        ReproductiveUrge.fillAmount = currentAgent.GetReproduction();
-        Danger.fillAmount           = currentAgent.GetDanger();
+        Hunger.fillAmount           = Agent.selectedAgent.GetHunger();
+        Thirst.fillAmount           = Agent.selectedAgent.GetThirst();
+        Tiredness.fillAmount        = Agent.selectedAgent.GetTiredness();
+        ReproductiveUrge.fillAmount = Agent.selectedAgent.GetReproductiveUrge();
+        Danger.fillAmount           = Agent.selectedAgent.GetDanger();
     }
 }

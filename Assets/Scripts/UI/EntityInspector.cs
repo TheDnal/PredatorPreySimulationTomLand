@@ -23,8 +23,6 @@ public class EntityInspector : MonoBehaviour
     public float transitionSpeed = 0;
     public float openButtonPos,closedButtonPos;
     private float targetXPos;
-    public GameObject currentEntity;
-    private PreyAgent currSelectedPrey;
     private InspectorPage currentPage;
     void Awake()
     {
@@ -39,24 +37,9 @@ public class EntityInspector : MonoBehaviour
         targetXPos = closedButtonPos;
         Buttons.SetActive(true);
     }
-    public void SetSelectedEntity(GameObject entity, EntityType _entityType)
-    {
-        entityType = _entityType;
-        currentEntity = entity;
-        EntityName.text = currentEntity.name;
-        currSelectedPrey = entity.GetComponent<PreyAgent>();
-        if(currentPage != null)
-        {
-            currentPage.InitialisePage(this);
-        }
-    }
-    public GameObject GetSelectedEntity()
-    {
-        return currentEntity;
-    }
     void Update()
     {
-        if(currentEntity != null && currentPage != null)
+        if(Agent.selectedAgent != null && currentPage != null)
         {   
             currentPage.UpdatePage();
         }

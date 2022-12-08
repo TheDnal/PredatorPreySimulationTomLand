@@ -11,13 +11,14 @@ public interface Agent
         A) The inspector can get info regardless of ai solution (fsm, behaviour tree, utility, goap etc)
         B) Promotes abstraction, which makes code more secure and easier to follow
     */
-    #region Properties
+    #region Fields
     public enum AgentType{PREY,PREDATOR};
     public static Agent selectedAgent;
     #endregion
     #region Getters
     ///<summary> Gets a string of the current agent action </summary>
     public string GetAction();
+    public AgentType GetAgentType();
     public Genome GetGenome();
     public SVision GetSensorySystem();
     public float GetHunger();
@@ -29,5 +30,6 @@ public interface Agent
     public int GetOffspringCount();
     ///<summary> 0 = male, 1 = female. </summary>
     public int GetGender();
+    public GameObject GetGameObject();
     #endregion
 }

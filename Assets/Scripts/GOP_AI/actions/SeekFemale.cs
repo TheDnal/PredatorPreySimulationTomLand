@@ -15,7 +15,7 @@ public class SeekFemale : Action
 //            ▀                    
 
     private GameObject nearestFemale;
-    public override bool isActionPossible(NewPreyAgent _agent)
+    public override bool isActionPossible(PreyAgent _agent)
     {
         actionRunning = false;
         actionName = "Mating";

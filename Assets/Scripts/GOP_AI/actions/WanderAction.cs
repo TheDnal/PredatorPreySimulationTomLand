@@ -29,7 +29,7 @@ public class WanderAction : Action
     private Vector3 previousPosition;
     #endregion
     #region Inherrited methods
-    public override bool isActionPossible(NewPreyAgent _agent){agent = _agent; actionName = "Wander"; return true;}
+    public override bool isActionPossible(PreyAgent _agent){agent = _agent; actionName = "Wander"; return true;}
     public override float ActionScore()
     {
         return 20;

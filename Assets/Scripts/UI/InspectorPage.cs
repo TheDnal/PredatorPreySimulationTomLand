@@ -5,7 +5,6 @@ using UnityEngine;
 public class InspectorPage : MonoBehaviour
 {
     protected EntityInspector inspector;    
-    protected GOPAgent currentAgent;
     void Awake()
     {
         gameObject.SetActive(false);
@@ -14,11 +13,6 @@ public class InspectorPage : MonoBehaviour
     {
         gameObject.SetActive(true);
         inspector = _Inspector; 
-        if(_Inspector.currentEntity == null)
-        {
-            return;
-        }
-        currentAgent = _Inspector.currentEntity.GetComponent<GOPAgent>();
     } 
     public virtual void UpdatePage(){}
     public virtual void ClosePage()

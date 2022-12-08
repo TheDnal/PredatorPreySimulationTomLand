@@ -17,7 +17,7 @@ public class FleeAction : Action
     private bool active = false;
     private float timer = 0;
     private Vector3 velocity;
-    public override bool isActionPossible(NewPreyAgent _agent)
+    public override bool isActionPossible(PreyAgent _agent)
     {
         actionName = "Flee";
         agent = _agent;

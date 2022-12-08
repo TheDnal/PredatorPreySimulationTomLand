@@ -28,7 +28,7 @@ public class GetFoodAction : Action
     private Vector2Int startPosition;
     #endregion
     #region Inherrited Methods
-    public override bool isActionPossible(NewPreyAgent _agent)
+    public override bool isActionPossible(PreyAgent _agent)
     {
         agent = _agent;
         actionName = "GetFood";

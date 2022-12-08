@@ -13,11 +13,7 @@ public class GeneticsPage : InspectorPage
     public override void InitialisePage(EntityInspector _Inspector)
     {
         base.InitialisePage(_Inspector);
-        if(_Inspector.currentEntity == null)
-        {
-            return;
-        }
-        genome = _Inspector.currentEntity.GetComponent<GOPAgent>().getGenome();
+        genome = Agent.selectedAgent.GetGenome();
         RefreshPage();
     }
     public void RefreshPage()

@@ -17,7 +17,7 @@ public class ReproduceAction : Action
     private float birthInterval = 1;
     private int maxChildCount = 3;
     private int childCount = 0;
-    public override bool isActionPossible(NewPreyAgent _agent)
+    public override bool isActionPossible(PreyAgent _agent)
     {
         actionName = "Reproduce";
         agent = _agent;

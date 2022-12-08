@@ -18,6 +18,10 @@ public class CamController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if(Agent.selectedAgent != null)
+        {       
+            currentAgent = Agent.selectedAgent.GetGameObject();
+        }
         if(followAgent && currentAgent != null)
         {
             Vector3 pos = transform.position;
@@ -25,11 +29,11 @@ public class CamController : MonoBehaviour
             pos.z = currentAgent.transform.position.z;
             transform.position = pos;
         }
-        if(cullPOV)
+        if(cullPOV && currentAgent != null)
         {
             List<Partition> visiblePartitions = new List<Partition>();
-            visiblePartitions.AddRange(currentAgent.GetComponent<GOPAgent>().sensorySystem.GetVisionCone());
-            visiblePartitions.AddRange(currentAgent.GetComponent<GOPAgent>().sensorySystem.GetSmell());
+            visiblePartitions.AddRange(Agent.selectedAgent.GetSensorySystem().GetVisionCone());
+            visiblePartitions.AddRange(Agent.selectedAgent.GetSensorySystem().GetSmell());
             MapGenerator.instance.UpdateLayeredTiles(visiblePartitions);
             CullPartitions(visiblePartitions);
         }
@@ -67,7 +71,7 @@ public class CamController : MonoBehaviour
     }
     public void ToggleFollowingAgent()
     {
-        currentAgent = EntityInspector.instance.GetSelectedEntity();
+        currentAgent = Agent.selectedAgent.GetGameObject();
         if(currentAgent == null)
         {
             return;
@@ -77,7 +81,7 @@ public class CamController : MonoBehaviour
     public void ToggleCullPOV()
     {
         GameObject prevAgent = currentAgent;
-        currentAgent = EntityInspector.instance.GetSelectedEntity();
+        currentAgent = Agent.selectedAgent.GetGameObject();
         if(currentAgent == null)
         {
             return;

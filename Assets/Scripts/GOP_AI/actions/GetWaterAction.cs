@@ -28,7 +28,7 @@ public class GetWaterAction : Action
     private float timer = 0;
     #endregion
     #region Inherrited methods
-    public override bool isActionPossible(NewPreyAgent _agent)
+    public override bool isActionPossible(PreyAgent _agent)
     {
         actionName = "GetWater";
         nearestWaterSource = null;

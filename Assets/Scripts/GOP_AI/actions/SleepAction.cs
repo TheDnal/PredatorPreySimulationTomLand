@@ -15,7 +15,7 @@ public class SleepAction : Action
     private bool active = false;
     #endregion
     #region Inherrited methods
-    public override bool isActionPossible(NewPreyAgent _agent)
+    public override bool isActionPossible(PreyAgent _agent)
     {
         actionName = "Sleep";
         agent = _agent;

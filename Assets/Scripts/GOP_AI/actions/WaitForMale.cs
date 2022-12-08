@@ -14,7 +14,7 @@ public class WaitForMale : Action
 //  ▀██████▀  █████▄▄██ ████████▀  
 //            ▀                    
 
-    public override bool isActionPossible(NewPreyAgent _agent)
+    public override bool isActionPossible(PreyAgent _agent)
     {
         actionRunning = false;
         actionName = "Mating";

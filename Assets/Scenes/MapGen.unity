@@ -1663,7 +1663,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   plantPrefab: {fileID: 8051440670488318334, guid: 448c5a0ac990c0a4591673943254e2ba, type: 3}
-  maxPlantCount: 50
+  maxPlantCount: 10
 --- !u!4 &265763117
 Transform:
   m_ObjectHideFlags: 0
@@ -4554,14 +4554,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 41186aa5f0b048343a1fdf5c13ce47db, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mapWidth: 9
-  mapHeight: 9
+  mapWidth: 6
+  mapHeight: 6
   noiseScale: 12
   octaves: 2
   persistance: 1
   lacunarity: 2
-  seed: 0
-  offset: {x: 2.17, y: 0.22}
+  seed: 2
+  offset: {x: 0, y: 0}
   autoUpdate: 1
   WorldSeaLevel: 0.5
   seaLevelOffset: 0
@@ -6816,7 +6816,6 @@ MonoBehaviour:
   transitionSpeed: 5
   openButtonPos: 290
   closedButtonPos: 87.5
-  currentEntity: {fileID: 0}
 --- !u!1 &1354801268
 GameObject:
   m_ObjectHideFlags: 0
@@ -9678,7 +9677,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   generator: {fileID: 1061143969}
-  startingPopulation: 10
+  startingPopulation: 1
   currentPopulation: 0
   entityPrefab: {fileID: 7191839513551554315, guid: b6ac8d364eb34684c9fe5e9606cdb669, type: 3}
   MaleMat: {fileID: 2100000, guid: 6fe87d30324297f4cace41de8295a083, type: 2}

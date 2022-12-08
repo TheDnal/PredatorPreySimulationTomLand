@@ -54,7 +54,7 @@ public class EntitySpawner : MonoBehaviour
                 genderMat = FemaleMat;
             }
             newEntity.GetComponent<MeshRenderer>().material = genderMat;
-            newEntity.GetComponent<NewPreyAgent>().Initialise(gender, GeneticsSystem.GetStartingPreyGenome());
+            newEntity.GetComponent<PreyAgent>().Initialise(gender, GeneticsSystem.GetStartingPreyGenome());
 
             //Misc
             newEntity.transform.parent = this.transform;

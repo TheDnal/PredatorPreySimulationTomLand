@@ -17,8 +17,14 @@ public class SensoryPage : InspectorPage
     public override void UpdatePage()
     {
         base.UpdatePage();
-        VisionCone = inspector.currentEntity.GetComponent<SVision>().GetVisionCone();
-        smellPartitions = inspector.currentEntity.GetComponent<SVision>().GetSmell();
+        if(Agent.selectedAgent == null)
+        {
+            VisionCone = null;
+            smellPartitions = null;
+            return;
+        }
+        VisionCone = Agent.selectedAgent.GetSensorySystem().GetVisionCone();
+        smellPartitions = Agent.selectedAgent.GetSensorySystem().GetSmell();
     }
     public void SetCurrentSense(Sense currentSense)
     {
