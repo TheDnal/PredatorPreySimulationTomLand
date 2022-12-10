@@ -6,11 +6,11 @@ public class Action : MonoBehaviour
 {
     /*
       Template class to be used to construct 
-      actions for GOP (Goal oriented planner)
+      actions for GOB (Goal oriented behavior)
       Actions represent the different behaviours the 
-      GOP-AI can perform. Actions have a score, with
+      GOB-AI can perform. Actions have a score, with
       the action with the hightest score being
-      performed by the GOP-AI. 
+      performed by the GOB-AI. 
     */
 
     //Inherited Fields

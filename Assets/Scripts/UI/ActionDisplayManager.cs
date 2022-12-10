@@ -6,7 +6,7 @@ public class ActionDisplayManager : MonoBehaviour
 {
     public Sprite Eat,Drink,Wander,Reproduce,Sleep , NULL;
     public TMPro.TextMeshProUGUI text;
-    public enum Actions{EAT,DRINK,WANDER,REPRODUCE, SLEEP,NULL};
+    public enum Actions{EAT,DRINK,WANDER,REPRODUCE, SLEEP, FINDMATE ,NULL};
     public void SetSprite(Actions action)
     {
         Image image = this.GetComponent<Image>();
@@ -32,6 +32,7 @@ public class ActionDisplayManager : MonoBehaviour
                 image.sprite = Sleep;
                 text.text = "Sleeping";
                 break;
+
             default:
                 image.sprite = NULL;
                 text.text = "Null";

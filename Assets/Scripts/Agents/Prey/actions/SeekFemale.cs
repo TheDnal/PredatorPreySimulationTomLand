@@ -17,27 +17,28 @@ public class SeekFemale : Action
     private GameObject nearestFemale;
     public override bool isActionPossible(PreyAgent _agent)
     {
-        actionRunning = false;
-        actionName = "Mating";
-        agent = _agent;
-        List<Partition> visiblePartitions = agent.GetSensorySystem().GetVisionCone();
-        bool canSeeFemale = false;
-        foreach(Partition p in visiblePartitions)
-        {
-            if(p.agents.Count > 0)
-            {
-                foreach(GameObject agent in p.agents)
-                {
-                    if(agent.GetComponent<GOPAgent>().GetGender() == 1 && agent.GetComponent<GOPAgent>().validFemale)
-                    {
-                        nearestFemale = agent;
-                        canSeeFemale = true;
-                        break;
-                    }
-                }
-            }
-        }
-        return canSeeFemale;
+        // actionRunning = false;
+        // actionName = "Mating";
+        // agent = _agent;
+        // List<Partition> visiblePartitions = agent.GetSensorySystem().GetVisionCone();
+        // bool canSeeFemale = false;
+        // foreach(Partition p in visiblePartitions)
+        // {
+        //     if(p.agents.Count > 0)
+        //     {
+        //         foreach(GameObject agent in p.agents)
+        //         {
+        //             if(agent.GetComponent<GOPAgent>().GetGender() == 1 && agent.GetComponent<GOPAgent>().validFemale)
+        //             {
+        //                 nearestFemale = agent;
+        //                 canSeeFemale = true;
+        //                 break;
+        //             }
+        //         }
+        //     }
+        // }
+        // return canSeeFemale;
+        return false;
     }
     public override float ActionScore()
     {
@@ -80,10 +81,10 @@ public class SeekFemale : Action
     // }
     public void MateWithFemale()
     {
-        if(nearestFemale != null && nearestFemale.GetComponent<GOPAgent>().validFemale)
-        {
-            agent.ResetReproduction();
-            nearestFemale.GetComponent<GOPAgent>().Mate();
-        }
+        // if(nearestFemale != null && nearestFemale.GetComponent<GOPAgent>().validFemale)
+        // {
+        //     agent.ResetReproduction();
+        //     nearestFemale.GetComponent<GOPAgent>().Mate();
+        // }
     }
 }

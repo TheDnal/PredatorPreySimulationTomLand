@@ -59,10 +59,10 @@ public class ReproduceAction : Action
             {
                 mat = EntitySpawner.instance.FemaleMat;
             }
-            GameObject prefab = EntitySpawner.instance.entityPrefab;
+            GameObject prefab = EntitySpawner.instance.preyPrefab;
             GameObject childAgent = Instantiate(prefab, this.transform.position, Quaternion.identity);
             childAgent.transform.parent = EntitySpawner.instance.transform;
-            childAgent.GetComponent<GOPAgent>().SetGender(gender);
+            //childAgent.GetComponent<GOPAgent>().SetGender(gender);
             childAgent.GetComponent<MeshRenderer>().material = mat;
         }
     }
@@ -86,10 +86,10 @@ public class ReproduceAction : Action
             {
                 mat = EntitySpawner.instance.FemaleMat;
             }
-            GameObject prefab = EntitySpawner.instance.entityPrefab;
+            GameObject prefab = EntitySpawner.instance.preyPrefab;
             GameObject childAgent = Instantiate(prefab, this.transform.position, Quaternion.identity);
             childAgent.transform.parent = EntitySpawner.instance.transform;
-            childAgent.GetComponent<GOPAgent>().SetGender(gender);
+           // childAgent.GetComponent<GOPAgent>().SetGender(gender);
             childAgent.GetComponent<MeshRenderer>().material = mat;
             EntitySpawner.instance.currentPopulation++;
             EntitySpawner.instance.AddEntity(childAgent.gameObject);

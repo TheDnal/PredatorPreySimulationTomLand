@@ -23,7 +23,7 @@ public class PreyAgent : MonoBehaviour, Agent
     private float age = 0;
     #endregion
     #region Discontent fields
-    [SerializeField] private float hunger, 
+    private float hunger, 
                   thirst, 
                   tiredness, 
                   reproductiveUrge, 
@@ -47,7 +47,7 @@ public class PreyAgent : MonoBehaviour, Agent
         rb = this.GetComponent<Rigidbody>();
         sensorySystem = this.GetComponent<SVision>();
         pSystem = PartitionSystem.instance;
-        pathfindingSystem.Initialise(this);
+        pathfindingSystem.Initialise(this.gameObject);
         UpdatePartitioning();
         initialised = true;
 
@@ -62,6 +62,8 @@ public class PreyAgent : MonoBehaviour, Agent
         actions.Add(flee);
         SleepAction sleep = this.gameObject.AddComponent<SleepAction>();
         actions.Add(sleep);
+        FindMateAction findMate = this.gameObject.AddComponent<FindMateAction>();
+        actions.Add(findMate);
     }
     public void Update()
     {
@@ -74,6 +76,7 @@ public class PreyAgent : MonoBehaviour, Agent
         //Update values
         UpdateDiscontent();
         UpdatePartitioning();
+        UpdateAge();
         UpdateMisc();
         //Get danger value
         danger = sensorySystem.GetSensedDanger();
@@ -85,6 +88,7 @@ public class PreyAgent : MonoBehaviour, Agent
         }
         //else find a new action
         bestAction = GetBestAction(actions);
+        currentActionName = bestAction.actionName;
         bestAction.PerformAction();
         performingAction = true;
     }
@@ -161,7 +165,7 @@ public class PreyAgent : MonoBehaviour, Agent
         }
         else if(actualAge < 18)
         {
-            transform.localScale = new Vector3(0.2f,0.4f,0.2f) * (actualAge * genome.size /18);
+            transform.localScale = new Vector3(0.2f,0.4f,0.2f) * (age * genome.size /18);
         }
         else
         {
@@ -187,12 +191,12 @@ public class PreyAgent : MonoBehaviour, Agent
     private void killAgent(string causeOfDeath = "")
     {
         string message = causeOfDeath == "" ? "agent died" : "agent died of " + causeOfDeath;
+        PartitionSystem.instance.RemoveGameObjectFromPartition(this.gameObject, currPartition, PartitionSystem.ObjectType.agent);
         Debug.Log(message);
         Destroy(this.gameObject);
     }
     private void OnMouseDown()
     {
-        Debug.Log("selected " + this.name);
         Agent.selectedAgent = this;
     }
     #endregion

@@ -6,8 +6,8 @@ public class EntitySpawner : MonoBehaviour
 {
     //AI Entity spawner Class. Gets a list of valid spawn points from the map generator and spawns AI on those spots
     public MapGenerator generator;
-    public int startingPopulation, currentPopulation;
-    public GameObject entityPrefab;
+    public int startingPreyPopulation, startingPredatorPopulation, currentPopulation;
+    public GameObject preyPrefab, predatorPrefab;
     public Material MaleMat,FemaleMat;
     public static EntitySpawner instance;
     private List<GameObject> entities = new List<GameObject>();
@@ -22,17 +22,18 @@ public class EntitySpawner : MonoBehaviour
     public void Initialise()
     {
         List<Vector3> validSpawns = PartitionSystem.instance.GetValidSpawnZones();
-        SpawnEntities(validSpawns);
+        SpawnPrey(validSpawns);
+        SpawnPredators(validSpawns);
     }
-    void SpawnEntities(List<Vector3> spawnZones)
+    void SpawnPrey(List<Vector3> spawnZones)
     {
-        for(int i = 0; i < startingPopulation; i++ )
+        for(int i = 0; i < startingPreyPopulation; i++ )
         {
             //Ran out of spawnzones
             if(spawnZones.Count == 0)
             {
                 Debug.Log("Error : Starting population exceeded valid map spawns.");
-                Debug.Log("Entities attemped to spawn : " + startingPopulation);
+                Debug.Log("Entities attemped to spawn : " + startingPreyPopulation);
                 Debug.Log("Entities successfully spawned : " + i);
                 break;
             }
@@ -40,21 +41,40 @@ public class EntitySpawner : MonoBehaviour
             int index = Random.Range(0, spawnZones.Count -1 );
             Vector3 spawnPos = spawnZones[index];
             spawnPos += Vector3.up * 0.75f;
-            GameObject newEntity = Instantiate(entityPrefab, spawnPos, Quaternion.identity);
+            GameObject newEntity = Instantiate(preyPrefab, spawnPos, Quaternion.identity);
 
             //Set gender
             int gender = Random.Range(0,2);
-            Material genderMat;
-            if(gender == 0)
-            {
-                genderMat = MaleMat;
-            }
-            else
-            {
-                genderMat = FemaleMat;
-            }
-            newEntity.GetComponent<MeshRenderer>().material = genderMat;
             newEntity.GetComponent<PreyAgent>().Initialise(gender, GeneticsSystem.GetStartingPreyGenome());
+
+            //Misc
+            newEntity.transform.parent = this.transform;
+            entities.Add(newEntity);
+            spawnZones.Remove(spawnZones[index]);
+            currentPopulation++;
+        }
+    }
+    void SpawnPredators(List<Vector3> spawnZones)
+    {
+        for(int i = 0; i < startingPredatorPopulation; i++ )
+        {
+            //Ran out of spawnzones
+            if(spawnZones.Count == 0)
+            {
+                Debug.Log("Error : Starting population exceeded valid map spawns.");
+                Debug.Log("Entities attemped to spawn : " + startingPredatorPopulation);
+                Debug.Log("Entities successfully spawned : " + i);
+                break;
+            }
+            //Spawn entity
+            int index = Random.Range(0, spawnZones.Count -1 );
+            Vector3 spawnPos = spawnZones[index];
+            spawnPos += Vector3.up * 0.75f;
+            GameObject newEntity = Instantiate(predatorPrefab, spawnPos, Quaternion.identity);
+
+            //Set gender
+            int gender = Random.Range(0,2);
+            newEntity.GetComponent<PredatorAgent>().Initialise(gender, GeneticsSystem.GetStartingPreyGenome());
 
             //Misc
             newEntity.transform.parent = this.transform;

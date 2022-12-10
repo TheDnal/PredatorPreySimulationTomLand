@@ -11,12 +11,12 @@ public class PathfindingSystem : MonoBehaviour
     Node startNode,endNode;
     Vector2Int gridCorner;
     private List<Vector2Int> partitionPath = new List<Vector2Int>();
-    private PreyAgent agent;
+    private GameObject agent;
     private List<Vector2Int> gizmoPath = new List<Vector2Int>();
     private Vector2Int endGizmo, startGizmo;
     #endregion
     #region Algorithm
-    public void Initialise(PreyAgent _agent)
+    public void Initialise(GameObject _agent)
     {
         agent = _agent;
     }
@@ -34,7 +34,7 @@ public class PathfindingSystem : MonoBehaviour
             Debug.Log("non traversable path");
             return null;
         }
-        startPos = agent.GetCurrentPartition();
+        startPos = PartitionSystem.instance.WorldToPartitionCoords(agent.transform.position);
         endPos = endPartition;
         GenerateNodeGrid(pathfindingRadius, endPos);
         partitionPath = DijkstraCompute();

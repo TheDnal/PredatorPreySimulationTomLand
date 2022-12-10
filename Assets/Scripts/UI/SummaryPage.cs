@@ -19,7 +19,7 @@ public class SummaryPage : InspectorPage
         {
             return;
         }
-         agentType.text           = "Agent type: \n" + Agent.selectedAgent.GetAgentType();
+        agentType.text           = "Agent type: \n" + Agent.selectedAgent.GetAgentType();
         agentAge.text            = "Agent age:";
         agentOffspringCount.text = "no. Offspring:";
         agentGender.text         = Agent.selectedAgent.GetGender() == 0 ? "Gender : \n Male" : "Gender \n Female";

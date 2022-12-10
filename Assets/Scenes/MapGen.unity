@@ -1205,6 +1205,7 @@ MonoBehaviour:
   Reproduce: {fileID: 21300000, guid: ca05b7c6d12017a4288a0391084cf235, type: 3}
   Sleep: {fileID: 21300000, guid: 9f7f61f7d1a778d419b51c2c7b330e9a, type: 3}
   Flee: {fileID: 21300000, guid: 8caedce6ab22d1544b3208298f7436f9, type: 3}
+  FindingMate: {fileID: 21300000, guid: 6dfaf5ceeac775e499a821ecbaa82d7b, type: 3}
   NULL: {fileID: 21300000, guid: aa9b53f747cdb5f439bcead676bfbcc9, type: 3}
   text: {fileID: 1911668608}
   Hunger: {fileID: 1173721656}
@@ -4554,13 +4555,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 41186aa5f0b048343a1fdf5c13ce47db, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mapWidth: 6
-  mapHeight: 6
+  mapWidth: 9
+  mapHeight: 9
   noiseScale: 12
   octaves: 2
   persistance: 1
   lacunarity: 2
-  seed: 2
+  seed: 1
   offset: {x: 0, y: 0}
   autoUpdate: 1
   WorldSeaLevel: 0.5
@@ -9677,9 +9678,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   generator: {fileID: 1061143969}
-  startingPopulation: 1
+  startingPreyPopulation: 0
+  startingPredatorPopulation: 1
   currentPopulation: 0
-  entityPrefab: {fileID: 7191839513551554315, guid: b6ac8d364eb34684c9fe5e9606cdb669, type: 3}
+  preyPrefab: {fileID: 7191839513551554315, guid: b6ac8d364eb34684c9fe5e9606cdb669, type: 3}
+  predatorPrefab: {fileID: 7436527199000002159, guid: 1091fd12e9d11794f822e07814d7538c, type: 3}
   MaleMat: {fileID: 2100000, guid: 6fe87d30324297f4cace41de8295a083, type: 2}
   FemaleMat: {fileID: 2100000, guid: 218c54f36220aca4187e603ac1fca000, type: 2}
 --- !u!4 &1703699936
