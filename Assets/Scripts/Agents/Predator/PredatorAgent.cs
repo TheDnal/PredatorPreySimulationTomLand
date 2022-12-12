@@ -76,13 +76,25 @@ public class PredatorAgent : MonoBehaviour, Agent
         sensorySystem = this.GetComponent<SVision>();
         pathfindingSystem = this.GetComponent<PathfindingSystem>();
         pathfindingSystem.Initialise(this.gameObject);
-        PartitionSystem.instance.AddGameObjectToPartition(this.gameObject, PartitionSystem.ObjectType.agent);
+        PartitionSystem.instance.AddGameObjectToPartition(this.gameObject, PartitionSystem.ObjectType.predator);
 
         //Set Advanced actions
         AdvWander wander = this.gameObject.AddComponent<AdvWander>();
         wander.Initialise(this);
         actions.Add(wander);
-        Debug.Log(actions.Count);
+
+        AdvFindWater water = this.gameObject.AddComponent<AdvFindWater>();
+        water.Initialise(this);
+        actions.Add(water);
+
+        AdvSleep sleep = this.gameObject.AddComponent<AdvSleep>();
+        sleep.Initialise(this);
+        actions.Add(sleep);
+
+        AdvHuntPrey hunt = this.gameObject.AddComponent<AdvHuntPrey>();
+        hunt.Initialise(this);
+        actions.Add(hunt);
+
     }
     private void Update()
     {
@@ -96,17 +108,52 @@ public class PredatorAgent : MonoBehaviour, Agent
         currentAction.UpdateAction();
         return;
       }
-      currentAction = actions[0];
+      PredatorDiscontentSnapshot snapshot = new PredatorDiscontentSnapshot(hunger,thirst,tiredness,reprodcutiveIncrease,danger,pregnancy);
+      currentAction = CalculateBestAction(snapshot);
+      currentActionName = currentAction.GetActionName();
       currentAction.PerformAction();
       performingAction = true;
     }
     private void UpdateDiscontents()
     {
+        float isSleepingModifier = isSleeping ? 0.25f : 1;
 
+        hunger    = IterateDiscontentValue(!isEating, hunger, hungerIncrease, hungerDecrease, isSleepingModifier);
+        if(hunger >= 1){KillAgent("starvation");}
+        thirst    = IterateDiscontentValue(!isDrinking, thirst, thirstIncrease, thirstDecrease, isSleepingModifier);
+        if(thirst >= 1){KillAgent("Dehydration");}
+
+        tiredness = IterateDiscontentValue(!isSleeping,tiredness, tirednessIncrease, tirednessDecrease);
+        if(tiredness >= 1){KillAgent("Exhaustion");}
+
+        if(age < 18)
+        {
+            reproductiveUrge = 0;
+            pregnancy = 0;
+            return;
+        }
+
+        //Adult only discontent values
+        if(gender == 1 && isPregnant){pregnancy = IterateDiscontentValue(true, pregnancy, pregnancyIncrease, 5);}
+        else{pregnancy = 0;}
+
+        if(!isPregnant){reproductiveUrge = IterateDiscontentValue(true, reproductiveUrge, reprodcutiveIncrease, 1);}
+        else{reproductiveUrge = 0;}
     }
-    private void IterateDiscontentValue(bool increasing, float _discontent, float increaseRate, float decreaseRate, float modifier = 1)
+    private float IterateDiscontentValue(bool increasing, float _discontent, float increaseRate, float decreaseRate, float modifier = 1)
     {
-
+        float value;
+        if(increasing)
+        { 
+            value = _discontent + increaseRate * Time.deltaTime * modifier;
+        }
+        else
+        {
+            value = _discontent + decreaseRate * Time.deltaTime * modifier;
+        }
+        if (value > 1){value = 1;}
+        else if(value < 0){value = 0;}
+        return value;
     }
     private void UpdateMisc()
     {
@@ -115,8 +162,8 @@ public class PredatorAgent : MonoBehaviour, Agent
       currPartition = PartitionSystem.instance.WorldToPartitionCoords(transform.position);
       if(oldPartition != currPartition)
       {
-        PartitionSystem.instance.RemoveGameObjectFromPartition(this.gameObject, oldPartition, PartitionSystem.ObjectType.agent);
-        PartitionSystem.instance.AddGameObjectToPartition(this.gameObject,PartitionSystem.ObjectType.agent);
+        PartitionSystem.instance.RemoveGameObjectFromPartition(this.gameObject, oldPartition, PartitionSystem.ObjectType.predator);
+        PartitionSystem.instance.AddGameObjectToPartition(this.gameObject,PartitionSystem.ObjectType.predator);
       }
       
       //Update velocity
@@ -128,18 +175,37 @@ public class PredatorAgent : MonoBehaviour, Agent
 
 
     }
-    private void CalculateBestAction()
+    private AdvancedAction CalculateBestAction(PredatorDiscontentSnapshot snapshot)
     {
-
+      float highscore = 0;
+      AdvancedAction bestAction = actions[0];
+      foreach(AdvancedAction action in actions)
+      {
+        if(action.isActionPossible(snapshot))
+        {
+          float score = action.ActionScore(snapshot);
+          if(score > highscore)
+          {
+            bestAction = action;
+            highscore = score;
+          }
+        }
+      }
+      return bestAction;
     }
     private void CalculateActionPlan()
     {
 
     }
+    public void Kill()
+    {
+      if(Agent.selectedAgent.GetGameObject() == this.gameObject){Agent.selectedAgent = null;}
+      KillAgent("");
+    }
     private void KillAgent(string killMessage)
     {
       if(killMessage != null){Debug.Log("Agent died from " + killMessage);}
-      PartitionSystem.instance.RemoveGameObjectFromPartition(this.gameObject, currPartition, PartitionSystem.ObjectType.agent);
+      PartitionSystem.instance.RemoveGameObjectFromPartition(this.gameObject, currPartition, PartitionSystem.ObjectType.predator);
       Destroy(this.gameObject);
     }
     private void OnMouseDown()
@@ -149,6 +215,12 @@ public class PredatorAgent : MonoBehaviour, Agent
     #endregion
     #region Getters
     public Vector3 GetVelocity(){return velocity;}
+    public Vector2Int GetCurrentPartition(){return currPartition;}
+    public PathfindingSystem GetPathfindingSystem(){return pathfindingSystem;}
+    public void SetEating(bool _isEating){isEating = _isEating;}
+    public void SetDrinking(bool _isDrinking){isDrinking = _isDrinking;}
+    public void SetSleeping(bool _isSleeping){isSleeping = _isSleeping;}
+    public void ResetReproductiveUrge(){reproductiveUrge = 0;}
     #endregion
     #region Setters
     public void SetVelocity(Vector3 _velocity){velocity = _velocity;}
@@ -156,7 +228,7 @@ public class PredatorAgent : MonoBehaviour, Agent
     #endregion
     //Fulfills the "Agent" interface, which allows inspector classes to monitor this agent.
     #region Interface Methods
-    public string GetAction(){return "";}
+    public string GetAction(){return currentActionName;}
     public Agent.AgentType GetAgentType(){return Agent.AgentType.PREDATOR;}
     public Genome GetGenome(){return GeneticsSystem.GetStartingPreyGenome();}
     public SVision GetSensorySystem(){return sensorySystem;}

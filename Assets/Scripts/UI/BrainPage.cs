@@ -6,7 +6,7 @@ public class BrainPage : InspectorPage
 {
     [Header("Action images")]
     public Image actionImage;
-    public Sprite Eat,Drink,Wander,Mating,Reproduce,Sleep, Flee, FindingMate, NULL;
+    public Sprite Eat,Drink,Wander,Mating,Reproduce,Sleep, Flee, FindingMate, Hunt, NULL;
     public TMPro.TextMeshProUGUI text;
     [Space(6),Header("Graph Images")]
     public Image Hunger;
@@ -65,6 +65,10 @@ public class BrainPage : InspectorPage
             case "FindMate":
                 actionImage.sprite = FindingMate;
                 text.text = "Finding Mate";
+                break;
+            case "Hunt":
+                actionImage.sprite = Hunt;
+                text.text = "Hunting prey";
                 break;
             default:
                 actionImage.sprite = NULL;

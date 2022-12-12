@@ -54,7 +54,7 @@ public class WanderAction : Action
         }
         timer += Time.deltaTime;
         wanderDuration += Time.deltaTime;
-        if(wanderDuration >= 3)
+        if(wanderDuration >= 2)
         {
             ExitAction();
             return;
@@ -77,6 +77,7 @@ public class WanderAction : Action
     }
     public override void ExitAction()
     {
+        agent.SetVelocity(Vector3.zero);
         agent.SetPerformingAction(false);
         active = false;
     }

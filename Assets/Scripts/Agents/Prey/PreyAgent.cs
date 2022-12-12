@@ -15,6 +15,8 @@ public class PreyAgent : MonoBehaviour, Agent
     private int offspringCount;
     private List<Action> actions = new List<Action>();    
     private Action bestAction;
+    private Action panicAction;
+    private bool panicked;
     private bool initialised = false;
     private bool performingAction = false;
     private Rigidbody rb;
@@ -80,7 +82,8 @@ public class PreyAgent : MonoBehaviour, Agent
         UpdateMisc();
         //Get danger value
         danger = sensorySystem.GetSensedDanger();
-        //If the agent is performing an action, update it
+        //If danger is above a certain threshhold, then override current action and panic
+        //If the agent is performing an action, update it (todo)
         if(performingAction)
         {
             bestAction.UpdateAction();
@@ -143,8 +146,8 @@ public class PreyAgent : MonoBehaviour, Agent
         currPartition = pSystem.WorldToPartitionCoords(transform.position);
         if(oldPartition != currPartition)
         {
-            pSystem.RemoveGameObjectFromPartition(this.gameObject,oldPartition, PartitionSystem.ObjectType.agent);
-            pSystem.AddGameObjectToPartition(this.gameObject,PartitionSystem.ObjectType.agent);
+            pSystem.RemoveGameObjectFromPartition(this.gameObject,oldPartition, PartitionSystem.ObjectType.prey);
+            pSystem.AddGameObjectToPartition(this.gameObject,PartitionSystem.ObjectType.prey);
         }
     }
     ///<summary> Updates any misc values </summary>
@@ -180,9 +183,11 @@ public class PreyAgent : MonoBehaviour, Agent
         {
             if(action.isActionPossible(this))
             {
-                if(action.ActionScore() > highestScore)
+                float score = action.ActionScore();
+                if(score > highestScore)
                 {
                     bestAction = action;
+                    highestScore = score;
                 }
             }
         }
@@ -190,10 +195,16 @@ public class PreyAgent : MonoBehaviour, Agent
     }
     private void killAgent(string causeOfDeath = "")
     {
-        string message = causeOfDeath == "" ? "agent died" : "agent died of " + causeOfDeath;
-        PartitionSystem.instance.RemoveGameObjectFromPartition(this.gameObject, currPartition, PartitionSystem.ObjectType.agent);
-        Debug.Log(message);
+        PartitionSystem.instance.RemoveGameObjectFromPartition(this.gameObject, currPartition, PartitionSystem.ObjectType.prey);
         Destroy(this.gameObject);
+    }
+    public void Kill()
+    {
+        if(Agent.selectedAgent.GetGameObject() == this.gameObject)
+        {
+            Agent.selectedAgent = null;
+        }
+        killAgent("");
     }
     private void OnMouseDown()
     {

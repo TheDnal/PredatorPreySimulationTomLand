@@ -4,6 +4,7 @@ using UnityEngine;
 
 public interface Agent
 {
+    
     /*
         Interface for the inspector system. This allows it to read information about the agent,
         without having full access to the agent itself.
@@ -31,5 +32,6 @@ public interface Agent
     ///<summary> 0 = male, 1 = female. </summary>
     public int GetGender();
     public GameObject GetGameObject();
+    public void Kill();
     #endregion
 }

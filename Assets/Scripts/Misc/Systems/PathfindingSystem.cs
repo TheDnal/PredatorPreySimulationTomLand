@@ -19,6 +19,7 @@ public class PathfindingSystem : MonoBehaviour
     public void Initialise(GameObject _agent)
     {
         agent = _agent;
+        
     }
     public List<Vector2Int> GetPathToPartition(Vector2Int endPartition, int pathfindingRadius)
     {
@@ -169,11 +170,11 @@ public class PathfindingSystem : MonoBehaviour
         return partitionPath;
     }
     
-    public bool isTargetReachable(Vector3 target)
+    public bool isTargetReachable(Vector3 target, int pathfindingRadius = 4)
     {
         //Actions will use this to make sure their target location is valid
         Vector2Int targetPartition = PartitionSystem.instance.WorldToPartitionCoords(target);
-        List<Vector2Int> dijkstraPath = GetPathToPartition(targetPartition, 4);
+        List<Vector2Int> dijkstraPath = GetPathToPartition(targetPartition, pathfindingRadius);
         if(dijkstraPath == null)
         {
             return false;

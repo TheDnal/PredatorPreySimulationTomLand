@@ -225,7 +225,7 @@ public class GetFoodAction : Action
     }
     void OnDrawGizmos()
     {
-        if(currentStage != Stage.inactive)
+        if(currentStage != Stage.inactive && agent == Agent.selectedAgent)
         {
             Gizmos.color = Color.white;
             if(DijkstraPath != null)

@@ -13,17 +13,18 @@ public class AdvancedAction : MonoBehaviour
     */
     #region Variables
     protected PredatorAgent agent;
-    public string actionName;
+    protected string actionName;
     protected bool actionRunning = false;
     #endregion
     #region Generic Methods
     public virtual void Initialise(PredatorAgent _agent){agent = _agent;}
     public virtual bool isActionPossible(PredatorDiscontentSnapshot snapshot){return false;}
     public virtual float ActionScore(PredatorDiscontentSnapshot snapshot){return 0;}
-    public virtual float EstimatedDuration(){return 0;}
+    public virtual float EstimatedDuration(PredatorDiscontentSnapshot snapshot){return 0;}
     public virtual void PerformAction(){}
     public virtual void UpdateAction(){}
     public virtual void ExitAction(){}
     public bool IsActionRunning(){return actionRunning;}
+    public string GetActionName(){return actionName;}
     #endregion
 }

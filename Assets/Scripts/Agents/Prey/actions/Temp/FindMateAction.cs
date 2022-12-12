@@ -20,6 +20,7 @@ public class FindMateAction : Action
     public override void PerformAction()
     {
         agent.SetPerformingAction(true);
+        PartitionSystem.instance.EmitSound(2,transform.position,noise.noiseType.matingCall);
         agent.SetVelocity(Vector3.zero);
         startRotation = agent.transform.rotation.eulerAngles.y;
         degrees = 0;

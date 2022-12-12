@@ -9,11 +9,11 @@ public class PartitionSystem : MonoBehaviour
     public Vector2Int size;
     private float partitionSize;
     public Partition[,] partitions;
-    public enum ObjectType{agent, food};
+    public enum ObjectType{predator, prey, food};
     private bool initialised = false;
     public Gradient scoreRange;
     public float multiplier = 0;
-    public enum DebugType { none, food, drinkableWater, bodyOfWater, agents, score, danger};
+    public enum DebugType { none, food, drinkableWater, bodyOfWater, agents, score, danger, sound};
     public DebugType GizmosMode;
     #region Initialization and generation of spacial partitioning system
     void Awake()
@@ -58,14 +58,27 @@ public class PartitionSystem : MonoBehaviour
         initialised =true;
         StartCoroutine(i_ScoreCalculator());
     }
+    public void Update()
+    {
+        if(!initialised){return;}
+        foreach(Partition p in partitions)
+        {
+            p.UpdateNoises();
+        }
+    }
     #endregion
     #region Public methods
     public void AddGameObjectToPartition(GameObject _GameObject, ObjectType type)
     {
         Vector2Int partitionCoords = WorldToPartitionCoords(_GameObject.transform.position);
-        if(type == ObjectType.agent)
+        if(type == ObjectType.predator)
         {
-            partitions[partitionCoords.x,partitionCoords.y].AddAgent(_GameObject);
+            partitions[partitionCoords.x,partitionCoords.y].AddAgent(_GameObject, false);
+            return;
+        }
+        else if(type == ObjectType.prey)
+        {
+            partitions[partitionCoords.x,partitionCoords.y].AddAgent(_GameObject, true);
             return;
         }
         else if(type == ObjectType.food)
@@ -73,17 +86,26 @@ public class PartitionSystem : MonoBehaviour
             partitions[partitionCoords.x,partitionCoords.y].AddFood(_GameObject);
             return;
         }
+        return;
     }   
     public void RemoveGameObjectFromPartition(GameObject _GameObject, Vector2Int partitionPos, ObjectType type)
     {
-        if(type == ObjectType.agent)
+        if(type == ObjectType.predator)
         {
             if( !partitions[partitionPos.x,partitionPos.y].agents.Contains(_GameObject))
             {
                 return;
             }
-            partitions[partitionPos.x,partitionPos.y].RemoveAgent(_GameObject);
+            partitions[partitionPos.x,partitionPos.y].RemoveAgent(_GameObject, false);
             return;
+        }
+        else if(type == ObjectType.prey)
+        {
+            if(!partitions[partitionPos.x,partitionPos.y].agents.Contains(_GameObject))
+            {
+                return;
+            }
+            partitions[partitionPos.x,partitionPos.y].RemoveAgent(_GameObject, true);
         }
         else if(type == ObjectType.food)
         {
@@ -153,6 +175,19 @@ public class PartitionSystem : MonoBehaviour
             }
         }
         return validSpawns;
+    }
+    public void EmitSound(int soundRadius ,Vector3 soundSource, noise.noiseType soundType)
+    {
+        noise newNoise = new noise(soundType, soundSource);
+        Vector2Int partitionPos = WorldToPartitionCoords(soundSource);
+        List<Partition> affectedPartitions = new List<Partition>();
+        affectedPartitions.AddRange(GetPartitionsInRadius(soundSource,soundRadius));
+        partitions[partitionPos.x,partitionPos.y].AddNoise(newNoise);
+        foreach(Partition p in affectedPartitions)
+        {
+            p.AddNoise(newNoise);
+        }
+        return;
     }
     #endregion
     #region Misc/Private methods
@@ -232,6 +267,18 @@ public class PartitionSystem : MonoBehaviour
                             Gizmos.DrawWireCube(pos + Vector3.up, Vector3.one * partitionSize);
                             break;
                         }
+                    case DebugType.sound:
+                        {
+                            float volume = 0;
+                            foreach(noise n in p.noises)
+                            {
+                                volume += n.volume; 
+                            }
+                            Color col = scoreRange.Evaluate(volume * multiplier);
+                            Gizmos.color = col;
+                            Gizmos.DrawWireCube(pos + Vector3.up, Vector3.one * partitionSize);
+                            break;
+                        }   
                     default:
                         break;
                 }
@@ -241,11 +288,10 @@ public class PartitionSystem : MonoBehaviour
     #endregion
 
 }
-
-
 public class Partition
 {
     #region fields
+    public List<noise> noises;
     public List<GameObject> agents;
     public List<GameObject> food;
     public Vector3 worldPosition;
@@ -266,6 +312,7 @@ public class Partition
     {
         food = new List<GameObject>();
         agents = new List<GameObject>();
+        noises = new List<noise>();
         foodCount = 0;
         worldPosition = _Position;
         coords = _coords;
@@ -309,14 +356,16 @@ public class Partition
     public bool hasDrinkbleWater(){return drinkableArea;}
     public bool IsWater(){return isWater;}
     public bool IsTraversable(){return isTraversable;}
-    public void AddAgent(GameObject _agent)
+    public void AddAgent(GameObject _agent, bool isPrey = true)
     {
         if(agents.Contains(_agent)){return;}
+        if(!isPrey){ChangePredatorCount(1);}
         agents.Add(_agent);
     }
-    public void RemoveAgent(GameObject _agent)
+    public void RemoveAgent(GameObject _agent, bool isPrey = true)
     {
         if(!agents.Contains(_agent)){return;}
+        if(!isPrey){ChangePredatorCount(-1);}
         agents.Remove(_agent);
     }
     public void AddFood(GameObject _food)
@@ -361,5 +410,43 @@ public class Partition
         dangerValue += isPrey ? predatorCount : 0;
         return dangerValue;
     }
+    public void AddNoise(noise _noise)
+    {
+        noises.Add(_noise);
+    }
+    public void UpdateNoises()
+    {
+        List<noise> noisesToRemove = new List<noise>();
+        float decay = Time.deltaTime;
+        foreach(noise currentNoise in noises)
+        {
+            currentNoise.changeVolume(-decay * 0.02f);
+            if(currentNoise.volume <= 0)
+            {
+                noisesToRemove.Add(currentNoise);
+            }
+        }
+        foreach(noise n in noisesToRemove)
+        {
+            noises.Remove(n);
+        }
+    }
     #endregion
+}
+public class noise
+{
+    public enum noiseType{deathScream, matingCall}
+    public noiseType type;
+    public float volume;
+    public Vector3 sourceLocation;
+    public noise(noiseType _type, Vector3 _source)
+    {
+        type = _type;
+        sourceLocation = _source;
+        volume = 1;
+    }
+    public void changeVolume(float amount)
+    {
+        volume += amount;
+    }
 }

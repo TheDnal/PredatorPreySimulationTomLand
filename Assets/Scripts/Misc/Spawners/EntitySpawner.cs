@@ -95,6 +95,7 @@ public class EntitySpawner : MonoBehaviour
     {
         foreach(GameObject entity in entities)
         {
+            if(entity == null){continue;}
             entity.layer = 0;
         }
     }

@@ -195,7 +195,7 @@ public class GetWaterAction : Action
     #region Misc
     void OnDrawGizmos()
     {
-        if(currentStage != ACTION_STAGE.inactive)
+        if(currentStage != ACTION_STAGE.inactive && agent == Agent.selectedAgent)
         {
             Gizmos.color = Color.white;
             if(DijkstraPath != null)
