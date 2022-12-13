@@ -116,6 +116,10 @@ public class GetFoodAction : Action
         agent.SetPerformingAction(false);
         currentStage = Stage.inactive;
     }
+    public override bool CanActionOverrideOthers()
+    {
+        return true;
+    }
     #endregion
     #region actionStates
     private Vector2Int targetWaypoint;

@@ -8,12 +8,13 @@ public class PreyAgent : MonoBehaviour, Agent
     [SerializeField] private SVision sensorySystem;
     [SerializeField] private PathfindingSystem pathfindingSystem;
     private PartitionSystem pSystem;
+    private List<Agent> potentialMates = new List<Agent>();
     private Vector2Int currPartition;
     private string currentActionName = "Null";
     private Genome genome;
     private int gender;
     private int offspringCount;
-    private List<Action> actions = new List<Action>();    
+    private List<Action> actions = new List<Action>();
     private Action bestAction;
     private Action panicAction;
     private bool panicked;
@@ -23,6 +24,10 @@ public class PreyAgent : MonoBehaviour, Agent
     private Vector3 velocity = Vector3.zero;
     private int actualAge = 0;
     private float age = 0;
+    //Variables that help the prey decide if an action is urgent enough to override the current action
+    private float overrideThreshold = 1.4f;
+    private float currentActionScore = 0;
+    private List<Action> overrideActions = new List<Action>();
     #endregion
     #region Discontent fields
     private float hunger, 
@@ -66,6 +71,15 @@ public class PreyAgent : MonoBehaviour, Agent
         actions.Add(sleep);
         FindMateAction findMate = this.gameObject.AddComponent<FindMateAction>();
         actions.Add(findMate);
+
+        //Get all overrides
+        foreach (Action action in actions)
+        {
+            if (action.CanActionOverrideOthers())
+            {
+                overrideActions.Add(action);
+            }
+        }
     }
     public void Update()
     {
@@ -84,6 +98,7 @@ public class PreyAgent : MonoBehaviour, Agent
         danger = sensorySystem.GetSensedDanger();
         //If danger is above a certain threshhold, then override current action and panic
         //If the agent is performing an action, update it (todo)
+        CheckOverrideActions();
         if(performingAction)
         {
             bestAction.UpdateAction();
@@ -175,6 +190,35 @@ public class PreyAgent : MonoBehaviour, Agent
             transform.localScale = new Vector3(0.2f,0.4f,0.2f) * genome.size;
         }
     }
+    private void CheckOverrideActions()
+    {
+        Action overrideAction = null;
+        float score = 0, highestScore = 0;
+        foreach (Action action in overrideActions)
+        {
+            if (!action.isActionPossible(this))
+            {
+                continue;
+            }
+            score = action.ActionScore();
+            if (score > highestScore)
+            {
+                highestScore = score;
+                overrideAction = action;
+            }
+        }
+        if (overrideAction != null)
+        {
+            if (overrideAction == bestAction)
+            {
+                return;
+            }
+            Debug.Log("action overrided");
+            bestAction.ExitAction();
+            bestAction = overrideAction;
+            bestAction.PerformAction();
+        }
+    }
     private Action GetBestAction(List<Action> _actions)
     {
         float highestScore = 0;
@@ -188,6 +232,7 @@ public class PreyAgent : MonoBehaviour, Agent
                 {
                     bestAction = action;
                     highestScore = score;
+                    currentActionScore = score;
                 }
             }
         }
@@ -214,6 +259,7 @@ public class PreyAgent : MonoBehaviour, Agent
     #region Getters
     public PathfindingSystem GetPathfindingSystem(){return pathfindingSystem;}
     public float GetPregnancy(){return pregnancy;}
+    
     #endregion
     #region Setters
     public void SetEating(bool _isEating){isEating = _isEating;}
@@ -223,6 +269,25 @@ public class PreyAgent : MonoBehaviour, Agent
     public void Inpregnate(Genome fatherGenome){isPregnant = true;}
     public void SetVelocity(Vector3 _velocity){velocity = _velocity;}
     public void SetPerformingAction(bool _performingAction){performingAction = _performingAction;}
+    public bool TryBecomeMate(Agent mate)
+    {
+        if (isPregnant) { return false; }
+        else if (potentialMates.Count < 2)
+        {
+            potentialMates.Add(mate);
+            return true;
+        }
+        return false;
+    }
+    public void TryMate(Genome _genome)
+    {
+        if (gender != 1) { return; }
+        if (!isPregnant)
+        {
+            isPregnant = true;
+            potentialMates.Clear();
+        }
+    }
     #endregion
     #region Interface Methods
     public string GetAction(){return currentActionName;}

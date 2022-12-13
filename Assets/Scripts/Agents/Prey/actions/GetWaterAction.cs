@@ -114,6 +114,10 @@ public class GetWaterAction : Action
         agent.SetPerformingAction(false);
         currentStage = ACTION_STAGE.inactive;
     }
+    public override bool CanActionOverrideOthers()
+    {
+        return true;
+    }
     #endregion
     #region ActionStates
     private void FollowPath()

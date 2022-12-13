@@ -28,6 +28,7 @@ public class Action : MonoBehaviour
     public virtual void PerformAction(){}
     public virtual void UpdateAction(){}
     public virtual void ExitAction(){}
+    public virtual bool CanActionOverrideOthers() { return false;}
     #endregion
 
 }

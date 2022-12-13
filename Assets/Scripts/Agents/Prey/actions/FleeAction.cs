@@ -75,14 +75,8 @@ public class FleeAction : Action
         active = false;
         agent.SetPerformingAction(false);
     }
-    void OnDrawGizmos()
+    public override bool CanActionOverrideOthers()
     {
-        if(active && fearCentre != Vector3.up)
-        {
-            Gizmos.color = Color.red;
-            Gizmos.DrawWireCube(fearCentre, Vector3.one);
-            Gizmos.color = Color.white;
-            Gizmos.DrawLine(transform.position, transform.position + velocity);
-        }
+        return true;
     }
 }
