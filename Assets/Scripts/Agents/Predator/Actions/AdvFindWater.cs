@@ -93,6 +93,11 @@ public class AdvFindWater : AdvancedAction
         //Start
         if(targetWaypoint == new Vector2Int(-1,-1))
         {
+            if(DijkstraPath == null)
+            {
+                currentStage = ActionStage.EXIT;
+                return;
+            }
             targetWaypoint = DijkstraPath[0];
         }
         //Check if reached waypoint

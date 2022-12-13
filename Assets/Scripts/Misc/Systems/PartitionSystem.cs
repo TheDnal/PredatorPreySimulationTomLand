@@ -269,6 +269,7 @@ public class PartitionSystem : MonoBehaviour
                         }
                     case DebugType.sound:
                         {
+                            if(p.noises.Count == 0){break;}
                             float volume = 0;
                             foreach(noise n in p.noises)
                             {
@@ -435,7 +436,7 @@ public class Partition
 }
 public class noise
 {
-    public enum noiseType{deathScream, matingCall}
+    public enum noiseType{deathScream, malePreyMatingCall, femalePreyMatingCall}
     public noiseType type;
     public float volume;
     public Vector3 sourceLocation;

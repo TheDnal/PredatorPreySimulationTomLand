@@ -69,9 +69,15 @@ public class PreyAgent : MonoBehaviour, Agent
         actions.Add(flee);
         SleepAction sleep = this.gameObject.AddComponent<SleepAction>();
         actions.Add(sleep);
-        FindMateAction findMate = this.gameObject.AddComponent<FindMateAction>();
-        actions.Add(findMate);
-
+        MatingCall callMate = this.gameObject.AddComponent<MatingCall>();
+        actions.Add(callMate);
+        RespondToCall respond = this.gameObject.AddComponent<RespondToCall>();
+        actions.Add(respond);
+        if(gender == 1)
+        {
+            GiveBirth birthing = this.gameObject.AddComponent<GiveBirth>();
+            actions.Add(birthing);
+        }
         //Get all overrides
         foreach (Action action in actions)
         {
@@ -192,6 +198,7 @@ public class PreyAgent : MonoBehaviour, Agent
     }
     private void CheckOverrideActions()
     {
+        if(bestAction == null){return;}
         Action overrideAction = null;
         float score = 0, highestScore = 0;
         foreach (Action action in overrideActions)
@@ -213,9 +220,10 @@ public class PreyAgent : MonoBehaviour, Agent
             {
                 return;
             }
-            Debug.Log("action overrided");
+            if(highestScore < 40f){return;}
             bestAction.ExitAction();
             bestAction = overrideAction;
+            currentActionName = bestAction.actionName;
             bestAction.PerformAction();
         }
     }
@@ -245,9 +253,12 @@ public class PreyAgent : MonoBehaviour, Agent
     }
     public void Kill()
     {
-        if(Agent.selectedAgent.GetGameObject() == this.gameObject)
+        if(Agent.selectedAgent != null)
         {
-            Agent.selectedAgent = null;
+            if(Agent.selectedAgent.GetGameObject() == this.gameObject)
+            {
+                Agent.selectedAgent = null;
+            }
         }
         killAgent("");
     }
@@ -262,10 +273,12 @@ public class PreyAgent : MonoBehaviour, Agent
     
     #endregion
     #region Setters
+    public void IncrementOffspringCount(){offspringCount ++;}
     public void SetEating(bool _isEating){isEating = _isEating;}
     public void SetDrinking(bool _isDrinking){isDrinking = _isDrinking;}
     public void SetSleeping(bool _isSleeping){isSleeping = _isSleeping;}
     public void ResetReproduction(){reproductiveUrge = 0;}
+    public void ResetPregnancy(){pregnancy = 0; isPregnant = false;}
     public void Inpregnate(Genome fatherGenome){isPregnant = true;}
     public void SetVelocity(Vector3 _velocity){velocity = _velocity;}
     public void SetPerformingAction(bool _performingAction){performingAction = _performingAction;}
@@ -285,6 +298,7 @@ public class PreyAgent : MonoBehaviour, Agent
         if (!isPregnant)
         {
             isPregnant = true;
+            reproductiveUrge = 0;
             potentialMates.Clear();
         }
     }

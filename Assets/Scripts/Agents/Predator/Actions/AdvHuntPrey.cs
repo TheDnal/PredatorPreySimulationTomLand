@@ -98,7 +98,7 @@ public class AdvHuntPrey : AdvancedAction
             return;
         }
         float distance = Vector3.Distance(transform.position,targetGameObject.transform.position);
-        if(distance < 0.25f)
+        if(distance < 0.33f)
         {
             currentState = actionState.KILL;
             return;

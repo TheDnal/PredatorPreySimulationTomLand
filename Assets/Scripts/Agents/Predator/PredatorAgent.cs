@@ -58,10 +58,10 @@ public class PredatorAgent : MonoBehaviour, Agent
                   reproductiveUrge, 
                   danger,
                   pregnancy;
-    private float hungerIncrease = 0.0125f, hungerDecrease = -1f,
-                  thirstIncrease = 0.02f, thirstDecrease = -1f,
-                  tirednessIncrease = 0.0125f, tirednessDecrease = -0.25f,
-                  reprodcutiveIncrease = 0.025f, pregnancyIncrease = 0.15f;
+    private float hungerIncrease = 0.025f, hungerDecrease = -1f,
+                  thirstIncrease = 0.033f, thirstDecrease = -1f,
+                  tirednessIncrease = 0.015f, tirednessDecrease = -0.25f,
+                  reprodcutiveIncrease = 0.020f, pregnancyIncrease = 0.15f;
     private bool isEating = false,
                 isDrinking = false, 
                 isSleeping = false,

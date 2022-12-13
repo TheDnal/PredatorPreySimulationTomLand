@@ -114,6 +114,7 @@ public class GetFoodAction : Action
     public override void ExitAction()
     {
         agent.SetPerformingAction(false);
+        agent.SetEating(false);
         currentStage = Stage.inactive;
     }
     public override bool CanActionOverrideOthers()
@@ -219,7 +220,10 @@ public class GetFoodAction : Action
             return false;
             }
         }
-        
+        if(nearestFoodPartition == null)
+        {
+            return false;
+        }
         if(nearestFoodPartition.foodCount == 0)
         {
             //No food in partition

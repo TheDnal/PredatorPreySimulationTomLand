@@ -112,6 +112,7 @@ public class GetWaterAction : Action
     public override void ExitAction()
     {
         agent.SetPerformingAction(false);
+        agent.SetDrinking(false);
         currentStage = ACTION_STAGE.inactive;
     }
     public override bool CanActionOverrideOthers()
@@ -125,6 +126,11 @@ public class GetWaterAction : Action
         //If starting the path, set first waypoint
         if(targetWaypoint == new Vector2Int(-1,-1))
         {
+            if(DijkstraPath == null)
+            {
+                currentStage = ACTION_STAGE.finished;
+                return;
+            }
             targetWaypoint = DijkstraPath[0];
         }
 
