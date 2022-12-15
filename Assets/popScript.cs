@@ -11,6 +11,7 @@ public class popScript : MonoBehaviour
     private List<GameObject> points = new List<GameObject>();
     private List<int> dataPoints = new List<int>();
     public RectTransform graphContainer;
+    public TextMeshProUGUI populationCounter;
     void Start()
     {
         StartCoroutine(i_dataCollector());
@@ -22,6 +23,8 @@ public class popScript : MonoBehaviour
             yield return new WaitForSeconds(3f);
             int population = EntitySpawner.instance.currentPopulation;
             dataPoints.Add(population);
+            ShowGraph(dataPoints);
+            populationCounter.text = "Population : " + population;
         }
     }
     private void CreateCircle(Vector2 anchoredPosition)
@@ -38,10 +41,7 @@ public class popScript : MonoBehaviour
     }
     void Update()
     {
-        if(Input.GetKeyDown(KeyCode.Space))
-        {
-            ShowGraph(dataPoints);
-        }
+
     }
     private void ShowGraph(List<int> valueList)
     {

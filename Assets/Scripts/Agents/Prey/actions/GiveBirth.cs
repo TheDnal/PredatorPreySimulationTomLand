@@ -52,7 +52,6 @@ public class GiveBirth : Action
         GameObject childAgent = Instantiate(prefab, pos, Quaternion.identity);
         childAgent.GetComponent<PreyAgent>().Initialise(gender, agent.GetGenome());
         EntitySpawner.instance.currentPopulation++;
-        EntitySpawner.instance.AddEntity(childAgent.gameObject);
         childAgent.transform.parent = this.transform.parent;
     }
     public override void ExitAction()

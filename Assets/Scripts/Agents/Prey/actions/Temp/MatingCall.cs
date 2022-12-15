@@ -8,9 +8,10 @@ public class MatingCall : Action
     bool actionActive = false;
     public override bool isActionPossible(PreyAgent _agent)
     {
+        actionName = "CallingForMate";
         agent = _agent;
         //Agent is locked out of this action if too hungry, tired, thirsty
-        if(agent.GetHunger() > 0.75 || agent.GetThirst() > 0.75 || agent.GetTiredness() > 0.75) { return false; }
+        if(agent.GetHunger() > 0.5 || agent.GetThirst() > 0.5 || agent.GetTiredness() > 0.5) { return false; }
 
         //Return false if agent doesn't have enough urge
         if(agent.GetReproductiveUrge() < 0.5){return false;}

@@ -36,7 +36,7 @@ public class PreyAgent : MonoBehaviour, Agent
                   reproductiveUrge, 
                   danger,
                   pregnancy;
-    private float hungerIncrease = 0.025f, hungerDecrease = -1f,
+    private float hungerIncrease = 0.025f, hungerDecrease = -0.5f,
                  thirstIncrease = 0.033f, thirstDecrease = -1f,
                  tirednessIncrease = 0.0125f, tirednessDecrease = -0.25f,
                  reprodcutiveIncrease = 0.05f, pregnancyIncrease = 0.33f;
@@ -104,7 +104,7 @@ public class PreyAgent : MonoBehaviour, Agent
         danger = sensorySystem.GetSensedDanger();
         //If danger is above a certain threshhold, then override current action and panic
         //If the agent is performing an action, update it (todo)
-        CheckOverrideActions();
+        //CheckOverrideActions();
         if(performingAction)
         {
             bestAction.UpdateAction();
@@ -200,7 +200,7 @@ public class PreyAgent : MonoBehaviour, Agent
     {
         if(bestAction == null){return;}
         Action overrideAction = null;
-        float score = 0, highestScore = 0;
+        float score = 0, highestScore = currentActionScore;
         foreach (Action action in overrideActions)
         {
             if (!action.isActionPossible(this))
@@ -249,6 +249,7 @@ public class PreyAgent : MonoBehaviour, Agent
     private void killAgent(string causeOfDeath = "")
     {
         PartitionSystem.instance.RemoveGameObjectFromPartition(this.gameObject, currPartition, PartitionSystem.ObjectType.prey);
+        EntitySpawner.instance.currentPopulation--;
         Destroy(this.gameObject);
     }
     public void Kill()

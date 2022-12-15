@@ -53,9 +53,13 @@ public class GetFoodAction : Action
                 }
             }
         }
-
-        //Return true if there is a nearest food, false if not
-        return nearestFoodPartition != null ? true : false;
+        if(nearestFoodPartition == null){return false;}
+        if(nearestFoodPartition.coords == agent.GetCurrentPartition()){return true;}
+        if(agent.GetPathfindingSystem().GetPathToPartition(nearestFoodPartition.coords,3) != null)
+        {   
+            return true;
+        }
+        return false;
     }
     public override float ActionScore()
     {

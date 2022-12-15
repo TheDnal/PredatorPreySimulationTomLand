@@ -48,8 +48,10 @@ public class GetWaterAction : Action
                 }
             }
         } 
-        if(nearestWaterSource != null)
-        {
+        if(nearestWaterSource == null){return false;}
+        if(nearestWaterSource.coords == agent.GetCurrentPartition()){return true;}
+        if(agent.GetPathfindingSystem().GetPathToPartition(nearestWaterSource.coords,3) != null)
+        {   
             return true;
         }
         return false;
