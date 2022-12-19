@@ -436,7 +436,7 @@ public class Partition
 }
 public class noise
 {
-    public enum noiseType{deathScream, malePreyMatingCall, femalePreyMatingCall}
+    public enum noiseType{deathScream, malePreyMatingCall, femalePreyMatingCall, malePredatorMatingCall, femalePredatorMatingCall}
     public noiseType type;
     public float volume;
     public Vector3 sourceLocation;

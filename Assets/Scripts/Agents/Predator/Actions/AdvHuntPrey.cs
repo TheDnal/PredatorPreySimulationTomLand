@@ -159,6 +159,7 @@ public class AdvHuntPrey : AdvancedAction
             if(partition.agents.Count == 0){continue;}
             foreach(GameObject agent in partition.agents)
             {
+                if(agent == null){continue;}
                 if(agent.GetComponent<Agent>().GetAgentType() == Agent.AgentType.PREY)
                 {
                     agents.Add(agent.GetComponent<Agent>());

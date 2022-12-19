@@ -13,8 +13,25 @@ public class GeneticsPage : InspectorPage
     public override void InitialisePage(EntityInspector _Inspector)
     {
         base.InitialisePage(_Inspector);
+        if(Agent.selectedAgent == null){ResetPage(); return;}
+        genome = Agent.selectedAgent.GetGenome();
+    }
+    public override void UpdatePage()
+    {
+        if(Agent.selectedAgent == null){ResetPage(); return;}
         genome = Agent.selectedAgent.GetGenome();
         RefreshPage();
+    }
+    public void ResetPage()
+    {
+        RefreshGeneUI(rK_Value, 0);
+        RefreshGeneUI(speed, 0);
+        RefreshGeneUI(size, 0);
+        RefreshGeneUI(respirationRate, 0);
+        RefreshGeneUI(visionRadius, 0);
+        RefreshGeneUI(visionAngle, 0);
+        RefreshGeneUI(smellRadius, 0);
+        RefreshGeneUI(hearingRadius, 0);
     }
     public void RefreshPage()
     {

@@ -17,6 +17,11 @@ public class SummaryPage : InspectorPage
         base.InitialisePage(_inspector);
         if(Agent.selectedAgent == null)
         {
+            Debug.Log("ding!");
+            agentType.text           = "Agent type:";
+            agentAge.text            = "Agent age";
+            agentOffspringCount.text = "no. Offspring:";
+            agentGender.text         = "Gender :";
             return;
         }
         agentType.text           = "Agent type: \n" + Agent.selectedAgent.GetAgentType();
@@ -28,6 +33,10 @@ public class SummaryPage : InspectorPage
     {
         if(Agent.selectedAgent == null)
         {
+            agentType.text           = "Agent type:";
+            agentAge.text            = "Agent age";
+            agentOffspringCount.text = "no. Offspring:";
+            agentGender.text         = "Gender :";
             followAgent = false;
             return;
         }
@@ -36,6 +45,7 @@ public class SummaryPage : InspectorPage
         offspringCount           = Agent.selectedAgent.GetOffspringCount();
         agentAge.text            = "Agent age: \n" + _age;
         agentOffspringCount.text = "no. Offspring: \n" + offspringCount;
+        agentGender.text         = Agent.selectedAgent.GetGender() == 0 ? "Gender : \n Male" : "Gender \n Female";
 
         if(followAgent)
         {

@@ -24,6 +24,7 @@ public class EntityInspector : MonoBehaviour
     public float openButtonPos,closedButtonPos;
     private float targetXPos;
     private InspectorPage currentPage;
+    private bool Initialised = false;
     void Awake()
     {
         if(instance != null)
@@ -35,11 +36,17 @@ public class EntityInspector : MonoBehaviour
         }
         instance = this;
         targetXPos = closedButtonPos;
+        Buttons.SetActive(false);
+    }
+    public void Initialise()
+    {
+        Initialised = true;
         Buttons.SetActive(true);
     }
     void Update()
     {
-        if(Agent.selectedAgent != null && currentPage != null)
+
+        if(currentPage != null)
         {   
             currentPage.UpdatePage();
         }
@@ -72,5 +79,9 @@ public class EntityInspector : MonoBehaviour
         currentPage = page;
         page.gameObject.SetActive(true);
         page.InitialisePage(this);
+    }
+    public void ClearSelectedAgent()
+    {
+        Agent.selectedAgent = null;
     }
 }

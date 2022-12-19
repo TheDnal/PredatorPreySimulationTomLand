@@ -49,21 +49,11 @@ public class ReproduceAction : Action
         {
             childCount ++;
             timer = 0;
-            Material mat;
             int gender = Random.Range(0,2);
-            if(gender == 0)
-            {
-                mat = EntitySpawner.instance.MaleMat;
-            }
-            else
-            {
-                mat = EntitySpawner.instance.FemaleMat;
-            }
             GameObject prefab = EntitySpawner.instance.preyPrefab;
             GameObject childAgent = Instantiate(prefab, this.transform.position, Quaternion.identity);
             childAgent.transform.parent = EntitySpawner.instance.transform;
             //childAgent.GetComponent<GOPAgent>().SetGender(gender);
-            childAgent.GetComponent<MeshRenderer>().material = mat;
         }
     }
     public override void ExitAction()
@@ -78,19 +68,10 @@ public class ReproduceAction : Action
             yield return new WaitForSeconds(1f);
             int gender = Random.Range(0,2);
             Material mat;
-            if(gender == 0)
-            {
-                mat = EntitySpawner.instance.MaleMat;
-            }
-            else
-            {
-                mat = EntitySpawner.instance.FemaleMat;
-            }
             GameObject prefab = EntitySpawner.instance.preyPrefab;
             GameObject childAgent = Instantiate(prefab, this.transform.position, Quaternion.identity);
             childAgent.transform.parent = EntitySpawner.instance.transform;
            // childAgent.GetComponent<GOPAgent>().SetGender(gender);
-            childAgent.GetComponent<MeshRenderer>().material = mat;
             EntitySpawner.instance.currentPopulation++;
             EntitySpawner.instance.AddEntity(childAgent.gameObject);
         }

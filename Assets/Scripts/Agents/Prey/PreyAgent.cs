@@ -58,6 +58,14 @@ public class PreyAgent : MonoBehaviour, Agent
         UpdatePartitioning();
         initialised = true;
 
+        if(gender == 0)
+        {
+            this.GetComponent<MeshRenderer>().material = EntitySpawner.instance.MalePreyMat;
+        }
+        else
+        {
+            this.GetComponent<MeshRenderer>().material = EntitySpawner.instance.FemalePreyMat;
+        }
         //Set up all actions
         WanderAction wander = this.gameObject.AddComponent<WanderAction>();
         actions.Add(wander);
@@ -191,6 +199,7 @@ public class PreyAgent : MonoBehaviour, Agent
         {
             transform.localScale = new Vector3(0.2f,0.4f,0.2f) * (age * genome.size /18);
         }
+        else if(age > 80){killAgent();}
         else
         {
             transform.localScale = new Vector3(0.2f,0.4f,0.2f) * genome.size;
@@ -254,17 +263,20 @@ public class PreyAgent : MonoBehaviour, Agent
     }
     public void Kill()
     {
-        if(Agent.selectedAgent != null)
+        if(Agent.selectedAgent == this)
         {
-            if(Agent.selectedAgent.GetGameObject() == this.gameObject)
-            {
-                Agent.selectedAgent = null;
-            }
+            Agent.selectedAgent = null;
         }
         killAgent("");
     }
     private void OnMouseDown()
     {
+        if(Agent.selectedAgent == this)
+        {
+            Agent.selectedAgent = null;
+            Debug.Log("agent is null");
+            return;
+        }
         Agent.selectedAgent = this;
     }
     #endregion
@@ -319,5 +331,6 @@ public class PreyAgent : MonoBehaviour, Agent
     public SVision GetSensorySystem(){return sensorySystem;}
     public Vector2Int GetCurrentPartition(){return currPartition;}
     public GameObject GetGameObject(){return this.gameObject;}
+    public void SetAge(int _age){age =_age;}
     #endregion
 }

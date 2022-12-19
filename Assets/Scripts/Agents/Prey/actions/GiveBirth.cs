@@ -6,7 +6,7 @@ public class GiveBirth : Action
 {
     private float timer = 0;
     private float spawnInterval = 1;
-    private int maxOffspring = 2, offspringCount = 0;
+    private int maxOffspring = 4, offspringCount = 0;
     public override bool CanActionOverrideOthers()
     {
         actionName = "Reproduce";
@@ -53,6 +53,14 @@ public class GiveBirth : Action
         childAgent.GetComponent<PreyAgent>().Initialise(gender, agent.GetGenome());
         EntitySpawner.instance.currentPopulation++;
         childAgent.transform.parent = this.transform.parent;
+        if(gender == 0)
+        {
+            childAgent.GetComponent<MeshRenderer>().material = EntitySpawner.instance.MalePreyMat;
+        }
+        else
+        {
+            childAgent.GetComponent<MeshRenderer>().material =EntitySpawner.instance.FemalePreyMat;
+        }
     }
     public override void ExitAction()
     {

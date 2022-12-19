@@ -4,20 +4,38 @@ using UnityEngine;
 
 public class CamController : MonoBehaviour
 {
+    public static CamController instance;
     public Vector3 cameraStartPos;
     public bool followAgent = false;
     private bool cullPOV = false;
     private GameObject currentAgent;
     public float speed = 5;
+    private bool Initialised = false;
     // Start is called before the first frame update
-    void Start()
+    public void Awake()
+    {
+        if(instance != null)
+        {
+            if(instance != this)
+            {
+                Destroy(this.gameObject);
+            }
+        }
+        else
+        {
+            instance = this;
+        }
+    }
+    public void Initialise()
     {
         transform.position = cameraStartPos;
+        Initialised = true;
     }
 
     // Update is called once per frame
     void Update()
     {
+        if(!Initialised){return;}
         if(Agent.selectedAgent != null)
         {       
             currentAgent = Agent.selectedAgent.GetGameObject();
@@ -71,11 +89,8 @@ public class CamController : MonoBehaviour
     }
     public void ToggleFollowingAgent()
     {
+        if(Agent.selectedAgent == null){return;}
         currentAgent = Agent.selectedAgent.GetGameObject();
-        if(currentAgent == null)
-        {
-            return;
-        }
         followAgent = followAgent ? false : true;
     }
     public void ToggleCullPOV()

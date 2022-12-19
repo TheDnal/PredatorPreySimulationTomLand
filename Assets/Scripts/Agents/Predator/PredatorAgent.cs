@@ -48,7 +48,7 @@ public class PredatorAgent : MonoBehaviour, Agent
     private int gender;
     private Genome genome;
     private int offspringCount = 0;
-    
+    private List<Agent> potentialMates = new List<Agent>();
     private Vector2Int currPartition;
 
     //Discontent Vals
@@ -78,6 +78,15 @@ public class PredatorAgent : MonoBehaviour, Agent
         pathfindingSystem.Initialise(this.gameObject);
         PartitionSystem.instance.AddGameObjectToPartition(this.gameObject, PartitionSystem.ObjectType.predator);
 
+        if(gender == 0)
+        {
+            this.GetComponent<MeshRenderer>().material = EntitySpawner.instance.MalePredatorMat;
+        }
+        else
+        {
+            this.GetComponent<MeshRenderer>().material = EntitySpawner.instance.FemalePredatorMat;
+        }
+
         //Set Advanced actions
         AdvWander wander = this.gameObject.AddComponent<AdvWander>();
         wander.Initialise(this);
@@ -95,6 +104,17 @@ public class PredatorAgent : MonoBehaviour, Agent
         hunt.Initialise(this);
         actions.Add(hunt);
 
+        AdvCallForMate call = this.gameObject.AddComponent<AdvCallForMate>();
+        call.Initialise(this);
+        actions.Add(call);
+
+        AdvRespondToCall respond = this.gameObject.AddComponent<AdvRespondToCall>();
+        respond.Initialise(this);
+        actions.Add(respond);
+
+        AdvGiveBirth birth = this.gameObject.AddComponent<AdvGiveBirth>();
+        birth.Initialise(this);
+        actions.Add(birth);
     }
     private void Update()
     {
@@ -132,7 +152,7 @@ public class PredatorAgent : MonoBehaviour, Agent
             pregnancy = 0;
             return;
         }
-
+        else if(age > 80){KillAgent("old age");}
         //Adult only discontent values
         if(gender == 1 && isPregnant){pregnancy = IterateDiscontentValue(true, pregnancy, pregnancyIncrease, 5);}
         else{pregnancy = 0;}
@@ -204,8 +224,8 @@ public class PredatorAgent : MonoBehaviour, Agent
     }
     private void KillAgent(string killMessage)
     {
-      if(killMessage != null){Debug.Log("Agent died from " + killMessage);}
       PartitionSystem.instance.RemoveGameObjectFromPartition(this.gameObject, currPartition, PartitionSystem.ObjectType.predator);
+      EntitySpawner.instance.currentPopulation --;
       Destroy(this.gameObject);
     }
     private void OnMouseDown()
@@ -225,12 +245,39 @@ public class PredatorAgent : MonoBehaviour, Agent
     #region Setters
     public void SetVelocity(Vector3 _velocity){velocity = _velocity;}
     public void SetPerformingAction(bool _performingAction){performingAction = _performingAction;}
+    public bool TryBecomeMate(Agent mate)
+    {
+      if(isPregnant){return false;}
+      else if(potentialMates.Count < 2)
+      {
+        potentialMates.Add(mate);
+        return true;
+      }
+      return false;
+    }
+    public void TryMate(Genome _genome)
+    {
+      if(gender != 1){return;}
+      if(!isPregnant)
+      {
+        isPregnant = true;
+        reproductiveUrge = 0;
+        potentialMates.Clear();
+      }
+    }
+    public void ResetPregnancy()
+    {
+      isPregnant = false;
+      reproductiveUrge = 0;
+      pregnancy = 0;
+    }
+    public void IncrementOffspringCount(){offspringCount ++;}
     #endregion
     //Fulfills the "Agent" interface, which allows inspector classes to monitor this agent.
     #region Interface Methods
     public string GetAction(){return currentActionName;}
     public Agent.AgentType GetAgentType(){return Agent.AgentType.PREDATOR;}
-    public Genome GetGenome(){return GeneticsSystem.GetStartingPreyGenome();}
+    public Genome GetGenome(){return genome;}
     public SVision GetSensorySystem(){return sensorySystem;}
     public float GetHunger(){return hunger;}
     public float GetThirst(){return thirst;}
@@ -241,6 +288,8 @@ public class PredatorAgent : MonoBehaviour, Agent
     public int GetOffspringCount(){return offspringCount;}
     public int GetGender(){return gender;}
     public GameObject GetGameObject(){return this.gameObject;}
+    public void SetAge(int _age){age =_age;}
+
     #endregion
 
 }

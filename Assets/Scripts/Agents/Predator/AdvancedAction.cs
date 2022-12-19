@@ -19,6 +19,7 @@ public class AdvancedAction : MonoBehaviour
     #region Generic Methods
     public virtual void Initialise(PredatorAgent _agent){agent = _agent;}
     public virtual bool isActionPossible(PredatorDiscontentSnapshot snapshot){return false;}
+    public virtual bool isActionChainable(){return false;}
     public virtual float ActionScore(PredatorDiscontentSnapshot snapshot){return 0;}
     public virtual float EstimatedDuration(PredatorDiscontentSnapshot snapshot){return 0;}
     public virtual void PerformAction(){}

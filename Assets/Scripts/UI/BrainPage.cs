@@ -6,7 +6,7 @@ public class BrainPage : InspectorPage
 {
     [Header("Action images")]
     public Image actionImage;
-    public Sprite Eat,Drink,Wander,Mating,Reproduce,Sleep, Flee, movingToMate, callingMates, Hunt, NULL;
+    public Sprite Eat,Drink,Wander,Mating,Reproduce,Sleep, Flee, movingToMate, callingMates, Hunt, NULL, clear;
     public TMPro.TextMeshProUGUI text;
     [Space(6),Header("Graph Images")]
     public Image Hunger;
@@ -18,11 +18,18 @@ public class BrainPage : InspectorPage
     public override void InitialisePage(EntityInspector _Inspector)
     {
         base.InitialisePage(_Inspector);
+        if(Agent.selectedAgent == null)
+        {
+            ClearGraphs();
+            ClearActionImage();
+        }
     }
     public override void UpdatePage()
     {
         if(Agent.selectedAgent == null)
         {
+            ClearGraphs();
+            ClearActionImage();
             return;
         }
         UpdateActionImage();
@@ -80,6 +87,11 @@ public class BrainPage : InspectorPage
                 break;
         }
     }
+    private void ClearActionImage()
+    {
+        actionImage.sprite = clear;
+        text.text = "";
+    }
     private void UpdateGraphs()
     {
         Hunger.fillAmount           = Agent.selectedAgent.GetHunger();
@@ -87,5 +99,13 @@ public class BrainPage : InspectorPage
         Tiredness.fillAmount        = Agent.selectedAgent.GetTiredness();
         ReproductiveUrge.fillAmount = Agent.selectedAgent.GetReproductiveUrge();
         Danger.fillAmount           = Agent.selectedAgent.GetDanger();
+    }
+    private void ClearGraphs()
+    {
+        Hunger.fillAmount           = 0;
+        Thirst.fillAmount           = 0;
+        Tiredness.fillAmount        = 0;
+        ReproductiveUrge.fillAmount = 0;
+        Danger.fillAmount           = 0;
     }
 }

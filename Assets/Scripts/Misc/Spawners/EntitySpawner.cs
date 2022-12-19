@@ -8,7 +8,7 @@ public class EntitySpawner : MonoBehaviour
     public MapGenerator generator;
     public int startingPreyPopulation, startingPredatorPopulation, currentPopulation;
     public GameObject preyPrefab, predatorPrefab;
-    public Material MaleMat,FemaleMat;
+    public Material MalePreyMat,FemalePreyMat, MalePredatorMat, FemalePredatorMat;
     public static EntitySpawner instance;
     private List<GameObject> entities = new List<GameObject>();
     void Awake()
@@ -45,8 +45,9 @@ public class EntitySpawner : MonoBehaviour
 
             //Set gender
             int gender = Random.Range(0,2);
-            newEntity.GetComponent<PreyAgent>().Initialise(gender, GeneticsSystem.GetStartingPreyGenome());
-
+            
+            newEntity.GetComponent<PreyAgent>().Initialise(gender, GeneticsSystem.GetStartingGenome(Genome.species.prey));
+            newEntity.GetComponent<Agent>().SetAge(18);
             //Misc
             newEntity.transform.parent = this.transform;
             entities.Add(newEntity);
@@ -74,8 +75,8 @@ public class EntitySpawner : MonoBehaviour
 
             //Set gender
             int gender = Random.Range(0,2);
-            newEntity.GetComponent<PredatorAgent>().Initialise(gender, GeneticsSystem.GetStartingPreyGenome());
-
+            newEntity.GetComponent<PredatorAgent>().Initialise(gender, GeneticsSystem.GetStartingGenome(Genome.species.predator));
+            newEntity.GetComponent<Agent>().SetAge(18);
             //Misc
             newEntity.transform.parent = this.transform;
             entities.Add(newEntity);

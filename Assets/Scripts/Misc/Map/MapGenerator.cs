@@ -63,12 +63,28 @@ public class MapGenerator : MonoBehaviour
             instance = this;
         }
     }
-    void Start()
+    public void Generate(Vector2Int _mapDimensions, int _seed, Vector2 _offset)
     {
+        if(Tiles != null)
+        {
+            foreach(GameObject tile in Tiles)
+            {
+                Destroy(tile);
+            }
+        }
+        Tiles.Clear();
+        mapWidth = _mapDimensions.x;
+        mapHeight = _mapDimensions.y;
+        seed = _seed;
+        offset = _offset;
         GenerateMap();
         GenerateTiles();
-        UpdateSeaLevel();
-        
+        UpdateSeaLevel();       
+    }
+    public void BeginSimulation()
+    {
+        Vector2Int dimensions = new Vector2Int(mapWidth, mapHeight);
+        Generate(dimensions, seed, offset);
         //Intitialisers
         if(GenerationAnimation)
         {
@@ -87,6 +103,8 @@ public class MapGenerator : MonoBehaviour
         BushSpawner.instance.Initialise();
         PlantSpawner.instance.Initialise();
         EntitySpawner.instance.Initialise();
+        CamController.instance.Initialise();
+        EntityInspector.instance.Initialise();
     }
     public void GenerateMap()
     {
@@ -131,6 +149,7 @@ public class MapGenerator : MonoBehaviour
                 newTile.GetComponent<MeshRenderer>().material.color = col;
                 newTile.transform.parent = this.transform;
                 TileArray[i,j] = newTile;
+                Tiles.Add(newTile);
             }
         }
         //Generate North/South Wall
@@ -138,33 +157,31 @@ public class MapGenerator : MonoBehaviour
         {
             float height = 0f;
             Vector3 pos = new Vector3(i,2.5f,-1) - new Vector3(mapWidth/2, 0, mapHeight/2);
-            Color col = LandColorGradient.Evaluate(1);
             pos.y += height;
             GameObject southWallTile = Instantiate(mapBoundryPrefab, pos, Quaternion.identity);
-            southWallTile.GetComponent<MeshRenderer>().material.color = col;
             southWallTile.transform.parent = this.transform;
-            
+            Tiles.Add(southWallTile);
+
             pos = new Vector3(i,2.5f, mapHeight) - new Vector3(mapWidth/2, 0, mapHeight/2);
             pos.y += height;
             GameObject northWallTile = Instantiate(mapBoundryPrefab, pos, Quaternion.identity);
-            northWallTile.GetComponent<MeshRenderer>().material.color = col;
             northWallTile.transform.parent = this.transform;
+            Tiles.Add(northWallTile);
         }
         for(int j = -1; j < mapHeight; j++)
         {
             float height = 0f;
             Vector3 pos = new Vector3(-1,2.5f,j) - new Vector3(mapWidth/2, 0, mapHeight/2);
-            Color col = LandColorGradient.Evaluate(1);
             pos.y += height;
             GameObject WestWallTile = Instantiate(mapBoundryPrefab, pos, Quaternion.identity);
-            WestWallTile.GetComponent<MeshRenderer>().material.color = col;
             WestWallTile.transform.parent = this.transform;
+            Tiles.Add(WestWallTile);
 
             pos = new Vector3(mapWidth, 2.5f, j) - new Vector3(mapWidth/2, 0, mapHeight/2);
             pos.y += height;
             GameObject EastWallTile = Instantiate(mapBoundryPrefab, pos, Quaternion.identity);
-            EastWallTile.GetComponent<MeshRenderer>().material.color = col;
             EastWallTile.transform.parent = this.transform;
+            Tiles.Add(EastWallTile);
         }
     }
     public bool isTileUnderWater(Vector2Int tileCoord)

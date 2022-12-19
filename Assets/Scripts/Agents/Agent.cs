@@ -28,6 +28,7 @@ public interface Agent
     public float GetReproductiveUrge();
     public float GetDanger();
     public int GetAge();
+    public void SetAge(int _age);
     public int GetOffspringCount();
     ///<summary> 0 = male, 1 = female. </summary>
     public int GetGender();

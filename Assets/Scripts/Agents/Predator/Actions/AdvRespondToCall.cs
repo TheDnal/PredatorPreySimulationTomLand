@@ -2,91 +2,86 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class RespondToCall : Action
+public class AdvRespondToCall : AdvancedAction
 {
-    private enum ActionState { inactive,moving,findMate,walkToMate,mating, exit}
+    private enum ActionState {inactive, moving, findMate, walkToMate, mating, exit}
     private ActionState currentState = ActionState.inactive;
     private Vector3 targetLocation;
-    private PreyAgent closestValidFemale;
+    private PredatorAgent closestValidFemale;
     private float degrees = 0;
-    public override bool isActionPossible(PreyAgent _agent)
+    private float timer =0;
+    public override void Initialise(PredatorAgent _agent)
     {
-        actionName = "movingToMate";
         agent = _agent;
-        //Agent is locked out of this action if too hungry, tired, thirsty
-        if(agent.GetHunger() > 0.5 || agent.GetThirst() > 0.5 || agent.GetTiredness() > 0.5) { return false; }
+        actionName = "movingToMate";
+    }
+    public override bool isActionPossible(PredatorDiscontentSnapshot snapshot)
+    {
+        //Return false if agent is too hungry, tired etc.
+        if(agent.GetHunger() > 0.75f || agent.GetThirst() > 0.75f || agent.GetTiredness() > 0.75f || agent.GetReproductiveUrge() < 0.75f){return false;}
+        
 
-        //Return false if agent doesn't have enough urge
-        if(agent.GetReproductiveUrge() < 0.5){return false;}
-
-        //Checking if the agent can hear any valid noises
+        //Check if the agent can hear any calls to respond to
         int gender = agent.GetGender();
-        Vector2Int currPartition = agent.GetCurrentPartition();
-        Partition partition = PartitionSystem.instance.partitions[currPartition.x, currPartition.y];
-        foreach (noise currentNoise in partition.noises)
+        Vector2Int currPartitionCoords = agent.GetCurrentPartition();
+        Partition partition = PartitionSystem.instance.partitions[currPartitionCoords.x,currPartitionCoords.y];
+        foreach(noise currentNoise in partition.noises)
         {
-            if (currentNoise.type == noise.noiseType.femalePreyMatingCall && gender == 0)
+            if(currentNoise.type == noise.noiseType.femalePredatorMatingCall && gender == 0)
             {
                 return true;
             }
-            else if(currentNoise.type == noise.noiseType.malePreyMatingCall && gender == 1)
+            if(currentNoise.type == noise.noiseType.malePredatorMatingCall && gender == 1)
             {
                 return true;
             }
         }
         return false;
     }
-    public override float ActionScore()
+    public override float ActionScore(PredatorDiscontentSnapshot snapshot)
     {
-        return agent.GetReproductiveUrge() * agent.GetReproductiveUrge() * 95;
+        return agent.GetReproductiveUrge() * agent.GetReproductiveUrge() * 85;
     }
     public override void PerformAction()
     {
-        
+        timer = 0;
         agent.SetPerformingAction(true);
+        //Get target noise
         int gender = agent.GetGender();
-
-        //Get the target noise
         noise.noiseType targetNoise;
-        if(gender == 0)
-        {
-            targetNoise = noise.noiseType.femalePreyMatingCall;
-        }
-        else
-        {
-            targetNoise = noise.noiseType.malePreyMatingCall;
-        }
+        if(gender == 0){targetNoise = noise.noiseType.femalePredatorMatingCall;}
+        else{targetNoise = noise.noiseType.malePredatorMatingCall;}
 
         //Get nearest valid noise
-        Partition localPartition = PartitionSystem.instance.partitions[agent.GetCurrentPartition().x, agent.GetCurrentPartition().y];
+        Partition localPartition = PartitionSystem.instance.partitions[agent.GetCurrentPartition().x,agent.GetCurrentPartition().y];
         float distance = 0, closest = float.MaxValue;
-        foreach (noise currentNoise in localPartition.noises)
+        foreach(noise currentNoise in localPartition.noises)
         {
-            if(currentNoise.type != targetNoise){continue;}
             distance = Vector3.Distance(transform.position, currentNoise.sourceLocation);
-            if (distance < closest)
+            if(distance < closest)
             {
-                closest = distance;
                 targetLocation = currentNoise.sourceLocation;
+                closest = distance;
             }
         }
-        if(targetLocation == null) { currentState = ActionState.exit;}
-        else 
+        if(targetLocation == null){currentState = ActionState.exit;}
+        else
         {
-            targetLocation.y = transform.position.y; 
-            currentState = ActionState.moving; 
+            targetLocation.y = transform.position.y;
+            currentState = ActionState.moving;
         }
-
     }
     public override void UpdateAction()
     {
+        timer += Time.deltaTime;
+        if(timer > 5){currentState = ActionState.exit;}
         agent.SetVelocity(Vector3.zero);
-        switch (currentState)
+        switch(currentState)
         {
             case ActionState.inactive:
                 break;
             case ActionState.moving:
-                MoveToLocation();
+                MoveTolocation();
                 break;
             case ActionState.findMate:
                 FindMate();
@@ -102,10 +97,9 @@ public class RespondToCall : Action
                 break;
         }
     }
-
-    private void MoveToLocation()
+    private void MoveTolocation()
     {
-        //return if close to destination
+        //Returns if close to destination
         if(Vector3.Distance(transform.position, targetLocation) < 0.25f)
         {
             currentState = ActionState.findMate;
@@ -125,31 +119,27 @@ public class RespondToCall : Action
             if(currentPartition.agents.Count == 0){continue;}
             foreach(GameObject agent in currentPartition.agents)
             {
-                if(agent.GetComponent<Agent>().GetAgentType() == Agent.AgentType.PREDATOR){continue;}
-                distance = Vector3.Distance(transform.position, agent.transform.position);
+                if(agent.GetComponent<Agent>().GetAgentType() == Agent.AgentType.PREY){continue;}
+                distance = Vector3.Distance(transform.position,agent.transform.position);
                 if(distance < closest)
                 {
                     closest = distance;
-                    closestValidFemale = agent.gameObject.GetComponent<PreyAgent>();
+                    closestValidFemale = agent.gameObject.GetComponent<PredatorAgent>();
                 }
             }
         }
-
         if(closestValidFemale == null)
         {
             currentState = ActionState.exit;
             return;
-            
         }
         else if(closestValidFemale.TryBecomeMate(agent))
         {
             currentState = ActionState.walkToMate;
-            return;
-        }
+        }        
         else
         {
-            currentState = ActionState.exit;
-            return;
+            currentState = ActionState.exit;    
         }
     }
     private void WalkToMate()
@@ -157,7 +147,6 @@ public class RespondToCall : Action
         if(closestValidFemale == null)
         {
             currentState = ActionState.exit;
-            return;
         }
         Vector3 velocity = closestValidFemale.transform.position - transform.position;
         if(Vector3.Distance(transform.position, closestValidFemale.transform.position) < 0.1)
@@ -172,17 +161,14 @@ public class RespondToCall : Action
         if(closestValidFemale == null)
         {
             currentState = ActionState.exit;
-            return;
         }
         closestValidFemale.TryMate(agent.GetGenome());
+        agent.ResetReproductiveUrge();
         currentState = ActionState.exit;
     }
     public override void ExitAction()
     {
         agent.SetPerformingAction(false);
-    }
-    public override bool CanActionOverrideOthers()
-    {
-        return true;
+        currentState = ActionState.inactive;
     }
 }
