@@ -15,10 +15,10 @@ public class AdvRespondToCall : AdvancedAction
         agent = _agent;
         actionName = "movingToMate";
     }
-    public override bool isActionPossible(PredatorDiscontentSnapshot snapshot)
+    public override bool isActionPossible(PredatorDiscontents snapshot, bool isChainAction)
     {
         //Return false if agent is too hungry, tired etc.
-        if(agent.GetHunger() > 0.75f || agent.GetThirst() > 0.75f || agent.GetTiredness() > 0.75f || agent.GetReproductiveUrge() < 0.75f){return false;}
+        if(snapshot.GetHunger() > 0.75f || snapshot.GetThirst() > 0.75f || snapshot.GetTiredness() > 0.75f || snapshot.GetReproductiveUrge() < 0.75f){return false;}
         
 
         //Check if the agent can hear any calls to respond to
@@ -38,9 +38,9 @@ public class AdvRespondToCall : AdvancedAction
         }
         return false;
     }
-    public override float ActionScore(PredatorDiscontentSnapshot snapshot)
+    public override float ActionScore(PredatorDiscontents snapshot, bool isChainAction)
     {
-        return agent.GetReproductiveUrge() * agent.GetReproductiveUrge() * 85;
+        return agent.GetReproductiveUrge() * agent.GetReproductiveUrge() * 160;
     }
     public override void PerformAction()
     {
@@ -170,5 +170,9 @@ public class AdvRespondToCall : AdvancedAction
     {
         agent.SetPerformingAction(false);
         currentState = ActionState.inactive;
+    }
+    public override float EstimatedDuration(PredatorDiscontents snapshot)
+    {
+        return 5;
     }
 }

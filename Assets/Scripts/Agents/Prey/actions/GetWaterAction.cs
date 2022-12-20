@@ -50,7 +50,7 @@ public class GetWaterAction : Action
         } 
         if(nearestWaterSource == null){return false;}
         if(nearestWaterSource.coords == agent.GetCurrentPartition()){return true;}
-        if(agent.GetPathfindingSystem().GetPathToPartition(nearestWaterSource.coords,3) != null)
+        if(agent.GetPathfindingSystem().GetPathToPartition(nearestWaterSource.coords,agent.GetGenome().visionRadius) != null)
         {   
             return true;
         }
@@ -86,7 +86,7 @@ public class GetWaterAction : Action
         else
         {
             //Get path
-            DijkstraPath = agent.GetPathfindingSystem().GetPathToPartition(nearestWaterSource.coords, 3);
+            DijkstraPath = agent.GetPathfindingSystem().GetPathToPartition(nearestWaterSource.coords, agent.GetGenome().visionRadius);
             //Move along path
             currentStage = ACTION_STAGE.followPath;
         }

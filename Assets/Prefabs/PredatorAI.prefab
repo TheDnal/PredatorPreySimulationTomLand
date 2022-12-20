@@ -178,10 +178,10 @@ GameObject:
   - component: {fileID: 1195961032173285325}
   - component: {fileID: 8286155525285399743}
   - component: {fileID: 6890847519449841748}
-  - component: {fileID: 1162425824935071332}
   - component: {fileID: 2204753211524106493}
   - component: {fileID: 1098830644142637778}
   - component: {fileID: 8390589256811415635}
+  - component: {fileID: 2144959164515409377}
   m_Layer: 0
   m_Name: PredatorAI
   m_TagString: Untagged
@@ -272,22 +272,6 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 112
   m_CollisionDetection: 0
---- !u!114 &1162425824935071332
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7436527199000002159}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d623181712295cb43b34ae50c6f0a3ad, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  maxDotProduct: -0.7
-  visionRadius: 4
-  smellRadius: 1
-  SVChannel: 3
 --- !u!114 &2204753211524106493
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -325,3 +309,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9f860c6391179484d8ac3e441d3fe325, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &2144959164515409377
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7436527199000002159}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 51e839730be02864ab37e4b0dd5eea80, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxDotProduct: 0
+  visionRadius: 0
+  smellRadius: 2
+  SVChannel: 3

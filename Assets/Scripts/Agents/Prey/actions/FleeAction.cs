@@ -75,8 +75,8 @@ public class FleeAction : Action
         active = false;
         agent.SetPerformingAction(false);
     }
-    public override bool CanActionOverrideOthers()
+    public override bool CanActionBeOverriden()
     {
-        return true;
+        return false;
     }
 }

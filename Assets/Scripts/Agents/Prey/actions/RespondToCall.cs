@@ -125,6 +125,7 @@ public class RespondToCall : Action
             if(currentPartition.agents.Count == 0){continue;}
             foreach(GameObject agent in currentPartition.agents)
             {
+                if(agent == null){continue;}
                 if(agent.GetComponent<Agent>().GetAgentType() == Agent.AgentType.PREDATOR){continue;}
                 distance = Vector3.Distance(transform.position, agent.transform.position);
                 if(distance < closest)

@@ -63,7 +63,7 @@ public class MapGenerator : MonoBehaviour
             instance = this;
         }
     }
-    public void Generate(Vector2Int _mapDimensions, int _seed, Vector2 _offset)
+    public void Generate(Vector2Int _mapDimensions, int _seed, Vector2 _offset, float _seaLevel)
     {
         if(Tiles != null)
         {
@@ -77,6 +77,7 @@ public class MapGenerator : MonoBehaviour
         mapHeight = _mapDimensions.y;
         seed = _seed;
         offset = _offset;
+        WorldSeaLevel = _seaLevel;
         GenerateMap();
         GenerateTiles();
         UpdateSeaLevel();       
@@ -84,7 +85,7 @@ public class MapGenerator : MonoBehaviour
     public void BeginSimulation()
     {
         Vector2Int dimensions = new Vector2Int(mapWidth, mapHeight);
-        Generate(dimensions, seed, offset);
+        Generate(dimensions, seed, offset, WorldSeaLevel);
         //Intitialisers
         if(GenerationAnimation)
         {
@@ -105,6 +106,7 @@ public class MapGenerator : MonoBehaviour
         EntitySpawner.instance.Initialise();
         CamController.instance.Initialise();
         EntityInspector.instance.Initialise();
+        MapInspector.instance.Initialise();
     }
     public void GenerateMap()
     {

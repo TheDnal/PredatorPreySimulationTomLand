@@ -12,9 +12,9 @@ public class SummaryPage : InspectorPage
     private bool followAgent = false;
     public GameObject mainCam;
     private GameObject selectedGameObject;
-    public override void InitialisePage(EntityInspector _inspector)
+    public override void InitialisePage()
     {
-        base.InitialisePage(_inspector);
+        gameObject.SetActive(true);
         if(Agent.selectedAgent == null)
         {
             Debug.Log("ding!");

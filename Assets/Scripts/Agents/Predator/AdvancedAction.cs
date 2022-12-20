@@ -18,10 +18,10 @@ public class AdvancedAction : MonoBehaviour
     #endregion
     #region Generic Methods
     public virtual void Initialise(PredatorAgent _agent){agent = _agent;}
-    public virtual bool isActionPossible(PredatorDiscontentSnapshot snapshot){return false;}
+    public virtual bool isActionPossible(PredatorDiscontents snapshot, bool isChainAction = false){return false;}
     public virtual bool isActionChainable(){return false;}
-    public virtual float ActionScore(PredatorDiscontentSnapshot snapshot){return 0;}
-    public virtual float EstimatedDuration(PredatorDiscontentSnapshot snapshot){return 0;}
+    public virtual float ActionScore(PredatorDiscontents snapshot, bool isChainAction = false){return 0;}
+    public virtual float EstimatedDuration(PredatorDiscontents snapshot){return 0;}
     public virtual void PerformAction(){}
     public virtual void UpdateAction(){}
     public virtual void ExitAction(){}

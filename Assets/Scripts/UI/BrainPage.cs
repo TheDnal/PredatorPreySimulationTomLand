@@ -15,9 +15,9 @@ public class BrainPage : InspectorPage
     public Image ReproductiveUrge;
     public Image Danger;
     
-    public override void InitialisePage(EntityInspector _Inspector)
+    public override void InitialisePage()
     {
-        base.InitialisePage(_Inspector);
+        gameObject.SetActive(true);
         if(Agent.selectedAgent == null)
         {
             ClearGraphs();

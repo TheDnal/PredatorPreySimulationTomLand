@@ -14,7 +14,6 @@ public class EntityInspector : MonoBehaviour
 
 
     [Header("UI Elements")]
-    public GameObject UIElement;
     public TextMeshProUGUI EntityName;
     public GameObject Buttons;
     [Space(3)]
@@ -78,7 +77,7 @@ public class EntityInspector : MonoBehaviour
         }
         currentPage = page;
         page.gameObject.SetActive(true);
-        page.InitialisePage(this);
+        page.InitialisePage();
     }
     public void ClearSelectedAgent()
     {

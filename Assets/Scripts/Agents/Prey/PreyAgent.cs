@@ -25,9 +25,6 @@ public class PreyAgent : MonoBehaviour, Agent
     private int actualAge = 0;
     private float age = 0;
     //Variables that help the prey decide if an action is urgent enough to override the current action
-    private float overrideThreshold = 1.4f;
-    private float currentActionScore = 0;
-    private List<Action> overrideActions = new List<Action>();
     #endregion
     #region Discontent fields
     private float hunger, 
@@ -39,7 +36,7 @@ public class PreyAgent : MonoBehaviour, Agent
     private float hungerIncrease = 0.025f, hungerDecrease = -0.5f,
                  thirstIncrease = 0.033f, thirstDecrease = -1f,
                  tirednessIncrease = 0.0125f, tirednessDecrease = -0.25f,
-                 reprodcutiveIncrease = 0.05f, pregnancyIncrease = 0.33f;
+                 reprodcutiveIncrease = 0.025f, pregnancyIncrease = 0.33f;
     private bool isEating = false,
                 isDrinking = false, 
                 isSleeping = false,
@@ -51,8 +48,10 @@ public class PreyAgent : MonoBehaviour, Agent
         //Store intialisation variables
         gender = _gender;
         genome = _genome;
+        hungerIncrease *= genome.respirationRate;
         rb = this.GetComponent<Rigidbody>();
         sensorySystem = this.GetComponent<SVision>();
+        sensorySystem.Configure(genome.visionRadius,genome.smellRadius,genome.visionAngle);
         pSystem = PartitionSystem.instance;
         pathfindingSystem.Initialise(this.gameObject);
         UpdatePartitioning();
@@ -73,8 +72,11 @@ public class PreyAgent : MonoBehaviour, Agent
         actions.Add(getFood);
         GetWaterAction getWater = this.gameObject.AddComponent<GetWaterAction>();
         actions.Add(getWater);
+
         FleeAction flee = this.gameObject.AddComponent<FleeAction>();
         actions.Add(flee);
+        panicAction = flee;
+
         SleepAction sleep = this.gameObject.AddComponent<SleepAction>();
         actions.Add(sleep);
         MatingCall callMate = this.gameObject.AddComponent<MatingCall>();
@@ -85,14 +87,6 @@ public class PreyAgent : MonoBehaviour, Agent
         {
             GiveBirth birthing = this.gameObject.AddComponent<GiveBirth>();
             actions.Add(birthing);
-        }
-        //Get all overrides
-        foreach (Action action in actions)
-        {
-            if (action.CanActionOverrideOthers())
-            {
-                overrideActions.Add(action);
-            }
         }
     }
     public void Update()
@@ -111,8 +105,17 @@ public class PreyAgent : MonoBehaviour, Agent
         //Get danger value
         danger = sensorySystem.GetSensedDanger();
         //If danger is above a certain threshhold, then override current action and panic
-        //If the agent is performing an action, update it (todo)
-        //CheckOverrideActions();
+        if(danger > 0)
+        {
+            if(bestAction != null && bestAction.CanActionBeOverriden())
+            {
+                bestAction.ExitAction();
+                bestAction = panicAction;
+                currentActionName = bestAction.actionName;
+                bestAction.PerformAction();
+                performingAction = true;
+            }
+        }
         if(performingAction)
         {
             bestAction.UpdateAction();
@@ -199,41 +202,10 @@ public class PreyAgent : MonoBehaviour, Agent
         {
             transform.localScale = new Vector3(0.2f,0.4f,0.2f) * (age * genome.size /18);
         }
-        else if(age > 80){killAgent();}
+        //else if(age > 80){killAgent();}
         else
         {
             transform.localScale = new Vector3(0.2f,0.4f,0.2f) * genome.size;
-        }
-    }
-    private void CheckOverrideActions()
-    {
-        if(bestAction == null){return;}
-        Action overrideAction = null;
-        float score = 0, highestScore = currentActionScore;
-        foreach (Action action in overrideActions)
-        {
-            if (!action.isActionPossible(this))
-            {
-                continue;
-            }
-            score = action.ActionScore();
-            if (score > highestScore)
-            {
-                highestScore = score;
-                overrideAction = action;
-            }
-        }
-        if (overrideAction != null)
-        {
-            if (overrideAction == bestAction)
-            {
-                return;
-            }
-            if(highestScore < 40f){return;}
-            bestAction.ExitAction();
-            bestAction = overrideAction;
-            currentActionName = bestAction.actionName;
-            bestAction.PerformAction();
         }
     }
     private Action GetBestAction(List<Action> _actions)
@@ -249,7 +221,6 @@ public class PreyAgent : MonoBehaviour, Agent
                 {
                     bestAction = action;
                     highestScore = score;
-                    currentActionScore = score;
                 }
             }
         }
@@ -293,7 +264,7 @@ public class PreyAgent : MonoBehaviour, Agent
     public void ResetReproduction(){reproductiveUrge = 0;}
     public void ResetPregnancy(){pregnancy = 0; isPregnant = false;}
     public void Inpregnate(Genome fatherGenome){isPregnant = true;}
-    public void SetVelocity(Vector3 _velocity){velocity = _velocity;}
+    public void SetVelocity(Vector3 _velocity){velocity = _velocity * genome.speed * 1.5f;}
     public void SetPerformingAction(bool _performingAction){performingAction = _performingAction;}
     public bool TryBecomeMate(Agent mate)
     {

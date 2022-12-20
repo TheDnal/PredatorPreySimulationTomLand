@@ -41,6 +41,7 @@ public class PredatorAgent : MonoBehaviour, Agent
     private List<AdvancedAction> actions = new List<AdvancedAction>();
     private List<AdvancedAction> actionPlan = new List<AdvancedAction>();
     private AdvancedAction currentAction;
+    private int currentActionIndex = 0;
     private bool performingAction = false;
     private Vector3 velocity = Vector3.zero;
 
@@ -50,7 +51,7 @@ public class PredatorAgent : MonoBehaviour, Agent
     private int offspringCount = 0;
     private List<Agent> potentialMates = new List<Agent>();
     private Vector2Int currPartition;
-
+    private bool initialised = false;
     //Discontent Vals
     private float hunger, 
                   thirst, 
@@ -61,7 +62,7 @@ public class PredatorAgent : MonoBehaviour, Agent
     private float hungerIncrease = 0.033f, hungerDecrease = -0.5f,
                   thirstIncrease = 0.033f, thirstDecrease = -1f,
                   tirednessIncrease = 0.015f, tirednessDecrease = -0.25f,
-                  reprodcutiveIncrease = 0.020f, pregnancyIncrease = 0.15f;
+                  reprodcutiveIncrease = 0.010f, pregnancyIncrease = 0.15f;
     private bool isEating = false,
                 isDrinking = false, 
                 isSleeping = false,
@@ -72,8 +73,10 @@ public class PredatorAgent : MonoBehaviour, Agent
     {
         gender = _gender;
         genome = _genome;
+        hungerIncrease *= genome.respirationRate;
         rb = this.GetComponent<Rigidbody>();
         sensorySystem = this.GetComponent<SVision>();
+        sensorySystem.Configure(genome.visionRadius,genome.smellRadius, genome.visionAngle);
         pathfindingSystem = this.GetComponent<PathfindingSystem>();
         pathfindingSystem.Initialise(this.gameObject);
         PartitionSystem.instance.AddGameObjectToPartition(this.gameObject, PartitionSystem.ObjectType.predator);
@@ -115,24 +118,45 @@ public class PredatorAgent : MonoBehaviour, Agent
         AdvGiveBirth birth = this.gameObject.AddComponent<AdvGiveBirth>();
         birth.Initialise(this);
         actions.Add(birth);
+
+        actionPlan = null;
+        initialised = true;
     }
     private void Update()
     {
+      if(!initialised){return;}
       //Check if out of bounds
       if(transform.position.y < 0){KillAgent("out of bounds");}
       //Perform updates
       UpdateDiscontents();
       UpdateMisc();
+      if(actionPlan == null)
+      {
+        actionPlan = CalculateActionPlan();
+        currentActionIndex = 0;
+        currentAction = actionPlan[0];
+        currentAction.PerformAction();
+        currentActionName = currentAction.GetActionName();
+        performingAction = true;
+      }
       if(performingAction)
       {
         currentAction.UpdateAction();
         return;
       }
-      PredatorDiscontentSnapshot snapshot = new PredatorDiscontentSnapshot(hunger,thirst,tiredness,reprodcutiveIncrease,danger,pregnancy);
-      currentAction = CalculateBestAction(snapshot);
-      currentActionName = currentAction.GetActionName();
-      currentAction.PerformAction();
-      performingAction = true;
+      currentActionIndex += 1;
+      if(currentActionIndex < actionPlan.Count)
+      {
+        currentAction.ExitAction();
+        currentAction = actionPlan[currentActionIndex];
+        currentAction.PerformAction();
+        performingAction = true;
+        currentActionName = currentAction.GetActionName();
+        return;
+      }
+      currentAction.ExitAction();
+      actionPlan.Clear();
+      actionPlan = null;
     }
     private void UpdateDiscontents()
     {
@@ -152,7 +176,6 @@ public class PredatorAgent : MonoBehaviour, Agent
             pregnancy = 0;
             return;
         }
-        else if(age > 80){KillAgent("old age");}
         //Adult only discontent values
         if(gender == 1 && isPregnant){pregnancy = IterateDiscontentValue(true, pregnancy, pregnancyIncrease, 5);}
         else{pregnancy = 0;}
@@ -192,18 +215,25 @@ public class PredatorAgent : MonoBehaviour, Agent
 
       //Update age
       age += Time.deltaTime;
-
-
+      //Grow size
+      if(age < 20)
+      {
+        transform.localScale = age/20 * new Vector3(0.2f,0.4f,0.2f) * genome.size;
+      }
+      else
+      {
+        transform.localScale = new Vector3(0.2f,0.4f,0.2f) * genome.size;
+      }
     }
-    private AdvancedAction CalculateBestAction(PredatorDiscontentSnapshot snapshot)
+    private AdvancedAction CalculateBestAction(PredatorDiscontents snapshot, bool isChainAction)
     {
       float highscore = 0;
       AdvancedAction bestAction = actions[0];
       foreach(AdvancedAction action in actions)
       {
-        if(action.isActionPossible(snapshot))
+        if(action.isActionPossible(snapshot, isChainAction))
         {
-          float score = action.ActionScore(snapshot);
+          float score = action.ActionScore(snapshot,isChainAction);
           if(score > highscore)
           {
             bestAction = action;
@@ -213,9 +243,65 @@ public class PredatorAgent : MonoBehaviour, Agent
       }
       return bestAction;
     }
-    private void CalculateActionPlan()
+    private List<AdvancedAction> CalculateActionPlan()
     {
+      //Get plan length
+      //Get starting discontent
+      PredatorDiscontents startDiscontent = new PredatorDiscontents(hunger,thirst,tiredness,reproductiveUrge,danger,pregnancy);
+      float planScore = 0, bestScore = 0;
+      List<AdvancedAction> validStartingActions = new List<AdvancedAction>();
+      List<AdvancedAction> validChainableActions = new List<AdvancedAction>();
 
+      //Get all valid starts, as well as chainable actions
+      foreach(AdvancedAction action in actions)
+      {
+        if(action.isActionChainable()){validChainableActions.Add(action);}
+        if(!action.isActionPossible(startDiscontent,false)){continue;}
+          validStartingActions.Add(action);
+      }
+
+      //The best action plan score is calculated by the combined score of all of its actions
+      List<AdvancedAction> currentPlan = new List<AdvancedAction>(), bestPlan = new List<AdvancedAction>();
+      //To calculate the best action plan, the method will find the best combination of actions for each starting action,
+      //then it will pick the action which has the best combination.      
+      foreach(AdvancedAction startingAction in validStartingActions)
+      {
+        planScore += startingAction.ActionScore(startDiscontent,false);
+        currentPlan.Add(startingAction);
+        PredatorDiscontents newDiscontent = CalculateFutureDiscontents(startDiscontent, startingAction.EstimatedDuration(startDiscontent));
+        AdvancedAction nextAction= validChainableActions[0];;
+        foreach(AdvancedAction chainAction in validChainableActions)
+        { 
+          float bestChainScore =0, score;
+          if(!chainAction.isActionPossible(newDiscontent,true)){continue;}
+          score = chainAction.ActionScore(newDiscontent,true);
+          if(score > bestChainScore)
+          {
+            bestChainScore = score;
+            nextAction = chainAction;
+          }
+        }
+        currentPlan.Add(nextAction);
+        planScore += nextAction.ActionScore(newDiscontent);
+        if(planScore > bestScore)
+        {
+          bestPlan.Clear();
+          bestPlan.AddRange(currentPlan);
+          bestScore = planScore;
+        }
+        currentPlan.Clear();
+      }
+      return bestPlan;
+    }
+    private PredatorDiscontents CalculateFutureDiscontents(PredatorDiscontents startSnapshot, float timeElapsed)
+    {
+      float _hunger = startSnapshot.GetHunger() + (hungerIncrease * timeElapsed);
+      float _thirst = startSnapshot.GetThirst() + (thirstIncrease * timeElapsed);
+      float _tiredness = startSnapshot.GetTiredness() + (tirednessIncrease * timeElapsed);
+      float _reproductiveUrge = age > 18 ? startSnapshot.GetReproductiveUrge() + (reprodcutiveIncrease * timeElapsed) : 0;
+      float _danger = startSnapshot.GetDanger();
+      float _pregnancy = isPregnant ? startSnapshot.GetPregnancy() + (pregnancyIncrease * timeElapsed): 0;
+      return new PredatorDiscontents(_hunger,_thirst,_tiredness,_reproductiveUrge,_danger,_pregnancy);
     }
     public void Kill()
     {
@@ -243,7 +329,7 @@ public class PredatorAgent : MonoBehaviour, Agent
     public void ResetReproductiveUrge(){reproductiveUrge = 0;}
     #endregion
     #region Setters
-    public void SetVelocity(Vector3 _velocity){velocity = _velocity;}
+    public void SetVelocity(Vector3 _velocity){velocity = _velocity * genome.speed * 1.5f;}
     public void SetPerformingAction(bool _performingAction){performingAction = _performingAction;}
     public bool TryBecomeMate(Agent mate)
     {
@@ -293,10 +379,10 @@ public class PredatorAgent : MonoBehaviour, Agent
     #endregion
 
 }
-public struct PredatorDiscontentSnapshot
+public struct PredatorDiscontents
 {
     private float hunger, thirst, tiredness, reproductiveUrge, danger, pregnancy;
-    public PredatorDiscontentSnapshot(float _hunger, float _thirst, float _tiredness, float _reproductiveUrge, float _danger, float _pregnancy)
+    public PredatorDiscontents(float _hunger, float _thirst, float _tiredness, float _reproductiveUrge, float _danger, float _pregnancy)
     {
       hunger = _hunger;
       thirst = _thirst;

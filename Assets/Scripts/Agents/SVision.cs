@@ -14,13 +14,21 @@ public class SVision : MonoBehaviour
     private Vector3 oldPos;
     public enum channel{sight, smell, sound, none};
     public channel SVChannel = channel.none;
+    private bool initialised = false;
     void Start()
     {
         pSystem = PartitionSystem.instance;
     }
-
+    public void Configure(int _visionRadius, int _smellRadius, float _maxDotProduct)
+    {
+        visionRadius = _visionRadius;
+        smellRadius = _smellRadius;
+        maxDotProduct = _maxDotProduct;
+        initialised = true;
+    }
     void Update()
     {
+        if(!initialised){return;}
         if(oldForwardVector != transform.forward || oldPos != transform.position)
         {
             visiblePartitions = CalculateVision();

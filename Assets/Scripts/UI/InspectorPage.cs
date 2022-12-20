@@ -9,14 +9,13 @@ public class InspectorPage : MonoBehaviour
     {
         gameObject.SetActive(false);
     }
-    public virtual void InitialisePage(EntityInspector _Inspector)
+    public virtual void InitialisePage()
     {
         gameObject.SetActive(true);
-        inspector = _Inspector; 
     } 
     public virtual void UpdatePage(){}
     public virtual void ClosePage()
     {
-        
+        gameObject.SetActive(false);
     }
 }

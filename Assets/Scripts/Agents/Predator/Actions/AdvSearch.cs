@@ -14,15 +14,15 @@ public class AdvSearch : AdvancedAction
         agent = _agent;
         actionName = "Search";
     }
-    public override bool isActionPossible(PredatorDiscontentSnapshot snapshot)
+    public override bool isActionPossible(PredatorDiscontents snapshot, bool isChainAction)
     {
         return base.isActionPossible(snapshot);
     }
-    public override float ActionScore(PredatorDiscontentSnapshot snapshot)
+    public override float ActionScore(PredatorDiscontents snapshot, bool isChainAction)
     {
         return base.ActionScore(snapshot);
     }
-    public override float EstimatedDuration(PredatorDiscontentSnapshot snapshot)
+    public override float EstimatedDuration(PredatorDiscontents snapshot)
     {
         return base.EstimatedDuration(snapshot);
     }

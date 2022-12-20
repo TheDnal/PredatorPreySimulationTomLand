@@ -27,7 +27,8 @@ public class Action : MonoBehaviour
     public virtual float ActionScore(){return 0;}
     public virtual void PerformAction(){}
     public virtual void UpdateAction(){}
-    public virtual void ExitAction(){}
+    public virtual void ExitAction(){} 
+    public virtual bool CanActionBeOverriden(){return true;}
     public virtual bool CanActionOverrideOthers() { return false;}
     #endregion
 

@@ -191,7 +191,15 @@ public class GetFoodAction : Action
         else
         {
             agent.SetVelocity(Vector3.zero);
-            currentStage = Stage.eatFood;
+            if(nearestFoodObject.GetComponent<Plant>().isEdible())
+            {
+                nearestFoodObject.GetComponent<Plant>().startEating();
+                currentStage = Stage.eatFood;
+            }
+            else
+            {
+                currentStage = Stage.finished;
+            }
         }
     }
     private float timer = 0;
@@ -199,10 +207,6 @@ public class GetFoodAction : Action
     {
         agent.SetEating(true);
         timer+= Time.deltaTime;
-        if(nearestFoodObject.GetComponent<Plant>().isEdible())
-        {
-            nearestFoodObject.GetComponent<Plant>().startEating();
-        }
         //Wait until time elapsed then finish state
         if(timer >= 1)
         {
@@ -210,7 +214,6 @@ public class GetFoodAction : Action
             agent.SetEating(false);
             currentStage = Stage.finished;
         }
-        
     }
     #endregion
     #region misc

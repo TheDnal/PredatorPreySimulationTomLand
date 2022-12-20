@@ -11,13 +11,15 @@ public class AdvCallForMate : AdvancedAction
         actionName = "CallingForMate";
         agent = _agent;
     }
-    public override bool isActionPossible(PredatorDiscontentSnapshot snapshot)
+    public override bool isActionPossible(PredatorDiscontents snapshot, bool isChainAction)
     {
         //Agent cannot call if hungry, tired, thirsty, in danger etc
         if(snapshot.GetHunger() > 0.5f || agent.GetThirst() > 0.5f || agent.GetTiredness() > 0.5f || agent.GetDanger() > 0 || agent.GetReproductiveUrge() < 0.5)
         {
             return false;
         }
+        //If planning for the future, the agent cannot assume it'll hear mates therefore it'll signal itself
+        if(isChainAction){return true;}
         //If the agent can hear a call for mate, return false
         Vector2Int localPartitionCoords = agent.GetCurrentPartition();
         int gender = agent.GetGender();
@@ -35,11 +37,11 @@ public class AdvCallForMate : AdvancedAction
         }
         return true;
     }
-    public override float ActionScore(PredatorDiscontentSnapshot snapshot)
+    public override float ActionScore(PredatorDiscontents snapshot, bool isChainAction)
     {
-        return agent.GetReproductiveUrge() * agent.GetReproductiveUrge() * 75;
+        return agent.GetReproductiveUrge() * agent.GetReproductiveUrge() * 160;
     }
-    public override float EstimatedDuration(PredatorDiscontentSnapshot snapshot)
+    public override float EstimatedDuration(PredatorDiscontents snapshot)
     {
         return 4;
     }
@@ -51,11 +53,11 @@ public class AdvCallForMate : AdvancedAction
         //Emit mating call
         if(agent.GetGender() == 0)
         {
-            PartitionSystem.instance.EmitSound(3, transform.position, noise.noiseType.malePredatorMatingCall);
+            PartitionSystem.instance.EmitSound(5, transform.position, noise.noiseType.malePredatorMatingCall);
         }
         else
         {
-            PartitionSystem.instance.EmitSound(3, transform.position, noise.noiseType.femalePredatorMatingCall);
+            PartitionSystem.instance.EmitSound(5, transform.position, noise.noiseType.femalePredatorMatingCall);
         }
     }
     public override void UpdateAction()
@@ -69,5 +71,9 @@ public class AdvCallForMate : AdvancedAction
     {
         agent.SetPerformingAction(false);
         actionActive = false;
+    }
+    public override bool isActionChainable()
+    {
+        return true;
     }
 }

@@ -16,6 +16,7 @@ public class AdvFindWater : AdvancedAction
     private Vector2Int StartPosition, targetWaypoint;
     private Vector3 targetPos;
     private float timer = 0;
+    private float exitTimer = 0;
     #endregion
     #region Methods
     public override void Initialise(PredatorAgent _agent)
@@ -23,7 +24,7 @@ public class AdvFindWater : AdvancedAction
         agent = _agent;
         actionName = "GetWater";
     }
-    public override bool isActionPossible(PredatorDiscontentSnapshot snapshot)
+    public override bool isActionPossible(PredatorDiscontents snapshot, bool isChainAction)
     {
         nearestWaterSource = null;
         List<Partition> visiblePartitions = agent.GetSensorySystem().GetVisionCone();
@@ -43,22 +44,37 @@ public class AdvFindWater : AdvancedAction
         if(nearestWaterSource != null){return true;}
         return false;
     }
-    public override float ActionScore(PredatorDiscontentSnapshot snapshot)
-    {
-        float distance = Vector3.Distance(transform.position, nearestWaterSource.worldPosition);        
-        return (snapshot.GetThirst() * snapshot.GetThirst() * 110) - distance;
+    public override float ActionScore(PredatorDiscontents snapshot, bool isChainAction)
+    {      
+        return (snapshot.GetThirst() * snapshot.GetThirst() * 110);
     }
-    public override float EstimatedDuration(PredatorDiscontentSnapshot snapshot)
+    public override float EstimatedDuration(PredatorDiscontents snapshot)
     {
-        return Vector3.Distance(transform.position, nearestWaterSource.worldPosition);
+        return 4;
     }
     public override void PerformAction()
     {
+        exitTimer =0;
         timer = 0;
         agent.SetVelocity(Vector3.zero);
         agent.SetPerformingAction(true);
         targetWaypoint = new Vector2Int(-1,-1);
         StartPosition = agent.GetCurrentPartition();
+        List<Partition> visiblePartitions = agent.GetSensorySystem().GetVisionCone();
+        float distance = 0, closest = float.MaxValue;
+        foreach(Partition partition in visiblePartitions)
+        {
+            if(partition.hasDrinkbleWater())
+            {
+                distance = Vector3.Distance(partition.worldPosition, transform.position);
+                if(distance< closest)
+                {
+                    closest = distance;
+                    nearestWaterSource = partition;
+                }
+            }
+        }
+        if(nearestWaterSource == null){currentStage = ActionStage.EXIT;}
         Partition currPartition = PartitionSystem.instance.partitions[StartPosition.x,StartPosition.y];
         if(currPartition.hasDrinkbleWater())
         {
@@ -90,6 +106,8 @@ public class AdvFindWater : AdvancedAction
     }
     private void FollowPath()
     {
+        exitTimer += Time.deltaTime;
+        if(exitTimer >= 4f){currentStage = ActionStage.EXIT; return;}
         //Start
         if(targetWaypoint == new Vector2Int(-1,-1))
         {

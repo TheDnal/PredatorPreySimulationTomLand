@@ -9,28 +9,34 @@ public static class GeneticsSystem
         //prey genome
         if(species == Genome.species.prey)
         {
-            Genome startingPreyGenome = new Genome(0f,1,1,2,-.5f,2,2, Genome.species.prey);
+            Genome startingPreyGenome = new Genome(0f,1,1,2,-.5f,2,2, 0, Genome.species.prey);
             return MergeGenome(startingPreyGenome,startingPreyGenome);
         }
         //predator genome
         else
         {
-            Genome startingPredatorGenome = new Genome(0f,1,1.5f,4,-.7f,4,4, Genome.species.predator);
+            Genome startingPredatorGenome = new Genome(0f,1,1.5f,4,-.6f,4,4, 1, Genome.species.predator);
             return MergeGenome(startingPredatorGenome,startingPredatorGenome);
         }
     }
     public static Genome MergeGenome(Genome parentA, Genome parentB)
     {
-        return new Genome(
+        Genome newGenome = new Genome(
             MutateValue(parentA.rK_Value,parentB.rK_Value,0.25f,-1,1),
             MutateValue(parentA.speed,parentB.speed,0.25f,0.5f,3f),
             MutateValue(parentA.size,parentB.size,0.25f,0.5f,2f),
             Mathf.RoundToInt( MutateValue(parentA.visionRadius,parentB.visionRadius,1.5f,0,5)),
-            MutateValue(parentA.visionAngle,parentB.visionAngle,0.25f,-1,1),
+            MutateValue(parentA.visionAngle,parentB.visionAngle,0.25f,-.7f,1),
             Mathf.RoundToInt(MutateValue(parentA.smellRadius, parentB.smellRadius, 1.5f, 0, 3)),
             Mathf.RoundToInt( MutateValue(parentA.hearingRadius,parentB.hearingRadius,1.5f,0,5)),
+            1,
             parentA.genomeSpecies
-                            );
+        );
+        if(parentA.genomeSpecies == Genome.species.prey || parentB.genomeSpecies == Genome.species.prey)
+        {
+            newGenome.intelligence = 0;
+        }
+        return newGenome;
     }
     private static float MutateValue(float parentAvalue, float parentBvalue, float mutationStrength, float minValue, float maxValue)
     {
@@ -59,14 +65,15 @@ public struct Genome
     public float speed;
     public float size;
     public float respirationRate;
-    public float visionRadius;
+    public int visionRadius;
     public float visionAngle;
-    public float smellRadius;
+    public int smellRadius;
     public float hearingRadius;
+    public int intelligence;
     #endregion 
     public Genome(float rK = 0f, float _speed = 1f, float _size = 1f, 
                       int _visionRadius = 2, float _visionAngle = -.5f,
-                      int _smellRadius = 1, int _hearingRadius = 1, species _species = species.prey)
+                      int _smellRadius = 1, int _hearingRadius = 1, int _intelligence = 0, species _species = species.prey)
     {
         rK_Value = rK;
         speed = _speed;
@@ -77,6 +84,7 @@ public struct Genome
         smellRadius = _smellRadius;
         hearingRadius = _hearingRadius;
         genomeSpecies = _species;
+        intelligence = _intelligence;
         respirationRate = CalculateRespirationRate();
     }
     private float CalculateRespirationRate()
@@ -85,7 +93,8 @@ public struct Genome
         float sensoryCost = 0.05f * (visionRadius + smellRadius + hearingRadius);
         sensoryCost += Mathf.Abs(visionRadius/5);
         float bodyCost = size /5 + speed /5;
-        float respirationRate = sensoryCost + bodyCost;
+        float intelligenceCost = 0.1f * intelligence;
+        float respirationRate = sensoryCost + bodyCost + intelligenceCost;
         return respirationRate;
     }
 }

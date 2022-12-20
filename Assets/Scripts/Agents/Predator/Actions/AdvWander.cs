@@ -12,9 +12,9 @@ public class AdvWander : AdvancedAction
     private Vector3 previousPosition;
     private Vector3 wanderDirection = Vector3.zero;
     public override void Initialise(PredatorAgent _agent){agent = _agent; actionName = "Wander";}
-    public override bool isActionPossible(PredatorDiscontentSnapshot snapshot){return true;}
-    public override float ActionScore(PredatorDiscontentSnapshot snapshot){return 5;}
-    public override float EstimatedDuration(PredatorDiscontentSnapshot snapshot){return 4;}
+    public override bool isActionPossible(PredatorDiscontents snapshot, bool isChainAction){return true;}
+    public override float ActionScore(PredatorDiscontents snapshot, bool isChainAction){return 5;}
+    public override float EstimatedDuration(PredatorDiscontents snapshot){return 4;}
     public override void PerformAction()
     {
         actionRunning = true;
@@ -32,7 +32,7 @@ public class AdvWander : AdvancedAction
         timer += Time.deltaTime;
         stuckTimer += Time.deltaTime;
         agent.SetVelocity(wanderDirection);
-        if(timer >= 2)
+        if(timer >= 1)
         {
             agent.SetVelocity(Vector3.zero);
             ExitAction();
@@ -55,5 +55,9 @@ public class AdvWander : AdvancedAction
         agent.SetVelocity(Vector3.zero);
         actionRunning = false;
         agent.SetPerformingAction(false);
+    }
+    public override bool isActionChainable()
+    {
+        return true;
     }
 }

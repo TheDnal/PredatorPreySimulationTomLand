@@ -13,11 +13,11 @@ public class AdvGiveBirth : AdvancedAction
         actionName = "Reproduce";
         agent = _agent;
     }
-    public override bool isActionPossible(PredatorDiscontentSnapshot snapshot)
+    public override bool isActionPossible(PredatorDiscontents snapshot, bool isChainAction)
     {
         return snapshot.GetPregnancy() >= 1 ? true : false;
     }
-    public override float ActionScore(PredatorDiscontentSnapshot snapshot)
+    public override float ActionScore(PredatorDiscontents snapshot, bool isChainAction)
     {
         return 999;
     }
@@ -68,5 +68,9 @@ public class AdvGiveBirth : AdvancedAction
     {
         agent.ResetPregnancy();
         agent.SetPerformingAction(false);
+    }
+    public override float EstimatedDuration(PredatorDiscontents snapshot)
+    {
+        return maxOffspring * spawnInterval;
     }
 }

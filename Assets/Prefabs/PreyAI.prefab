@@ -178,10 +178,10 @@ GameObject:
   - component: {fileID: -7753586947757254999}
   - component: {fileID: 8503648720136566235}
   - component: {fileID: 6583247496511207728}
-  - component: {fileID: -7720130899013404928}
   - component: {fileID: 1902078862707978649}
   - component: {fileID: 847386321094228918}
   - component: {fileID: 1170677297590289094}
+  - component: {fileID: 225285611304909050}
   m_Layer: 0
   m_Name: PreyAI
   m_TagString: Untagged
@@ -272,22 +272,6 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 112
   m_CollisionDetection: 0
---- !u!114 &-7720130899013404928
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7191839513551554315}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d623181712295cb43b34ae50c6f0a3ad, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  maxDotProduct: -0.5
-  visionRadius: 2
-  smellRadius: 1
-  SVChannel: 3
 --- !u!114 &1902078862707978649
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -325,5 +309,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7fbc5d021fb40564983fa78cc6a30071, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sensorySystem: {fileID: -7720130899013404928}
+  sensorySystem: {fileID: 225285611304909050}
   pathfindingSystem: {fileID: 1902078862707978649}
+--- !u!114 &225285611304909050
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7191839513551554315}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 51e839730be02864ab37e4b0dd5eea80, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxDotProduct: 0
+  visionRadius: 0
+  smellRadius: 2
+  SVChannel: 3

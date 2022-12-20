@@ -14,15 +14,15 @@ public class AdvSleep : AdvancedAction
         agent = _agent;
         actionName = "Sleep";
     }
-    public override bool isActionPossible(PredatorDiscontentSnapshot snapshot)
+    public override bool isActionPossible(PredatorDiscontents snapshot, bool isChainAction)
     {
         return snapshot.GetTiredness() > 0.5 ? true : false;
     }
-    public override float ActionScore(PredatorDiscontentSnapshot snapshot)
+    public override float ActionScore(PredatorDiscontents snapshot, bool isChainAction)
     {
         return snapshot.GetTiredness() * snapshot.GetTiredness() * 75;
     }
-    public override float EstimatedDuration(PredatorDiscontentSnapshot snapshot)
+    public override float EstimatedDuration(PredatorDiscontents snapshot)
     {
         return 4;
     }
@@ -43,5 +43,9 @@ public class AdvSleep : AdvancedAction
     {
         agent.SetPerformingAction(false);
         agent.SetSleeping(false);
+    }
+    public override bool isActionChainable()
+    {
+        return true;
     }
 }

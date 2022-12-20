@@ -10,9 +10,9 @@ public class SensoryPage : InspectorPage
     private List<Partition> VisionCone = new List<Partition>();
     private List<Partition> smellPartitions = new List<Partition>();
     private List<Partition> displayedPartitions = new List<Partition>();
-    public override void InitialisePage(EntityInspector _Inspector)
+    public override void InitialisePage()
     {
-        base.InitialisePage(_Inspector);
+        gameObject.SetActive(true);
     }
     public override void UpdatePage()
     {

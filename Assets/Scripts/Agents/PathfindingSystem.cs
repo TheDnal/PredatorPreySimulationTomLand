@@ -37,12 +37,15 @@ public class PathfindingSystem : MonoBehaviour
         }
         startPos = PartitionSystem.instance.WorldToPartitionCoords(agent.transform.position);
         endPos = endPartition;
-        GenerateNodeGrid(pathfindingRadius, endPos);
-        partitionPath = DijkstraCompute();
-        gizmoPath = partitionPath;
-        return partitionPath;
+        if(GenerateNodeGrid(pathfindingRadius, endPos))
+        {
+            partitionPath = DijkstraCompute();
+            gizmoPath = partitionPath;
+            return partitionPath;
+        }
+        return null;
     }
-    private void GenerateNodeGrid(int radius, Vector2Int end)
+    private bool GenerateNodeGrid(int radius, Vector2Int end)
     {
         //Length of node grid
         int length = 1 + 2* radius;
@@ -54,7 +57,7 @@ public class PathfindingSystem : MonoBehaviour
         gridCorner = startPos - new Vector2Int(radius,radius);
         //Get end coord in relative coords
         Vector2Int endCoord = end - gridCorner;
-
+        if(endCoord.x < 0 || endCoord.y < 0 || endCoord.x > length || endCoord.y > length){return false;}
         Vector2Int bounds = PartitionSystem.instance.size;
         //Generate node grid, starting from the grid corner
         for(int i = 0; i < length; i++)
@@ -79,6 +82,7 @@ public class PathfindingSystem : MonoBehaviour
         //Get start and end node
         startNode = nodes[radius,radius];
         endNode = nodes[endCoord.x,endCoord.y];
+        return true;
     }
     private List<Vector2Int> DijkstraCompute()
     {
@@ -170,7 +174,7 @@ public class PathfindingSystem : MonoBehaviour
         return partitionPath;
     }
     
-    public bool isTargetReachable(Vector3 target, int pathfindingRadius = 4)
+    public bool isTargetReachable(Vector3 target, int pathfindingRadius = 6)
     {
         //Actions will use this to make sure their target location is valid
         Vector2Int targetPartition = PartitionSystem.instance.WorldToPartitionCoords(target);
